@@ -206,17 +206,39 @@ npm run seed
 
 ## Recent Changes (October 2025)
 
-### Public Landing Page Complete ✅ (October 5, 2025)
+### Landing Page Component Enhancements ✅ (October 5, 2025)
+- **Updated Header**: Added logo image support and improved mobile menu with hamburger toggle
+- **Enhanced HeroSection**: Added banner image placeholder and improved visual design
+- **Redesigned LearningJourney**: Implemented flowchart-style layout with alternating top/bottom text placement
+- **Updated PricingSection**: Shifted focus to institutional plans (removed first cohort pricing)
+- **Enhanced RegistrationForm**: 
+  - Added additional form controls (Label, Select, Checkbox components)
+  - Integrated toast notifications for user feedback
+  - Gender selection and additional fields
+- **Created Interactive TypingDemo**:
+  - 5 progressive levels with increasing difficulty
+  - Real-time WPM tracking and accuracy measurement
+  - Bilingual support (Arabic RTL / English LTR)
+  - Character-by-character feedback with color coding
+  - Level completion with pass/fail criteria
+  - Fixed completion logic to use locally calculated metrics (no stale state)
+- **Created UI Components**: Label, Select, Checkbox for form controls
+- **Created Utilities**: queryClient for API calls, use-toast hook for notifications
+- **Added Translation Keys**: Expanded LanguageContext with all navigation and component text
+- **Path Aliases**: Added @assets/* path for placeholder images
+- All components now properly use translation system (no hardcoded bilingual strings)
+
+### Public Landing Page Initial Build ✅ (October 5, 2025)
 - Built complete bilingual landing page (Arabic/English)
 - Implemented LanguageProvider with RTL/LTR support
-- Created all required components:
+- Created all required sections:
   - Header with navigation and language toggle
   - HeroSection with CTA buttons and stats
   - FeaturesSection with 6 feature cards
   - LearningJourney with 4-step path
   - TypingDemo with animated preview
   - CoursesSection with course cards
-  - PricingSection with first cohort offer (500 SAR / 50% off)
+  - PricingSection with institutional plans
   - ContactSection with contact form
   - Footer with social links
   - EarlyBirdPopup (appears after 3 seconds)
