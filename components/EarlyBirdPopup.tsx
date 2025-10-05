@@ -1,0 +1,103 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { X, Rocket, Check } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useLanguage } from '@/app/contexts/LanguageContext';
+
+interface EarlyBirdPopupProps {
+  onRegisterClick: () => void;
+}
+
+export function EarlyBirdPopup({ onRegisterClick }: EarlyBirdPopupProps) {
+  const [isVisible, setIsVisible] = useState(false);
+  const { t, language, setLanguage, isRTL } = useLanguage();
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsVisible(true);
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  const closePopup = () => {
+    setIsVisible(false);
+  };
+
+  const handleRegisterClick = () => {
+    setIsVisible(false);
+    onRegisterClick();
+  };
+
+  const toggleLanguage = () => {
+    setLanguage(language === 'ar' ? 'en' : 'ar');
+  };
+
+  if (!isVisible) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 relative">
+        <button
+          onClick={closePopup}
+          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-2xl z-10"
+        >
+          <X size={24} />
+        </button>
+        
+        <div className="bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 text-white p-6 rounded-t-2xl text-center">
+          <div className="mb-4">
+            <Rocket className="w-12 h-12 mx-auto mb-2" />
+          </div>
+          <h3 className={`text-2xl font-bold mb-2 ${isRTL ? 'arabic-heading' : ''}`}>{t('popup-title')}</h3>
+          <p className={`text-blue-100 ${isRTL ? 'arabic-body' : ''}`}>{t('popup-subtitle')}</p>
+        </div>
+        
+        <div className="p-6">
+          <div className="text-center mb-6">
+            <div className="bg-red-50 text-red-600 px-4 py-2 rounded-lg inline-block mb-4">
+              <span className="font-bold">{t('discount-text')}</span>
+            </div>
+            <div className="text-3xl font-bold text-blue-600 mb-2">
+              <span>{t('price-text')}</span>
+              <span className="text-lg text-gray-500 line-through ml-2">{t('original-price')}</span>
+            </div>
+            <p className={`text-gray-600 ${isRTL ? 'arabic-body' : ''}`}>{t('cohort-text')}</p>
+          </div>
+          
+          <div className="space-y-4 mb-6">
+            <div className={`flex items-center text-gray-700 ${isRTL ? 'text-right flex-row-reverse' : 'text-left'}`}>
+              <Check className={`text-green-500 ${isRTL ? 'ml-3' : 'mr-3'}`} size={20} />
+              <span className={isRTL ? 'arabic-body' : ''}>{t('feature-1')}</span>
+            </div>
+            <div className={`flex items-center text-gray-700 ${isRTL ? 'text-right flex-row-reverse' : 'text-left'}`}>
+              <Check className={`text-green-500 ${isRTL ? 'ml-3' : 'mr-3'}`} size={20} />
+              <span className={isRTL ? 'arabic-body' : ''}>{t('feature-2')}</span>
+            </div>
+            <div className={`flex items-center text-gray-700 ${isRTL ? 'text-right flex-row-reverse' : 'text-left'}`}>
+              <Check className={`text-green-500 ${isRTL ? 'ml-3' : 'mr-3'}`} size={20} />
+              <span className={isRTL ? 'arabic-body' : ''}>{t('feature-3')}</span>
+            </div>
+          </div>
+          
+          <Button
+            onClick={handleRegisterClick}
+            className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+          >
+            {t('register-btn')}
+          </Button>
+          
+          <div className="flex justify-center mt-4">
+            <button
+              onClick={toggleLanguage}
+              className="bg-gray-100 px-3 py-1 rounded-full text-sm text-gray-600 hover:bg-gray-200 transition-colors"
+            >
+              {t('lang-toggle')}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -1,0 +1,316 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@200;300;400;500;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: hsl(0, 0%, 100%);
+  --foreground: hsl(210, 25%, 7.8%);
+  --card: hsl(0, 0%, 100%);
+  --card-foreground: hsl(210, 25%, 7.8%);
+  --popover: hsl(0, 0%, 100%);
+  --popover-foreground: hsl(210, 25%, 7.8%);
+  --primary: hsl(221, 83%, 53%);
+  --primary-foreground: hsl(0, 0%, 100%);
+  --secondary: hsl(210, 40%, 96%);
+  --secondary-foreground: hsl(210, 25%, 7.8%);
+  --muted: hsl(210, 40%, 96%);
+  --muted-foreground: hsl(215, 16%, 47%);
+  --accent: hsl(210, 40%, 96%);
+  --accent-foreground: hsl(221, 83%, 53%);
+  --destructive: hsl(0, 84%, 60%);
+  --destructive-foreground: hsl(0, 0%, 100%);
+  --border: hsl(214, 32%, 91%);
+  --input: hsl(214, 32%, 91%);
+  --ring: hsl(221, 83%, 53%);
+  --chart-1: hsl(221, 83%, 53%);
+  --chart-2: hsl(212, 95%, 68%);
+  --chart-3: hsl(216, 92%, 60%);
+  --chart-4: hsl(210, 98%, 78%);
+  --chart-5: hsl(212, 97%, 87%);
+  --radius: 0.75rem;
+  
+  /* Custom Banan Colors */
+  --banan-primary: hsl(221, 83%, 53%);
+  --banan-secondary: hsl(217, 91%, 60%);
+  --banan-light: hsl(214, 95%, 93%);
+  --banan-accent: hsl(224, 76%, 48%);
+  --banan-dark: hsl(224, 64%, 33%);
+  
+  /* Typography */
+  --font-arabic: 'Cairo', 'Tajawal', 'Noto Sans Arabic', 'Segoe UI Arabic', 'Tahoma', Arial, sans-serif;
+  --font-english: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+}
+
+.font-arabic {
+  font-family: var(--font-arabic) !important;
+  letter-spacing: 0.015em !important;
+  line-height: 1.65 !important;
+  font-weight: 400;
+  word-spacing: 0.1em;
+}
+
+/* Arabic heading styles */
+.arabic-heading {
+  font-family: var(--font-arabic) !important;
+  font-weight: 600;
+  letter-spacing: 0.008em !important;
+  line-height: 1.45 !important;
+  word-spacing: 0.08em;
+}
+
+.arabic-hero-title {
+  font-family: var(--font-arabic) !important;
+  font-weight: 700;
+  letter-spacing: 0.005em !important;
+  line-height: 1.35 !important;
+  word-spacing: 0.06em;
+}
+
+.arabic-body {
+  font-family: var(--font-arabic) !important;
+  font-weight: 400;
+  letter-spacing: 0.02em !important;
+  line-height: 1.75 !important;
+  word-spacing: 0.12em;
+}
+
+/* Arabic button text */
+.arabic-button {
+  font-family: var(--font-arabic) !important;
+  font-weight: 500;
+  letter-spacing: 0.008em !important;
+  word-spacing: 0.08em;
+}
+
+/* Better text rendering for Arabic */
+.arabic-text {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: 'kern' 1, 'liga' 1, 'calt' 1;
+  direction: rtl;
+  text-align: right;
+}
+
+/* Centered Arabic text */
+.arabic-text-center {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: 'kern' 1, 'liga' 1, 'calt' 1;
+  direction: rtl;
+  text-align: center !important;
+}
+
+/* Arabic paragraph spacing */
+.arabic-paragraph {
+  margin-bottom: 1.2em;
+  text-indent: 0;
+}
+
+/* Enhanced Arabic list styles */
+.arabic-list {
+  list-style-type: arabic-indic;
+  margin-right: 1.5em;
+  margin-left: 0;
+}
+
+/* Responsive Arabic text sizing */
+@media (max-width: 768px) {
+  .arabic-hero-title {
+    line-height: 1.4 !important;
+  }
+  
+  .arabic-body {
+    line-height: 1.7 !important;
+  }
+}
+
+/* Hero section enhancements */
+.hero-text-shadow {
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.floating-card {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.pulse-slow {
+  animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Enhanced glass morphism effects */
+.glass-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Improved button hover effects */
+.btn-hover-scale {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.btn-hover-scale:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+/* Fade in animations */
+.animate-fade-in-up {
+  animation: fadeInUp 0.8s ease-out forwards;
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dark {
+  --background: hsl(222, 84%, 5%);
+  --foreground: hsl(210, 40%, 98%);
+  --card: hsl(222, 84%, 5%);
+  --card-foreground: hsl(210, 40%, 98%);
+  --popover: hsl(222, 84%, 5%);
+  --popover-foreground: hsl(210, 40%, 98%);
+  --primary: hsl(217, 91%, 60%);
+  --primary-foreground: hsl(222, 84%, 5%);
+  --secondary: hsl(217, 32%, 17%);
+  --secondary-foreground: hsl(210, 40%, 98%);
+  --muted: hsl(217, 32%, 17%);
+  --muted-foreground: hsl(215, 20%, 65%);
+  --accent: hsl(217, 32%, 17%);
+  --accent-foreground: hsl(210, 40%, 98%);
+  --destructive: hsl(0, 62%, 30%);
+  --destructive-foreground: hsl(210, 40%, 98%);
+  --border: hsl(217, 32%, 17%);
+  --input: hsl(217, 32%, 17%);
+  --ring: hsl(224, 76%, 48%);
+  --chart-1: hsl(220, 70%, 50%);
+  --chart-2: hsl(160, 60%, 45%);
+  --chart-3: hsl(30, 80%, 55%);
+  --chart-4: hsl(280, 65%, 60%);
+  --chart-5: hsl(340, 75%, 55%);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-english);
+  }
+  
+  /* Arabic font styling */
+  [dir="rtl"] body,
+  .font-arabic {
+    font-family: var(--font-arabic);
+  }
+  
+  /* English font styling */
+  [dir="ltr"] body,
+  .font-english {
+    font-family: var(--font-english);
+  }
+}
+
+@layer components {
+  /* Custom animations */
+  .typing-animation {
+    border-right: 3px solid var(--banan-primary);
+    animation: blink 1s infinite;
+  }
+  
+  @keyframes blink {
+    0%, 50% { border-color: var(--banan-primary); }
+    51%, 100% { border-color: transparent; }
+  }
+  
+  .fade-in {
+    animation: fadeIn 0.5s ease-in;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .slide-up {
+    animation: slideUp 0.6s ease-out;
+  }
+  
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .glass-effect {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  
+  .gradient-bg {
+    background: linear-gradient(135deg, var(--banan-primary) 0%, var(--banan-secondary) 50%, var(--banan-accent) 100%);
+  }
+  
+  /* Smooth transitions for language switching */
+  .language-toggle {
+    transition: all 0.3s ease;
+  }
+  
+  .language-toggle:hover {
+    transform: scale(1.05);
+  }
+}
+
+@layer utilities {
+  /* RTL/LTR utilities */
+  .rtl { direction: rtl; }
+  .ltr { direction: ltr; }
+  
+  /* Blue theme color utilities */
+  .text-banan-primary { color: var(--banan-primary); }
+  .text-banan-secondary { color: var(--banan-secondary); }
+  .text-banan-accent { color: var(--banan-accent); }
+  .text-banan-dark { color: var(--banan-dark); }
+  
+  .bg-banan-primary { background-color: var(--banan-primary); }
+  .bg-banan-secondary { background-color: var(--banan-secondary); }
+  .bg-banan-light { background-color: var(--banan-light); }
+  .bg-banan-accent { background-color: var(--banan-accent); }
+  .bg-banan-dark { background-color: var(--banan-dark); }
+  
+  .border-banan-primary { border-color: var(--banan-primary); }
+  .border-banan-secondary { border-color: var(--banan-secondary); }
+  .border-banan-accent { border-color: var(--banan-accent); }
+  
+  /* Focus utilities for blue theme */
+  .focus-banan {
+    @apply focus:ring-2 focus:ring-banan-primary focus:border-transparent;
+  }
+}
