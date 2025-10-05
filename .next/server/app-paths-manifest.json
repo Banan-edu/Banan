@@ -1,8 +1,9 @@
 {
-  "/api/instructor/classes/route": "app/api/instructor/classes/route.js",
+  "/api/auth/login/route": "app/api/auth/login/route.js",
   "/api/auth/me/route": "app/api/auth/me/route.js",
+  "/api/student/courses/route": "app/api/student/courses/route.js",
   "/page": "app/page.js",
   "/login/page": "app/login/page.js",
-  "/instructor/page": "app/instructor/page.js",
-  "/instructor/classes/page": "app/instructor/classes/page.js"
+  "/admin/page": "app/admin/page.js",
+  "/student/page": "app/student/page.js"
 }
