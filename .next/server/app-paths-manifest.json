@@ -1,7 +1,7 @@
 {
   "/login/page": "app/login/page.js",
   "/instructor/classes/page": "app/instructor/classes/page.js",
-  "/student/course/[id]/page": "app/student/course/[id]/page.js",
   "/student/page": "app/student/page.js",
+  "/student/course/[id]/page": "app/student/course/[id]/page.js",
   "/student/lesson/[id]/page": "app/student/lesson/[id]/page.js"
 }
