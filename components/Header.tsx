@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
   const { t, language, setLanguage, isRTL } = useLanguage();
   const router = useRouter();
 
@@ -19,8 +19,9 @@ export function Header() {
     };
     
     checkAuth();
-    window.addEventListener('storage', checkAuth);
-    return () => window.removeEventListener('storage', checkAuth);
+    
+    const interval = setInterval(checkAuth, 1000);
+    return () => clearInterval(interval);
   }, []);
 
   const toggleLanguage = () => {
@@ -29,8 +30,10 @@ export function Header() {
 
   const handleLogout = async () => {
     await fetch('/api/auth/logout', { method: 'POST' });
+    document.cookie = 'auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
     setIsLoggedIn(false);
     router.push('/');
+    router.refresh();
   };
 
   const scrollToSection = (sectionId: string) => {
@@ -53,7 +56,7 @@ export function Header() {
             </div>
           </div>
           
-          {isLoggedIn ? (
+          {isLoggedIn === true ? (
             <nav className={`hidden md:flex gap-8 ${isRTL ? 'space-x-reverse' : ''}`}>
               <a
                 href="/"
@@ -74,7 +77,7 @@ export function Header() {
                 {isRTL ? 'لوحة التحكم' : 'Dashboard'}
               </a>
             </nav>
-          ) : (
+          ) : isLoggedIn === false ? (
             <nav className={`hidden md:flex gap-8 ${isRTL ? 'space-x-reverse' : ''}`}>
               <button
                 onClick={() => scrollToSection('home')}
@@ -107,7 +110,7 @@ export function Header() {
                 {t('nav-contact')}
               </button>
             </nav>
-          )}
+          ) : null}
           
           <div className={`flex items-center gap-3 ${isRTL ? 'flex-row-reverse' : ''}`}>
             <Button
@@ -118,7 +121,7 @@ export function Header() {
               {language === 'ar' ? 'English' : 'العربية'}
             </Button>
 
-            {isLoggedIn ? (
+            {isLoggedIn === true ? (
               <Button
                 onClick={handleLogout}
                 variant="outline"
@@ -126,7 +129,7 @@ export function Header() {
               >
                 {isRTL ? 'تسجيل الخروج' : 'Logout'}
               </Button>
-            ) : (
+            ) : isLoggedIn === false ? (
               <Button
                 onClick={() => router.push('/login')}
                 variant="outline"
@@ -134,7 +137,7 @@ export function Header() {
               >
                 {isRTL ? 'تسجيل الدخول' : 'Login'}
               </Button>
-            )}
+            ) : null}
             
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -145,10 +148,10 @@ export function Header() {
           </div>
         </div>
         
-        {isMenuOpen && (
+        {isMenuOpen && isLoggedIn !== null && (
           <div className="md:hidden py-4 border-t border-gray-200">
             <div className="flex flex-col space-y-2">
-              {isLoggedIn ? (
+              {isLoggedIn === true ? (
                 <>
                   <a href="/" className="text-gray-700 hover:text-blue-600 transition-colors py-2 text-left">{isRTL ? 'الرئيسية' : 'Home'}</a>
                   <a href="/#pricing" className="text-gray-700 hover:text-blue-600 transition-colors py-2 text-left">{isRTL ? 'الأسعار' : 'Pricing'}</a>
