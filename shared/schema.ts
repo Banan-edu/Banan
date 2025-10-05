@@ -324,6 +324,30 @@ export const testsRelations = relations(tests, ({ one, many }) => ({
   testResults: many(testResults),
 }));
 
+export const genderEnum = pgEnum('gender', ['male', 'female']);
+
+export const registrations = pgTable("registrations", {
+  id: serial("id").primaryKey(),
+  fullName: text("full_name").notNull(),
+  gender: genderEnum("gender").notNull(),
+  dateOfBirth: text("date_of_birth").notNull(),
+  phone: text("phone").notNull(),
+  email: text("email").notNull(),
+  currentTypingSpeed: integer("current_typing_speed"),
+  desiredTypingSpeed: integer("desired_typing_speed"),
+  additionalInfo: text("additional_info"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const contactMessages = pgTable("contact_messages", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  email: text("email").notNull(),
+  subject: text("subject").notNull(),
+  message: text("message").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 export type School = typeof schools.$inferSelect;
@@ -342,3 +366,7 @@ export type Test = typeof tests.$inferSelect;
 export type InsertTest = typeof tests.$inferInsert;
 export type TestResult = typeof testResults.$inferSelect;
 export type InsertTestResult = typeof testResults.$inferInsert;
+export type Registration = typeof registrations.$inferSelect;
+export type InsertRegistration = typeof registrations.$inferInsert;
+export type ContactMessage = typeof contactMessages.$inferSelect;
+export type InsertContactMessage = typeof contactMessages.$inferInsert;
