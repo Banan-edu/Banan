@@ -47,11 +47,34 @@ export function Header() {
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
             <div className="flex-shrink-0 flex items-center">
-              <h1 className="text-2xl font-bold text-blue-600">بنان</h1>
+              <a href="/" className="text-2xl font-bold text-blue-600 hover:text-blue-700 transition-colors">
+                بنان
+              </a>
             </div>
           </div>
           
-          {!isLoggedIn && (
+          {isLoggedIn ? (
+            <nav className={`hidden md:flex gap-8 ${isRTL ? 'space-x-reverse' : ''}`}>
+              <a
+                href="/"
+                className={`text-gray-700 hover:text-blue-600 transition-colors ${isRTL ? 'arabic-text font-arabic' : ''}`}
+              >
+                {isRTL ? 'الرئيسية' : 'Home'}
+              </a>
+              <a
+                href="/#pricing"
+                className={`text-gray-700 hover:text-blue-600 transition-colors ${isRTL ? 'arabic-text font-arabic' : ''}`}
+              >
+                {isRTL ? 'الأسعار' : 'Pricing'}
+              </a>
+              <a
+                href="/student"
+                className={`text-gray-700 hover:text-blue-600 transition-colors ${isRTL ? 'arabic-text font-arabic' : ''}`}
+              >
+                {isRTL ? 'لوحة التحكم' : 'Dashboard'}
+              </a>
+            </nav>
+          ) : (
             <nav className={`hidden md:flex gap-8 ${isRTL ? 'space-x-reverse' : ''}`}>
               <button
                 onClick={() => scrollToSection('home')}
@@ -122,14 +145,24 @@ export function Header() {
           </div>
         </div>
         
-        {isMenuOpen && !isLoggedIn && (
+        {isMenuOpen && (
           <div className="md:hidden py-4 border-t border-gray-200">
             <div className="flex flex-col space-y-2">
-              <button onClick={() => scrollToSection('home')} className="text-gray-700 hover:text-blue-600 transition-colors py-2 text-left">{t('nav-home')}</button>
-              <button onClick={() => scrollToSection('features')} className="text-gray-700 hover:text-blue-600 transition-colors py-2 text-left">{t('nav-features')}</button>
-              <button onClick={() => scrollToSection('courses')} className="text-gray-700 hover:text-blue-600 transition-colors py-2 text-left">{t('nav-courses')}</button>
-              <button onClick={() => scrollToSection('pricing')} className="text-gray-700 hover:text-blue-600 transition-colors py-2 text-left">{t('nav-pricing')}</button>
-              <button onClick={() => scrollToSection('contact')} className="text-gray-700 hover:text-blue-600 transition-colors py-2 text-left">{t('nav-contact')}</button>
+              {isLoggedIn ? (
+                <>
+                  <a href="/" className="text-gray-700 hover:text-blue-600 transition-colors py-2 text-left">{isRTL ? 'الرئيسية' : 'Home'}</a>
+                  <a href="/#pricing" className="text-gray-700 hover:text-blue-600 transition-colors py-2 text-left">{isRTL ? 'الأسعار' : 'Pricing'}</a>
+                  <a href="/student" className="text-gray-700 hover:text-blue-600 transition-colors py-2 text-left">{isRTL ? 'لوحة التحكم' : 'Dashboard'}</a>
+                </>
+              ) : (
+                <>
+                  <button onClick={() => scrollToSection('home')} className="text-gray-700 hover:text-blue-600 transition-colors py-2 text-left">{t('nav-home')}</button>
+                  <button onClick={() => scrollToSection('features')} className="text-gray-700 hover:text-blue-600 transition-colors py-2 text-left">{t('nav-features')}</button>
+                  <button onClick={() => scrollToSection('courses')} className="text-gray-700 hover:text-blue-600 transition-colors py-2 text-left">{t('nav-courses')}</button>
+                  <button onClick={() => scrollToSection('pricing')} className="text-gray-700 hover:text-blue-600 transition-colors py-2 text-left">{t('nav-pricing')}</button>
+                  <button onClick={() => scrollToSection('contact')} className="text-gray-700 hover:text-blue-600 transition-colors py-2 text-left">{t('nav-contact')}</button>
+                </>
+              )}
             </div>
           </div>
         )}
