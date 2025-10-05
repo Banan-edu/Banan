@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { LanguageProvider } from "./contexts/LanguageContext";
+import { Providers } from "./providers";
 
 export const metadata: Metadata = {
   title: "بَنان (Banan) - Multilingual Touch Typing Platform",
@@ -15,9 +15,9 @@ export default function RootLayout({
   return (
     <html lang="ar">
       <body>
-        <LanguageProvider>
+        <Providers>
           {children}
-        </LanguageProvider>
+        </Providers>
       </body>
     </html>
   );
