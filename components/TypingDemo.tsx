@@ -102,10 +102,11 @@ export function TypingDemo() {
 
     if (typedText.length > 0) {
       const currentTime = Date.now();
+      let calculatedWPM = 0;
       if (startTime) {
         const timeInMinutes = (currentTime - startTime) / 60000;
         const wordsTyped = typedText.trim().split(' ').length;
-        const calculatedWPM = Math.round(wordsTyped / timeInMinutes) || 0;
+        calculatedWPM = Math.round(wordsTyped / timeInMinutes) || 0;
         setWpm(calculatedWPM);
       }
 
@@ -116,16 +117,17 @@ export function TypingDemo() {
         }
       }
       const accuracyRate = typedText.length > 0 ? (correctChars / typedText.length) * 100 : 100;
-      setAccuracy(Math.round(accuracyRate));
+      const calculatedAccuracy = Math.round(accuracyRate);
+      setAccuracy(calculatedAccuracy);
 
       if (typedText === sampleText) {
         setIsCompleted(true);
-        const passed = wpm >= currentLevelData.targetWPM && accuracy >= currentLevelData.targetAccuracy;
+        const passed = calculatedWPM >= currentLevelData.targetWPM && calculatedAccuracy >= currentLevelData.targetAccuracy;
         setLevelPassed(passed);
         setShowLevelComplete(true);
       }
     }
-  }, [typedText, startTime, sampleText, wpm, accuracy, currentLevelData]);
+  }, [typedText, startTime, sampleText, currentLevelData]);
 
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;

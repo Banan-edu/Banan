@@ -16,60 +16,56 @@ export function PricingSection({ onRegisterClick }: PricingSectionProps) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <h2 className={`text-3xl lg:text-4xl font-bold text-white mb-6 text-center ${isRTL ? 'arabic-heading arabic-text-center' : ''}`}>
-            {isRTL ? 'أنشئ خطة لمؤسستك الآن' : 'Create a Plan for Your Institution Now'}
+            {t('pricing-inst-title')}
           </h2>
           <p className={`text-xl text-blue-100 max-w-3xl mx-auto mb-8 text-center leading-relaxed ${isRTL ? 'arabic-body arabic-text-center' : ''}`}>
-            {isRTL 
-              ? (
-                <>
-                  نقدم حلول تعليمية مخصصة للمدارس والجامعات والمؤسسات التعليمية
-                  <br />
-                  بأسعار مرنة تناسب احتياجاتكم
-                </>
-              )
-              : 'We provide customized educational solutions for schools, universities, and educational institutions with flexible pricing that suits your needs'
-            }
+            {t('pricing-inst-subtitle').split('\n').map((line, i) => (
+              <span key={i}>
+                {line}
+                {i === 0 && <br />}
+              </span>
+            ))}
           </p>
           
           <div className="bg-white bg-opacity-10 backdrop-blur-lg rounded-2xl p-8 max-w-2xl mx-auto mb-8">
             <h3 className={`text-2xl font-bold text-white mb-6 text-center ${isRTL ? 'arabic-heading arabic-text-center' : ''}`}>
-              {isRTL ? 'ما نقدمه للمؤسسات' : 'What We Offer for Institutions'}
+              {t('pricing-offers-title')}
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-white">
               <div className={`flex items-center ${isRTL ? 'flex-row-reverse' : ''}`}>
                 <Check className="h-5 w-5 text-green-300 mx-2 flex-shrink-0" />
                 <span className={`${isRTL ? 'arabic-body' : ''}`}>
-                  {isRTL ? 'عدد طلاب غير محدود' : 'Unlimited students'}
+                  {t('pricing-unlimited')}
                 </span>
               </div>
               <div className={`flex items-center ${isRTL ? 'flex-row-reverse' : ''}`}>
                 <Check className="h-5 w-5 text-green-300 mx-2 flex-shrink-0" />
                 <span className={`${isRTL ? 'arabic-body' : ''}`}>
-                  {isRTL ? 'لوحة تحكم إدارية' : 'Admin dashboard'}
+                  {t('pricing-admin')}
                 </span>
               </div>
               <div className={`flex items-center ${isRTL ? 'flex-row-reverse' : ''}`}>
                 <Check className="h-5 w-5 text-green-300 mx-2 flex-shrink-0" />
                 <span className={`${isRTL ? 'arabic-body' : ''}`}>
-                  {isRTL ? 'تدريب المعلمين' : 'Teacher training'}
+                  {t('pricing-training')}
                 </span>
               </div>
               <div className={`flex items-center ${isRTL ? 'flex-row-reverse' : ''}`}>
                 <Check className="h-5 w-5 text-green-300 mx-2 flex-shrink-0" />
                 <span className={`${isRTL ? 'arabic-body' : ''}`}>
-                  {isRTL ? 'تخصيص المحتوى' : 'Content customization'}
+                  {t('pricing-custom')}
                 </span>
               </div>
               <div className={`flex items-center ${isRTL ? 'flex-row-reverse' : ''}`}>
                 <Check className="h-5 w-5 text-green-300 mx-2 flex-shrink-0" />
                 <span className={`${isRTL ? 'arabic-body' : ''}`}>
-                  {isRTL ? 'مدير حساب مخصص' : 'Dedicated account manager'}
+                  {t('pricing-manager')}
                 </span>
               </div>
               <div className={`flex items-center ${isRTL ? 'flex-row-reverse' : ''}`}>
                 <Check className="h-5 w-5 text-green-300 mx-2 flex-shrink-0" />
                 <span className={`${isRTL ? 'arabic-body' : ''}`}>
-                  {isRTL ? 'تقارير تفصيلية' : 'Detailed reports'}
+                  {t('pricing-reports')}
                 </span>
               </div>
             </div>
@@ -79,7 +75,7 @@ export function PricingSection({ onRegisterClick }: PricingSectionProps) {
             onClick={() => window.location.href = '#contact'}
             className={`bg-white text-blue-600 px-12 py-4 rounded-xl font-bold text-lg btn-hover-scale shadow-xl ${isRTL ? 'arabic-button arabic-text' : ''}`}
           >
-            {isRTL ? 'تواصل معنا' : 'Contact Us'}
+            {t('pricing-contact-btn')}
           </Button>
         </div>
       </div>
