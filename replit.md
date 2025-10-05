@@ -206,6 +206,25 @@ npm run seed
 
 ## Recent Changes (October 2025)
 
+### Public Landing Page Complete ✅ (October 5, 2025)
+- Built complete bilingual landing page (Arabic/English)
+- Implemented LanguageProvider with RTL/LTR support
+- Created all required components:
+  - Header with navigation and language toggle
+  - HeroSection with CTA buttons and stats
+  - FeaturesSection with 6 feature cards
+  - LearningJourney with 4-step path
+  - TypingDemo with animated preview
+  - CoursesSection with course cards
+  - PricingSection with first cohort offer (500 SAR / 50% off)
+  - ContactSection with contact form
+  - Footer with social links
+  - EarlyBirdPopup (appears after 3 seconds)
+  - RegistrationForm modal
+- Added registrations and contactMessages database tables
+- Created /api/register and /api/contact endpoints
+- Fixed LanguageProvider context with client wrapper (providers.tsx)
+
 ### Instructor Portal Complete ✅
 - Built complete class management with multi-class support
 - Built course creation and editing system
