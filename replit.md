@@ -206,6 +206,12 @@ npm run seed
 
 ## Recent Changes (October 2025)
 
+### Global Navigation & Branding Update ✅ (October 5, 2025)
+- **Logo Update**: Replaced logo image with text "بنان" in blue
+- **Navigation Enhancement**: Added login link to navbar (displays as "تسجيل الدخول" in Arabic, "Login" in English)
+- **Global Layout**: Moved Header and Footer to providers.tsx so they appear on all pages
+- Header and Footer now consistently present across entire platform (landing page, login, admin, instructor, student portals)
+
 ### Landing Page Component Enhancements ✅ (October 5, 2025)
 - **Updated Header**: Added logo image support and improved mobile menu with hamburger toggle
 - **Enhanced HeroSection**: Added banner image placeholder and improved visual design

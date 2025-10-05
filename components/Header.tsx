@@ -27,11 +27,7 @@ export function Header() {
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
             <div className="flex-shrink-0 flex items-center">
-              <img 
-                src="/assets/logo.svg" 
-                alt="Banan Logo" 
-                className="h-10 w-auto object-contain"
-              />
+              <h1 className="text-2xl font-bold text-blue-600">بنان</h1>
             </div>
           </div>
           
@@ -66,6 +62,12 @@ export function Header() {
             >
               {t('nav-contact')}
             </button>
+            <a
+              href="/login"
+              className={`text-gray-700 hover:text-blue-600 transition-colors ${isRTL ? 'arabic-text font-arabic' : ''}`}
+            >
+              {isRTL ? 'تسجيل الدخول' : 'Login'}
+            </a>
           </nav>
           
           <div className="flex items-center space-x-4 space-x-reverse">
@@ -94,6 +96,7 @@ export function Header() {
               <button onClick={() => scrollToSection('courses')} className="text-gray-700 hover:text-blue-600 transition-colors py-2 text-left">{t('nav-courses')}</button>
               <button onClick={() => scrollToSection('pricing')} className="text-gray-700 hover:text-blue-600 transition-colors py-2 text-left">{t('nav-pricing')}</button>
               <button onClick={() => scrollToSection('contact')} className="text-gray-700 hover:text-blue-600 transition-colors py-2 text-left">{t('nav-contact')}</button>
+              <a href="/login" className="text-gray-700 hover:text-blue-600 transition-colors py-2 text-left">{isRTL ? 'تسجيل الدخول' : 'Login'}</a>
               <div className="pt-4 border-t border-gray-100 mt-4">
                 <Button onClick={toggleLanguage} variant="outline" className="w-full bg-blue-50 text-blue-600 border-blue-200 px-4 py-2 rounded-lg font-semibold hover:bg-blue-100 transition-colors">
                   {language === 'ar' ? 'English' : 'العربية'}
