@@ -1,85 +1,108 @@
 'use client';
 
 import { useState } from 'react';
-import { Menu, X, Globe } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/app/contexts/LanguageContext';
-import Link from 'next/link';
 
 export function Header() {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { language, setLanguage, isRTL } = useLanguage();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { t, language, setLanguage, isRTL } = useLanguage();
 
   const toggleLanguage = () => {
     setLanguage(language === 'ar' ? 'en' : 'ar');
   };
 
-  const navigation = [
-    { name: isRTL ? 'المميزات' : 'Features', href: '#features' },
-    { name: isRTL ? 'الدورات' : 'Courses', href: '#courses' },
-    { name: isRTL ? 'الأسعار' : 'Pricing', href: '#pricing' },
-    { name: isRTL ? 'تواصل معنا' : 'Contact', href: '#contact' },
-  ];
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+    setIsMenuOpen(false);
+  };
 
   return (
-    <header className="bg-white shadow-sm sticky top-0 z-50">
-      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <header className="bg-white shadow-sm sticky top-0 z-40">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
-            <h1 className="text-2xl font-bold text-blue-600">بَنان</h1>
+            <div className="flex-shrink-0 flex items-center">
+              <img 
+                src="/assets/logo.svg" 
+                alt="Banan Logo" 
+                className="h-10 w-auto object-contain"
+              />
+            </div>
           </div>
-
-          <div className="hidden md:flex items-center space-x-8">
-            {navigation.map((item) => (
-              <a
-                key={item.name}
-                href={item.href}
-                className="text-gray-700 hover:text-blue-600 transition-colors"
-              >
-                {item.name}
-              </a>
-            ))}
-          </div>
-
-          <div className="flex items-center gap-4">
+          
+          <nav className={`hidden md:flex gap-8 ${isRTL ? 'space-x-reverse' : ''}`}>
             <button
-              onClick={toggleLanguage}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
+              onClick={() => scrollToSection('home')}
+              className={`text-gray-700 hover:text-blue-600 transition-colors ${isRTL ? 'arabic-text font-arabic' : ''}`}
             >
-              <Globe size={20} />
-              <span className="text-sm">{language === 'ar' ? 'EN' : 'عربي'}</span>
+              {t('nav-home')}
             </button>
-            
-            <Link href="/login">
-              <Button className="px-4 py-2">
-                {isRTL ? 'تسجيل الدخول' : 'Login'}
-              </Button>
-            </Link>
-
             <button
-              className="md:hidden"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              onClick={() => scrollToSection('features')}
+              className={`text-gray-700 hover:text-blue-600 transition-colors ${isRTL ? 'arabic-text font-arabic' : ''}`}
             >
-              {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+              {t('nav-features')}
+            </button>
+            <button
+              onClick={() => scrollToSection('courses')}
+              className={`text-gray-700 hover:text-blue-600 transition-colors ${isRTL ? 'arabic-text font-arabic' : ''}`}
+            >
+              {t('nav-courses')}
+            </button>
+            <button
+              onClick={() => scrollToSection('pricing')}
+              className={`text-gray-700 hover:text-blue-600 transition-colors ${isRTL ? 'arabic-text font-arabic' : ''}`}
+            >
+              {t('nav-pricing')}
+            </button>
+            <button
+              onClick={() => scrollToSection('contact')}
+              className={`text-gray-700 hover:text-blue-600 transition-colors ${isRTL ? 'arabic-text font-arabic' : ''}`}
+            >
+              {t('nav-contact')}
+            </button>
+          </nav>
+          
+          <div className="flex items-center space-x-4 space-x-reverse">
+            <Button
+              onClick={toggleLanguage}
+              variant="outline"
+              className="bg-blue-50 text-blue-600 border-blue-200 px-4 py-2 rounded-lg font-semibold hover:bg-blue-100 transition-colors"
+            >
+              {language === 'ar' ? 'English' : 'العربية'}
+            </Button>
+            
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="md:hidden text-gray-700 hover:text-blue-600"
+            >
+              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
         </div>
-
-        {isMobileMenuOpen && (
-          <div className="md:hidden py-4 space-y-2">
-            {navigation.map((item) => (
-              <a
-                key={item.name}
-                href={item.href}
-                className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                {item.name}
-              </a>
-            ))}
+        
+        {isMenuOpen && (
+          <div className="md:hidden py-4 border-t border-gray-200">
+            <div className="flex flex-col space-y-2">
+              <button onClick={() => scrollToSection('home')} className="text-gray-700 hover:text-blue-600 transition-colors py-2 text-left">{t('nav-home')}</button>
+              <button onClick={() => scrollToSection('features')} className="text-gray-700 hover:text-blue-600 transition-colors py-2 text-left">{t('nav-features')}</button>
+              <button onClick={() => scrollToSection('courses')} className="text-gray-700 hover:text-blue-600 transition-colors py-2 text-left">{t('nav-courses')}</button>
+              <button onClick={() => scrollToSection('pricing')} className="text-gray-700 hover:text-blue-600 transition-colors py-2 text-left">{t('nav-pricing')}</button>
+              <button onClick={() => scrollToSection('contact')} className="text-gray-700 hover:text-blue-600 transition-colors py-2 text-left">{t('nav-contact')}</button>
+              <div className="pt-4 border-t border-gray-100 mt-4">
+                <Button onClick={toggleLanguage} variant="outline" className="w-full bg-blue-50 text-blue-600 border-blue-200 px-4 py-2 rounded-lg font-semibold hover:bg-blue-100 transition-colors">
+                  {language === 'ar' ? 'English' : 'العربية'}
+                </Button>
+              </div>
+            </div>
           </div>
         )}
-      </nav>
+      </div>
     </header>
   );
 }

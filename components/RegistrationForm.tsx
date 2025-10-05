@@ -4,8 +4,13 @@ import { useState } from 'react';
 import { X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
 import { useLanguage } from '@/app/contexts/LanguageContext';
+import { apiRequest } from '@/lib/queryClient';
+import { useToast } from '@/hooks/use-toast';
 
 interface RegistrationFormProps {
   isOpen: boolean;
@@ -13,187 +18,226 @@ interface RegistrationFormProps {
 }
 
 export function RegistrationForm({ isOpen, onClose }: RegistrationFormProps) {
-  const { isRTL } = useLanguage();
+  const { t, isRTL } = useLanguage();
+  const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [message, setMessage] = useState('');
   const [formData, setFormData] = useState({
     fullName: '',
-    gender: 'male' as 'male' | 'female',
+    gender: '',
     dateOfBirth: '',
     phone: '',
     email: '',
     currentTypingSpeed: '',
     desiredTypingSpeed: '',
     additionalInfo: '',
+    terms: false,
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setMessage('');
 
     try {
-      const res = await fetch('/api/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...formData,
-          currentTypingSpeed: formData.currentTypingSpeed ? parseInt(formData.currentTypingSpeed) : undefined,
-          desiredTypingSpeed: formData.desiredTypingSpeed ? parseInt(formData.desiredTypingSpeed) : undefined,
-        }),
-      });
-      const data = await res.json();
+      const submissionData = {
+        ...formData,
+        currentTypingSpeed: formData.currentTypingSpeed ? parseInt(formData.currentTypingSpeed) : null,
+        desiredTypingSpeed: formData.desiredTypingSpeed ? parseInt(formData.desiredTypingSpeed) : null,
+      };
+
+      await apiRequest('POST', '/api/register', submissionData);
       
-      if (data.success) {
-        setMessage('✅ ' + data.message);
-        setFormData({
-          fullName: '',
-          gender: 'male',
-          dateOfBirth: '',
-          phone: '',
-          email: '',
-          currentTypingSpeed: '',
-          desiredTypingSpeed: '',
-          additionalInfo: '',
-        });
-        setTimeout(() => onClose(), 2000);
-      } else {
-        setMessage('❌ ' + data.message);
-      }
+      toast({
+        title: t('register-btn'),
+        description: isRTL ? 'تم إرسال التسجيل بنجاح!' : 'Registration submitted successfully!',
+      });
+
+      onClose();
+      setFormData({
+        fullName: '',
+        gender: '',
+        dateOfBirth: '',
+        phone: '',
+        email: '',
+        currentTypingSpeed: '',
+        desiredTypingSpeed: '',
+        additionalInfo: '',
+        terms: false,
+      });
     } catch (error) {
-      setMessage('❌ ' + (isRTL ? 'حدث خطأ في الاتصال' : 'Connection error'));
+      toast({
+        title: isRTL ? 'خطأ' : 'Error',
+        description: isRTL ? 'حدث خطأ في إرسال التسجيل' : 'Failed to submit registration',
+        variant: 'destructive',
+      });
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  const handleInputChange = (field: string, value: string | boolean) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 overflow-y-auto">
-      <div className="bg-white rounded-xl p-6 max-w-2xl w-full my-8" dir={isRTL ? 'rtl' : 'ltr'}>
-        <div className="flex justify-between items-center mb-6">
-          <h3 className={`text-2xl font-bold ${isRTL ? 'arabic-heading' : ''}`}>
-            {isRTL ? 'التسجيل في برنامج بنان - الدفعة الأولى 2025' : 'Register for Banan Program - First Cohort 2025'}
-          </h3>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
-            <X size={24} />
-          </button>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+        <div className="bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 text-white p-6 rounded-t-2xl">
+          <div className="flex justify-between items-center">
+            <h3 className={`text-xl font-bold ${isRTL ? 'arabic-heading arabic-text' : ''}`}>{t('form-title')}</h3>
+            <button onClick={onClose} className="text-white hover:text-gray-200 text-2xl">
+              <X size={24} />
+            </button>
+          </div>
         </div>
         
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid md:grid-cols-2 gap-4">
+        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className={`block text-sm font-medium mb-2 ${isRTL ? 'arabic-body' : ''}`}>
-                {isRTL ? 'الاسم الكامل *' : 'Full Name *'}
-              </label>
+              <Label className={`block text-gray-700 font-semibold mb-2 ${isRTL ? 'arabic-text font-arabic' : ''}`}>
+                {t('name-label')}
+              </Label>
               <Input
                 type="text"
                 value={formData.fullName}
-                onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                onChange={(e) => handleInputChange('fullName', e.target.value)}
                 required
+                className="w-full"
+                placeholder={isRTL ? 'أدخل اسمك الكامل' : 'Enter your full name'}
               />
             </div>
             <div>
-              <label className={`block text-sm font-medium mb-2 ${isRTL ? 'arabic-body' : ''}`}>
-                {isRTL ? 'الجنس *' : 'Gender *'}
-              </label>
-              <select
-                value={formData.gender}
-                onChange={(e) => setFormData({ ...formData, gender: e.target.value as 'male' | 'female' })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                required
-              >
-                <option value="male">{isRTL ? 'ذكر' : 'Male'}</option>
-                <option value="female">{isRTL ? 'أنثى' : 'Female'}</option>
-              </select>
+              <Label className={`block text-gray-700 font-semibold mb-2 ${isRTL ? 'arabic-text font-arabic' : ''}`}>
+                {t('gender-label')}
+              </Label>
+              <Select value={formData.gender} onValueChange={(value) => handleInputChange('gender', value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder={t('gender-select')} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="male">{t('male-option')}</SelectItem>
+                  <SelectItem value="female">{t('female-option')}</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
+          </div>
+          
+          <div>
+            <Label className="block text-gray-700 font-semibold mb-2">
+              {t('dob-label')}
+            </Label>
+            <Input
+              type="date"
+              value={formData.dateOfBirth}
+              onChange={(e) => handleInputChange('dateOfBirth', e.target.value)}
+              required
+              className="w-full"
+            />
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className={`block text-sm font-medium mb-2 ${isRTL ? 'arabic-body' : ''}`}>
-                {isRTL ? 'تاريخ الميلاد *' : 'Date of Birth *'}
-              </label>
-              <Input
-                type="date"
-                value={formData.dateOfBirth}
-                onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
-                required
-              />
-            </div>
-            <div>
-              <label className={`block text-sm font-medium mb-2 ${isRTL ? 'arabic-body' : ''}`}>
-                {isRTL ? 'رقم الهاتف *' : 'Phone *'}
-              </label>
+              <Label className="block text-gray-700 font-semibold mb-2">
+                {t('phone-label')}
+              </Label>
               <Input
                 type="tel"
                 value={formData.phone}
-                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                onChange={(e) => handleInputChange('phone', e.target.value)}
                 required
+                className="w-full"
+                placeholder="+966 5XX XXX XXX"
               />
             </div>
             <div>
-              <label className={`block text-sm font-medium mb-2 ${isRTL ? 'arabic-body' : ''}`}>
-                {isRTL ? 'البريد الإلكتروني *' : 'Email *'}
-              </label>
+              <Label className={`block text-gray-700 font-semibold mb-2 ${isRTL ? 'arabic-text font-arabic' : ''}`}>
+                {t('email-label')}
+              </Label>
               <Input
                 type="email"
                 value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                onChange={(e) => handleInputChange('email', e.target.value)}
                 required
+                className="w-full"
+                placeholder="example@email.com"
               />
             </div>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className={`block text-sm font-medium mb-2 ${isRTL ? 'arabic-body' : ''}`}>
-                {isRTL ? 'سرعة الطباعة الحالية (كلمة/دقيقة)' : 'Current Typing Speed (WPM)'}
-              </label>
+              <Label className={`block text-gray-700 font-semibold mb-2 ${isRTL ? 'arabic-text font-arabic' : ''}`}>
+                {t('current-speed-label')}
+              </Label>
               <Input
                 type="number"
                 value={formData.currentTypingSpeed}
-                onChange={(e) => setFormData({ ...formData, currentTypingSpeed: e.target.value })}
+                onChange={(e) => handleInputChange('currentTypingSpeed', e.target.value)}
+                min="0"
+                max="200"
+                className="w-full"
+                placeholder={isRTL ? 'مثال: 25' : 'e.g., 25'}
               />
+              <p className="text-sm text-gray-500 mt-1">
+                <a
+                  href="https://www.typingstudy.com/typingtest/39/The_Flea_and_the_Man"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:underline"
+                >
+                  {t('test-speed-link')}
+                </a>
+              </p>
             </div>
             <div>
-              <label className={`block text-sm font-medium mb-2 ${isRTL ? 'arabic-body' : ''}`}>
-                {isRTL ? 'السرعة المرغوبة (كلمة/دقيقة)' : 'Desired Typing Speed (WPM)'}
-              </label>
+              <Label className={`block text-gray-700 font-semibold mb-2 ${isRTL ? 'arabic-text font-arabic' : ''}`}>
+                {t('desired-speed-label')}
+              </Label>
               <Input
                 type="number"
                 value={formData.desiredTypingSpeed}
-                onChange={(e) => setFormData({ ...formData, desiredTypingSpeed: e.target.value })}
+                onChange={(e) => handleInputChange('desiredTypingSpeed', e.target.value)}
+                min="0"
+                max="200"
+                className="w-full"
+                placeholder={isRTL ? 'مثال: 60' : 'e.g., 60'}
               />
             </div>
           </div>
+          
           <div>
-            <label className={`block text-sm font-medium mb-2 ${isRTL ? 'arabic-body' : ''}`}>
-              {isRTL ? 'معلومات إضافية' : 'Additional Information'}
-            </label>
+            <Label className={`block text-gray-700 font-semibold mb-2 ${isRTL ? 'arabic-text font-arabic' : ''}`}>
+              {t('additional-info-label')}
+            </Label>
             <Textarea
               value={formData.additionalInfo}
-              onChange={(e) => setFormData({ ...formData, additionalInfo: e.target.value })}
+              onChange={(e) => handleInputChange('additionalInfo', e.target.value)}
               rows={3}
+              className="w-full"
+              placeholder={isRTL ? 'أي معلومات أخرى تود إضافتها...' : 'Any additional information you would like to add...'}
             />
           </div>
-          {message && (
-            <div className={`p-3 rounded-lg text-center ${message.includes('✅') ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
-              {message}
-            </div>
-          )}
-          <div className="flex gap-3">
-            <Button
-              type="button"
-              onClick={onClose}
-              variant="outline"
-              className="flex-1"
-            >
-              {isRTL ? 'إلغاء' : 'Cancel'}
-            </Button>
-            <Button
-              type="submit"
-              disabled={isSubmitting}
-              className="flex-1 bg-blue-600 text-white hover:bg-blue-700"
-            >
-              {isSubmitting ? (isRTL ? 'جاري الإرسال...' : 'Sending...') : (isRTL ? 'تسجيل' : 'Register')}
-            </Button>
+          
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="terms"
+              checked={formData.terms}
+              onCheckedChange={(checked) => handleInputChange('terms', checked as boolean)}
+              required
+            />
+            <Label htmlFor="terms" className={`text-gray-700 ${isRTL ? 'arabic-text font-arabic' : ''}`}>
+              {t('terms-label')}
+            </Label>
           </div>
+          
+          <Button
+            type="submit"
+            disabled={isSubmitting}
+            className={`w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors ${isRTL ? 'arabic-button arabic-text' : ''}`}
+          >
+            {isSubmitting ? (isRTL ? 'جاري الإرسال...' : 'Submitting...') : t('submit-btn')}
+          </Button>
         </form>
       </div>
     </div>

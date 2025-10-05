@@ -1,7 +1,7 @@
 'use client';
 
-import { Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Check } from 'lucide-react';
 import { useLanguage } from '@/app/contexts/LanguageContext';
 
 interface PricingSectionProps {
@@ -9,70 +9,78 @@ interface PricingSectionProps {
 }
 
 export function PricingSection({ onRegisterClick }: PricingSectionProps) {
-  const { isRTL } = useLanguage();
-
-  const features = isRTL ? [
-    'دروس تفاعلية باللغتين',
-    'تتبع الأداء والتقدم',
-    'شهادة إنجاز معتمدة',
-    'دعم فني متواصل',
-    'تحديثات مجانية',
-  ] : [
-    'Interactive lessons in both languages',
-    'Performance and progress tracking',
-    'Certified completion certificate',
-    'Continuous technical support',
-    'Free updates',
-  ];
+  const { t, isRTL } = useLanguage();
 
   return (
-    <section id="pricing" className="py-20 bg-gray-50">
+    <section id="pricing" className="py-20 bg-gradient-to-br from-blue-600 to-blue-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className={`text-3xl lg:text-4xl font-bold text-gray-900 mb-4 ${isRTL ? 'arabic-heading' : ''}`}>
-            {isRTL ? 'عرض الدفعة الأولى الخاص' : 'First Cohort Special Offer'}
+        <div className="text-center mb-12">
+          <h2 className={`text-3xl lg:text-4xl font-bold text-white mb-6 text-center ${isRTL ? 'arabic-heading arabic-text-center' : ''}`}>
+            {isRTL ? 'أنشئ خطة لمؤسستك الآن' : 'Create a Plan for Your Institution Now'}
           </h2>
-          <p className={`text-xl text-gray-600 ${isRTL ? 'arabic-body' : ''}`}>
-            {isRTL ? 'سجل الآن واستفد من العرض الخاص' : 'Register now and benefit from the special offer'}
+          <p className={`text-xl text-blue-100 max-w-3xl mx-auto mb-8 text-center leading-relaxed ${isRTL ? 'arabic-body arabic-text-center' : ''}`}>
+            {isRTL 
+              ? (
+                <>
+                  نقدم حلول تعليمية مخصصة للمدارس والجامعات والمؤسسات التعليمية
+                  <br />
+                  بأسعار مرنة تناسب احتياجاتكم
+                </>
+              )
+              : 'We provide customized educational solutions for schools, universities, and educational institutions with flexible pricing that suits your needs'
+            }
           </p>
-        </div>
-
-        <div className="max-w-lg mx-auto">
-          <div className="bg-white rounded-3xl shadow-xl overflow-hidden border-4 border-blue-500">
-            <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-8 text-center">
-              <h3 className={`text-2xl font-bold mb-2 ${isRTL ? 'arabic-heading' : ''}`}>
-                {isRTL ? 'الدفعة الأولى' : 'First Cohort'}
-              </h3>
-              <div className="flex items-center justify-center gap-4 mb-4">
-                <span className="text-5xl font-bold">500</span>
-                <div className={`text-left ${isRTL ? 'text-right' : ''}`}>
-                  <div className="text-sm">{isRTL ? 'ريال' : 'SAR'}</div>
-                  <div className="text-sm line-through opacity-75">1000</div>
-                </div>
+          
+          <div className="bg-white bg-opacity-10 backdrop-blur-lg rounded-2xl p-8 max-w-2xl mx-auto mb-8">
+            <h3 className={`text-2xl font-bold text-white mb-6 text-center ${isRTL ? 'arabic-heading arabic-text-center' : ''}`}>
+              {isRTL ? 'ما نقدمه للمؤسسات' : 'What We Offer for Institutions'}
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-white">
+              <div className={`flex items-center ${isRTL ? 'flex-row-reverse' : ''}`}>
+                <Check className="h-5 w-5 text-green-300 mx-2 flex-shrink-0" />
+                <span className={`${isRTL ? 'arabic-body' : ''}`}>
+                  {isRTL ? 'عدد طلاب غير محدود' : 'Unlimited students'}
+                </span>
               </div>
-              <div className="bg-red-500 text-white px-4 py-2 rounded-full inline-block">
-                {isRTL ? 'خصم 50%' : '50% OFF'}
+              <div className={`flex items-center ${isRTL ? 'flex-row-reverse' : ''}`}>
+                <Check className="h-5 w-5 text-green-300 mx-2 flex-shrink-0" />
+                <span className={`${isRTL ? 'arabic-body' : ''}`}>
+                  {isRTL ? 'لوحة تحكم إدارية' : 'Admin dashboard'}
+                </span>
               </div>
-            </div>
-
-            <div className="p-8">
-              <ul className="space-y-4 mb-8">
-                {features.map((feature, index) => (
-                  <li key={index} className={`flex items-center gap-3 ${isRTL ? 'flex-row-reverse text-right' : ''}`}>
-                    <Check className="text-green-500 flex-shrink-0" size={20} />
-                    <span className={isRTL ? 'arabic-body' : ''}>{feature}</span>
-                  </li>
-                ))}
-              </ul>
-
-              <Button
-                onClick={onRegisterClick}
-                className="w-full bg-blue-600 text-white py-4 text-lg font-semibold rounded-lg hover:bg-blue-700"
-              >
-                {isRTL ? 'سجل الآن' : 'Register Now'}
-              </Button>
+              <div className={`flex items-center ${isRTL ? 'flex-row-reverse' : ''}`}>
+                <Check className="h-5 w-5 text-green-300 mx-2 flex-shrink-0" />
+                <span className={`${isRTL ? 'arabic-body' : ''}`}>
+                  {isRTL ? 'تدريب المعلمين' : 'Teacher training'}
+                </span>
+              </div>
+              <div className={`flex items-center ${isRTL ? 'flex-row-reverse' : ''}`}>
+                <Check className="h-5 w-5 text-green-300 mx-2 flex-shrink-0" />
+                <span className={`${isRTL ? 'arabic-body' : ''}`}>
+                  {isRTL ? 'تخصيص المحتوى' : 'Content customization'}
+                </span>
+              </div>
+              <div className={`flex items-center ${isRTL ? 'flex-row-reverse' : ''}`}>
+                <Check className="h-5 w-5 text-green-300 mx-2 flex-shrink-0" />
+                <span className={`${isRTL ? 'arabic-body' : ''}`}>
+                  {isRTL ? 'مدير حساب مخصص' : 'Dedicated account manager'}
+                </span>
+              </div>
+              <div className={`flex items-center ${isRTL ? 'flex-row-reverse' : ''}`}>
+                <Check className="h-5 w-5 text-green-300 mx-2 flex-shrink-0" />
+                <span className={`${isRTL ? 'arabic-body' : ''}`}>
+                  {isRTL ? 'تقارير تفصيلية' : 'Detailed reports'}
+                </span>
+              </div>
             </div>
           </div>
+          
+          <Button
+            onClick={() => window.location.href = '#contact'}
+            className={`bg-white text-blue-600 px-12 py-4 rounded-xl font-bold text-lg btn-hover-scale shadow-xl ${isRTL ? 'arabic-button arabic-text' : ''}`}
+          >
+            {isRTL ? 'تواصل معنا' : 'Contact Us'}
+          </Button>
         </div>
       </div>
     </section>

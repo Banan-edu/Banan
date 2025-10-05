@@ -30,6 +30,9 @@
       ],
       "@server/*": [
         "./server/*"
+      ],
+      "@assets/*": [
+        "./public/assets/*"
       ]
     },
     "target": "ES2017"

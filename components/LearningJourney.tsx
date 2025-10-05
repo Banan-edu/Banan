@@ -1,48 +1,138 @@
 'use client';
 
-import { CheckCircle } from 'lucide-react';
 import { useLanguage } from '@/app/contexts/LanguageContext';
 
 export function LearningJourney() {
-  const { isRTL } = useLanguage();
+  const { t, isRTL } = useLanguage();
 
-  const steps = isRTL ? [
-    { title: 'ابدأ من الصفر', desc: 'تعلم الأساسيات بطريقة بسيطة وواضحة' },
-    { title: 'تمرن يومياً', desc: 'مارس الطباعة مع دروس تفاعلية' },
-    { title: 'تابع تقدمك', desc: 'راقب تطورك مع إحصائيات مفصلة' },
-    { title: 'احصل على شهادة', desc: 'شهادة إنجاز معتمدة عند الإتمام' },
-  ] : [
-    { title: 'Start from Zero', desc: 'Learn the basics in a simple and clear way' },
-    { title: 'Practice Daily', desc: 'Practice typing with interactive lessons' },
-    { title: 'Track Progress', desc: 'Monitor your development with detailed statistics' },
-    { title: 'Get Certified', desc: 'Certified completion certificate upon finishing' },
+  const journeySteps = [
+    { step: 1, color: 'from-blue-500 to-blue-600' },
+    { step: 2, color: 'from-green-500 to-green-600' },
+    { step: 3, color: 'from-purple-500 to-purple-600' },
+    { step: 4, color: 'from-orange-500 to-orange-600' }
   ];
 
+  const getStepContent = (stepNumber: number) => {
+    switch (stepNumber) {
+      case 1:
+        return { title: t('journey-step1-title'), desc: t('journey-step1-desc') };
+      case 2:
+        return { title: t('journey-step2-title'), desc: t('journey-step2-desc') };
+      case 3:
+        return { title: t('journey-step3-title'), desc: t('journey-step3-desc') };
+      case 4:
+        return { title: t('journey-step4-title'), desc: t('journey-step4-desc') };
+      default:
+        return { title: '', desc: '' };
+    }
+  };
+
   return (
-    <section className="py-20 bg-gray-50">
+    <section className="py-24 bg-gradient-to-br from-gray-50 to-blue-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className={`text-3xl lg:text-4xl font-bold text-gray-900 mb-4 ${isRTL ? 'arabic-heading' : ''}`}>
-            {isRTL ? 'رحلة التعلم معنا' : 'Your Learning Journey'}
+        <div className="text-center mb-20">
+          <h2 className={`text-3xl lg:text-4xl font-bold text-gray-900 mb-6 ${isRTL ? 'arabic-heading' : ''}`}>
+            {t('journey-title')}
           </h2>
-          <p className={`text-xl text-gray-600 ${isRTL ? 'arabic-body' : ''}`}>
-            {isRTL ? 'خطوات بسيطة نحو إتقان الطباعة السريعة' : 'Simple steps towards mastering fast typing'}
+          <p className={`text-xl text-gray-600 max-w-3xl mx-auto ${isRTL ? 'arabic-body' : ''}`}>
+            {t('journey-description')}
           </p>
         </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {steps.map((step, index) => (
-            <div key={index} className="relative">
-              <div className="bg-white p-6 rounded-xl shadow-md text-center hover:shadow-lg transition-shadow">
-                <div className="w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold">
-                  {index + 1}
-                </div>
-                <h3 className={`text-lg font-bold text-gray-900 mb-2 ${isRTL ? 'arabic-heading' : ''}`}>{step.title}</h3>
-                <p className={`text-gray-600 ${isRTL ? 'arabic-body' : ''}`}>{step.desc}</p>
-                <CheckCircle className="w-8 h-8 text-green-500 mx-auto mt-4" />
+
+        <div className="relative mb-24">
+          <div className="hidden lg:block">
+            <div className="relative max-w-4xl mx-auto" style={{ height: '380px' }}>
+              <div className="absolute top-1/2 left-24 right-24 h-1 bg-blue-400 transform -translate-y-1/2 z-0"></div>
+              
+              <div className={`flex items-center justify-between absolute inset-0 px-12 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                {(isRTL ? [...journeySteps].reverse() : journeySteps).map((step, index) => {
+                  const stepContent = getStepContent(step.step);
+                  const actualIndex = isRTL ? journeySteps.length - 1 - index : index;
+                  const isTopText = actualIndex === 0 || actualIndex === 2;
+                  
+                  return (
+                    <div key={step.step} className="relative flex flex-col items-center justify-center h-full">
+                      {isTopText && (
+                        <div className="absolute top-0 text-center w-52">
+                          <h3 className={`text-lg font-bold text-gray-900 mb-3 ${isRTL ? 'arabic-heading' : ''}`}>
+                            {stepContent.title}
+                          </h3>
+                          <p className={`text-sm text-gray-600 leading-relaxed break-words ${isRTL ? 'arabic-body' : ''}`}>
+                            {stepContent.desc}
+                          </p>
+                          <div className="flex justify-center mt-4">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-blue-400">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" stroke="currentColor" />
+                            </svg>
+                          </div>
+                        </div>
+                      )}
+                      
+                      <div className="w-16 h-16 bg-white border-2 border-gray-300 rounded-full flex items-center justify-center text-gray-700 font-bold text-xl shadow-lg relative z-10">
+                        {step.step}
+                      </div>
+                      
+                      {!isTopText && (
+                        <div className="absolute top-full -mt-36 text-center w-52">
+                          <div className="flex justify-center">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-blue-400">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" stroke="currentColor" />
+                            </svg>
+                          </div>
+                          <h3 className={`text-lg font-bold text-gray-900 mb-3 ${isRTL ? 'arabic-heading' : ''}`}>
+                            {stepContent.title}
+                          </h3>
+                          <p className={`text-sm text-gray-600 leading-relaxed break-words ${isRTL ? 'arabic-body' : ''}`}>
+                            {stepContent.desc}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </div>
-          ))}
+          </div>
+
+          <div className="lg:hidden">
+            <div className="space-y-8">
+              {journeySteps.map((step, index) => {
+                const stepContent = getStepContent(step.step);
+                return (
+                  <div key={step.step}>
+                    <div className="text-center">
+                      <div className={`w-20 h-20 bg-gradient-to-br ${step.color} rounded-full flex items-center justify-center text-white font-bold text-2xl shadow-lg mx-auto mb-6 ring-4 ring-white`}>
+                        {step.step}
+                      </div>
+                      <h3 className={`text-xl font-bold text-gray-900 mb-4 ${isRTL ? 'arabic-heading' : ''}`}>
+                        {stepContent.title}
+                      </h3>
+                      <p className={`text-gray-600 leading-relaxed ${isRTL ? 'arabic-body' : ''}`}>
+                        {stepContent.desc}
+                      </p>
+                    </div>
+                    {index < journeySteps.length - 1 && (
+                      <div className="flex justify-center py-6">
+                        <div className={`w-2 h-8 rounded-full bg-gradient-to-b ${
+                          index === 0 ? 'from-blue-400 to-green-400' :
+                          index === 1 ? 'from-green-400 to-purple-400' :
+                          'from-purple-400 to-orange-400'
+                        } opacity-70 shadow-sm`}></div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        <div className="text-center">
+          <div className="bg-white rounded-2xl p-8 shadow-lg max-w-2xl mx-auto">
+            <h3 className={`text-2xl font-bold text-gray-900 mb-4 ${isRTL ? 'arabic-heading' : ''}`}>
+              {t('journey-cta-title')}
+            </h3>
+          </div>
         </div>
       </div>
     </section>
