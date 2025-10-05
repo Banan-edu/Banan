@@ -166,7 +166,7 @@ export function TypingDemo() {
     if (textDirection === 'rtl') {
       const chars = sampleText.split('');
       const segments: Array<{text: string, type: 'correct' | 'incorrect' | 'untyped'}> = [];
-      let currentSegment = { text: '', type: 'untyped' as const };
+      let currentSegment: {text: string, type: 'correct' | 'incorrect' | 'untyped'} = { text: '', type: 'untyped' };
       
       chars.forEach((char, index) => {
         let charType: 'correct' | 'incorrect' | 'untyped';
