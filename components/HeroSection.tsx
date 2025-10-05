@@ -14,7 +14,7 @@ export function HeroSection({ onRegisterClick }: HeroSectionProps) {
     <section id="home" className="relative text-white py-20 overflow-hidden">
       <div className="absolute inset-0">
         <img
-          src="/assets/banner.svg"
+          src="/images/saudi_arabian_studen_1a14f599.jpg"
           alt="Digital learning and typing skills education"
           className="w-full h-full object-cover opacity-15"
         />
@@ -56,7 +56,7 @@ export function HeroSection({ onRegisterClick }: HeroSectionProps) {
             <div className="flex justify-center pt-4">
               <Button
                 onClick={onRegisterClick}
-                className={`bg-white text-indigo-600 px-10 py-4 rounded-xl font-bold text-lg btn-hover-scale shadow-xl ${isRTL ? 'arabic-button arabic-text' : ''}`}
+                className={`bg-white text-blue-600 px-10 py-4 rounded-xl font-bold text-lg btn-hover-scale shadow-xl ${isRTL ? 'arabic-button arabic-text' : ''}`}
               >
                 {t('start-learning-btn')}
               </Button>
@@ -67,7 +67,7 @@ export function HeroSection({ onRegisterClick }: HeroSectionProps) {
             <div className="relative">
               <div className="relative z-10">
                 <img
-                  src="/assets/banner.svg"
+                  src="/images/touch_typing_keyboar_f218d231.jpg"
                   alt="Digital education technology for typing and computer skills"
                   className="rounded-2xl shadow-2xl w-full hover:scale-105 transition-transform duration-500"
                   loading="lazy"

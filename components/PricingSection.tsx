@@ -73,7 +73,7 @@ export function PricingSection({ onRegisterClick }: PricingSectionProps) {
           
           <Button
             onClick={() => window.location.href = '#contact'}
-            className={`bg-white text-blue-600 px-12 py-4 rounded-xl font-bold text-lg btn-hover-scale shadow-xl ${isRTL ? 'arabic-button arabic-text' : ''}`}
+            className={`bg-white text-blue-600 px-12 py-4 rounded-xl font-bold text-lg btn-hover-scale shadow-xl hover:bg-blue-50 transition-colors ${isRTL ? 'arabic-button arabic-text' : ''}`}
           >
             {t('pricing-contact-btn')}
           </Button>

@@ -9,6 +9,11 @@
   
   body {
     @apply h-full bg-gray-50;
+    font-family: 'Tajawal', sans-serif;
+  }
+  
+  * {
+    font-family: 'Tajawal', sans-serif;
   }
 }
 
@@ -18,4 +23,9 @@
 
 [dir="ltr"] {
   direction: ltr;
+}
+
+/* Fix white background buttons to have blue text */
+.btn-white-bg {
+  color: #3B82F6 !important;
 }

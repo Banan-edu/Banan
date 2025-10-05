@@ -1,4 +1,17 @@
-<svg width="160" height="80" xmlns="http://www.w3.org/2000/svg">
-  <rect width="160" height="80" fill="#3B82F6"/>
-  <text x="80" y="45" font-family="Arial" font-size="24" fill="white" text-anchor="middle">بَنان</text>
+<svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fingerprint circles -->
+  <circle cx="60" cy="60" r="50" stroke="#3B82F6" stroke-width="2" fill="none" opacity="0.8"/>
+  <circle cx="60" cy="60" r="42" stroke="#3B82F6" stroke-width="2" fill="none" opacity="0.7"/>
+  <circle cx="60" cy="60" r="34" stroke="#3B82F6" stroke-width="2" fill="none" opacity="0.6"/>
+  <circle cx="60" cy="60" r="26" stroke="#3B82F6" stroke-width="2" fill="none" opacity="0.5"/>
+  <circle cx="60" cy="60" r="18" stroke="#3B82F6" stroke-width="2" fill="none" opacity="0.4"/>
+  
+  <!-- Fingerprint ridges (curved paths) -->
+  <path d="M 30,60 Q 45,40 60,38 Q 75,40 90,60" stroke="#3B82F6" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <path d="M 25,65 Q 42,43 60,42 Q 78,43 95,65" stroke="#3B82F6" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <path d="M 22,72 Q 40,48 60,46 Q 80,48 98,72" stroke="#3B82F6" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <path d="M 20,80 Q 38,53 60,50 Q 82,53 100,80" stroke="#3B82F6" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  
+  <!-- Arabic text بنان -->
+  <text x="60" y="105" font-family="Tajawal, Arial" font-size="16" font-weight="700" fill="#3B82F6" text-anchor="middle">بنان</text>
 </svg>
