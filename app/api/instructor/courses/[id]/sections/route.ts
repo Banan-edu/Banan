@@ -17,10 +17,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   const [course] = await db
     .select()
     .from(courses)
-    .where(and(
-      eq(courses.id, courseId),
-      eq(courses.instructorId, session.userId)
-    ))
+    .where(eq(courses.id, courseId))
     .limit(1);
 
   if (!course) {

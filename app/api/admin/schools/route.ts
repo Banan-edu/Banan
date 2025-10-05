@@ -13,21 +13,7 @@ export async function GET(req: NextRequest) {
 
   const allSchools = await db.select().from(schools);
 
-  const schoolsWithStats = await Promise.all(
-    allSchools.map(async (school) => {
-      const instructors = await db
-        .select({ id: users.id })
-        .from(users)
-        .where(eq(users.schoolId, school.id));
-
-      return {
-        ...school,
-        instructorCount: instructors.length,
-      };
-    })
-  );
-
-  return NextResponse.json({ schools: schoolsWithStats });
+  return NextResponse.json({ schools: allSchools });
 }
 
 export async function POST(req: NextRequest) {
@@ -37,19 +23,19 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Not authorized' }, { status: 401 });
   }
 
-  const { name, address, contactEmail, contactPhone } = await req.json();
+  const { name, country, address, phone } = await req.json();
 
-  if (!name) {
-    return NextResponse.json({ error: 'School name is required' }, { status: 400 });
+  if (!name || !country || !address) {
+    return NextResponse.json({ error: 'Name, country and address are required' }, { status: 400 });
   }
 
   const [newSchool] = await db
     .insert(schools)
     .values({
       name,
-      address: address || null,
-      contactEmail: contactEmail || null,
-      contactPhone: contactPhone || null,
+      country,
+      address,
+      phone: phone || null,
     })
     .returning();
 

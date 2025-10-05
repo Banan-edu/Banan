@@ -15,13 +15,13 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const role = searchParams.get('role');
 
-  let query = db.select().from(users);
+  let allUsers;
   
   if (role) {
-    query = query.where(eq(users.role, role as any));
+    allUsers = await db.select().from(users).where(eq(users.role, role as any));
+  } else {
+    allUsers = await db.select().from(users);
   }
-
-  const allUsers = await query;
 
   return NextResponse.json({ users: allUsers });
 }
@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Not authorized' }, { status: 401 });
   }
 
-  const { name, email, password, role, schoolId } = await req.json();
+  const { name, email, password, role } = await req.json();
 
   if (!name || !email || !password || !role) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -48,7 +48,6 @@ export async function POST(req: NextRequest) {
       email,
       password: hashedPassword,
       role,
-      schoolId: schoolId || null,
     })
     .returning();
 

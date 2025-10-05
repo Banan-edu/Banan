@@ -10,9 +10,9 @@ export default function AdminSchoolsPage() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
+    country: '',
     address: '',
-    contactEmail: '',
-    contactPhone: '',
+    phone: '',
   });
   const router = useRouter();
 
@@ -46,7 +46,7 @@ export default function AdminSchoolsPage() {
       });
       if (res.ok) {
         setShowCreateModal(false);
-        setFormData({ name: '', address: '', contactEmail: '', contactPhone: '' });
+        setFormData({ name: '', country: '', address: '', phone: '' });
         fetchSchools();
       }
     } catch (error) {
@@ -87,10 +87,9 @@ export default function AdminSchoolsPage() {
                 <Building className="w-8 h-8 text-blue-600" />
                 <div className="flex-1">
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">{school.name}</h3>
+                  {school.country && <p className="text-gray-600 text-sm mb-1">{school.country}</p>}
                   {school.address && <p className="text-gray-600 text-sm mb-1">{school.address}</p>}
-                  {school.contactEmail && <p className="text-gray-600 text-sm mb-1">{school.contactEmail}</p>}
-                  {school.contactPhone && <p className="text-gray-600 text-sm mb-1">{school.contactPhone}</p>}
-                  <p className="text-sm text-gray-500 mt-2">{school.instructorCount} instructors</p>
+                  {school.phone && <p className="text-gray-600 text-sm mb-1">{school.phone}</p>}
                 </div>
               </div>
             </div>
@@ -108,16 +107,16 @@ export default function AdminSchoolsPage() {
                 <input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required />
               </div>
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">Address</label>
-                <input type="text" value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <label className="block text-sm font-medium text-gray-700 mb-2">Country *</label>
+                <input type="text" value={formData.country} onChange={(e) => setFormData({ ...formData, country: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required />
               </div>
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">Contact Email</label>
-                <input type="email" value={formData.contactEmail} onChange={(e) => setFormData({ ...formData, contactEmail: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <label className="block text-sm font-medium text-gray-700 mb-2">Address *</label>
+                <input type="text" value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required />
               </div>
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">Contact Phone</label>
-                <input type="tel" value={formData.contactPhone} onChange={(e) => setFormData({ ...formData, contactPhone: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
+                <input type="tel" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
               </div>
               <div className="flex gap-3">
                 <button type="button" onClick={() => setShowCreateModal(false)} className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">Cancel</button>

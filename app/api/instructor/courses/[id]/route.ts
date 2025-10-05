@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth';
 import { db } from '@server/db';
-import { courses, sections, lessons } from '@shared/schema';
-import { eq, and } from 'drizzle-orm';
+import { courses, courseEditors, sections, lessons } from '@shared/schema';
+import { eq, and, or } from 'drizzle-orm';
 
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
   const session = await getSession();
@@ -16,14 +16,26 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
   const [course] = await db
     .select()
     .from(courses)
-    .where(and(
-      eq(courses.id, courseId),
-      eq(courses.instructorId, session.userId)
-    ))
+    .where(eq(courses.id, courseId))
     .limit(1);
 
   if (!course) {
     return NextResponse.json({ error: 'Course not found' }, { status: 404 });
+  }
+
+  const isCreator = course.createdBy === session.userId;
+  
+  const [editorAccess] = await db
+    .select()
+    .from(courseEditors)
+    .where(and(
+      eq(courseEditors.courseId, courseId),
+      eq(courseEditors.userId, session.userId)
+    ))
+    .limit(1);
+
+  if (!isCreator && !editorAccess) {
+    return NextResponse.json({ error: 'Not authorized to access this course' }, { status: 403 });
   }
 
   const courseSections = await db

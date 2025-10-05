@@ -1,14 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth';
 import { db } from '@server/db';
-import { classes, users, classStudents, classCourses, courses } from '@shared/schema';
-import { eq, and, inArray } from 'drizzle-orm';
+import { classes, classInstructors, classStudents, classCourses, courses } from '@shared/schema';
+import { eq, inArray } from 'drizzle-orm';
 
 export async function GET(req: NextRequest) {
   const session = await getSession();
 
   if (!session || session.role !== 'instructor') {
     return NextResponse.json({ error: 'Not authorized' }, { status: 401 });
+  }
+
+  const instructorClassIds = await db
+    .select({ classId: classInstructors.classId })
+    .from(classInstructors)
+    .where(eq(classInstructors.userId, session.userId));
+
+  const classIds = instructorClassIds.map(c => c.classId);
+
+  if (classIds.length === 0) {
+    return NextResponse.json({ classes: [] });
   }
 
   const instructorClasses = await db
@@ -19,7 +30,7 @@ export async function GET(req: NextRequest) {
       createdAt: classes.createdAt,
     })
     .from(classes)
-    .where(eq(classes.instructorId, session.userId));
+    .where(inArray(classes.id, classIds));
 
   const classesWithStats = await Promise.all(
     instructorClasses.map(async (classItem) => {
@@ -56,7 +67,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Not authorized' }, { status: 401 });
   }
 
-  const { name, description, schoolId } = await req.json();
+  const { name, description } = await req.json();
 
   if (!name) {
     return NextResponse.json({ error: 'Class name is required' }, { status: 400 });
@@ -67,10 +78,13 @@ export async function POST(req: NextRequest) {
     .values({
       name,
       description: description || null,
-      instructorId: session.userId,
-      schoolId: schoolId || 1,
     })
     .returning();
+
+  await db.insert(classInstructors).values({
+    classId: newClass.id,
+    userId: session.userId,
+  });
 
   return NextResponse.json({ class: newClass });
 }
