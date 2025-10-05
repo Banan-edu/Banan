@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth';
 import { db } from '@server/db';
-import { courses, sections, lessons, lessonProgress } from '@shared/schema';
-import { eq } from 'drizzle-orm';
+import { courses, sections, lessons, lessonProgress, classCourses, classStudents } from '@shared/schema';
+import { eq, and } from 'drizzle-orm';
 
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
   const session = await getSession();
@@ -12,6 +12,28 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
   }
 
   const courseId = parseInt(params.id);
+
+  const studentClasses = await db
+    .select({ classId: classStudents.classId })
+    .from(classStudents)
+    .where(eq(classStudents.userId, session.userId));
+
+  const classIds = studentClasses.map(c => c.classId);
+
+  if (classIds.length === 0) {
+    return NextResponse.json({ error: 'Not enrolled in any classes' }, { status: 403 });
+  }
+
+  const enrolledCourses = await db
+    .select({ classId: classCourses.classId })
+    .from(classCourses)
+    .where(eq(classCourses.courseId, courseId));
+
+  const hasAccess = enrolledCourses.some(ec => classIds.includes(ec.classId));
+
+  if (!hasAccess) {
+    return NextResponse.json({ error: 'Not authorized to access this course' }, { status: 403 });
+  }
 
   const [course] = await db
     .select()
@@ -42,8 +64,10 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
           const [progress] = await db
             .select()
             .from(lessonProgress)
-            .where(eq(lessonProgress.lessonId, lesson.id))
-            .where(eq(lessonProgress.userId, session.userId))
+            .where(and(
+              eq(lessonProgress.lessonId, lesson.id),
+              eq(lessonProgress.userId, session.userId)
+            ))
             .limit(1);
 
           return {

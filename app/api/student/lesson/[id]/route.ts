@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth';
 import { db } from '@server/db';
-import { lessons, lessonProgress } from '@shared/schema';
-import { eq } from 'drizzle-orm';
+import { lessons, lessonProgress, sections, courses, classCourses, classStudents } from '@shared/schema';
+import { eq, and, inArray } from 'drizzle-orm';
 
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
   const session = await getSession();
@@ -23,11 +23,46 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     return NextResponse.json({ error: 'Lesson not found' }, { status: 404 });
   }
 
+  const [section] = await db
+    .select()
+    .from(sections)
+    .where(eq(sections.id, lesson.sectionId))
+    .limit(1);
+
+  if (!section) {
+    return NextResponse.json({ error: 'Section not found' }, { status: 404 });
+  }
+
+  const studentClasses = await db
+    .select({ classId: classStudents.classId })
+    .from(classStudents)
+    .where(eq(classStudents.userId, session.userId));
+
+  const classIds = studentClasses.map(c => c.classId);
+
+  if (classIds.length === 0) {
+    return NextResponse.json({ error: 'Not enrolled in any classes' }, { status: 403 });
+  }
+
+  const enrolledCourses = await db
+    .select({ courseId: classCourses.courseId })
+    .from(classCourses)
+    .where(and(
+      eq(classCourses.courseId, section.courseId),
+      inArray(classCourses.classId, classIds)
+    ));
+
+  if (enrolledCourses.length === 0) {
+    return NextResponse.json({ error: 'Not authorized to access this lesson' }, { status: 403 });
+  }
+
   const [progress] = await db
     .select()
     .from(lessonProgress)
-    .where(eq(lessonProgress.lessonId, lessonId))
-    .where(eq(lessonProgress.userId, session.userId))
+    .where(and(
+      eq(lessonProgress.lessonId, lessonId),
+      eq(lessonProgress.userId, session.userId)
+    ))
     .limit(1);
 
   return NextResponse.json({ lesson, progress });
@@ -41,7 +76,55 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   }
 
   const lessonId = parseInt(params.id);
-  const { score, speed, accuracy, timeSpent } = await req.json();
+  const body = await req.json();
+  
+  const speed = Math.max(0, Math.min(200, parseInt(body.speed) || 0));
+  const accuracy = Math.max(0, Math.min(100, parseInt(body.accuracy) || 0));
+  const timeSpent = Math.max(0, Math.min(3600, parseInt(body.timeSpent) || 0));
+  const score = Math.max(0, Math.min(1000, parseInt(body.score) || 0));
+
+  const [lesson] = await db
+    .select()
+    .from(lessons)
+    .where(eq(lessons.id, lessonId))
+    .limit(1);
+
+  if (!lesson) {
+    return NextResponse.json({ error: 'Lesson not found' }, { status: 404 });
+  }
+
+  const [section] = await db
+    .select()
+    .from(sections)
+    .where(eq(sections.id, lesson.sectionId))
+    .limit(1);
+
+  if (!section) {
+    return NextResponse.json({ error: 'Section not found' }, { status: 404 });
+  }
+
+  const studentClasses = await db
+    .select({ classId: classStudents.classId })
+    .from(classStudents)
+    .where(eq(classStudents.userId, session.userId));
+
+  const classIds = studentClasses.map(c => c.classId);
+
+  if (classIds.length === 0) {
+    return NextResponse.json({ error: 'Not enrolled in any classes' }, { status: 403 });
+  }
+
+  const enrolledCourses = await db
+    .select({ courseId: classCourses.courseId })
+    .from(classCourses)
+    .where(and(
+      eq(classCourses.courseId, section.courseId),
+      inArray(classCourses.classId, classIds)
+    ));
+
+  if (enrolledCourses.length === 0) {
+    return NextResponse.json({ error: 'Not authorized to submit progress for this lesson' }, { status: 403 });
+  }
 
   const stars = accuracy >= 95 && speed >= 40 ? 3 : accuracy >= 85 && speed >= 30 ? 2 : 1;
   const completed = accuracy >= 80;
@@ -49,8 +132,10 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   const [existing] = await db
     .select()
     .from(lessonProgress)
-    .where(eq(lessonProgress.lessonId, lessonId))
-    .where(eq(lessonProgress.userId, session.userId))
+    .where(and(
+      eq(lessonProgress.lessonId, lessonId),
+      eq(lessonProgress.userId, session.userId)
+    ))
     .limit(1);
 
   if (existing) {
