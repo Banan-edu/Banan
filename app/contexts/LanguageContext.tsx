@@ -18,9 +18,9 @@ const translations: Record<Language, Record<string, string>> = {
     'nav-courses': 'الدورات',
     'nav-pricing': 'الأسعار',
     'nav-contact': 'تواصل معنا',
-    'hero-title': 'تعلم الطباعة باللمس بطريقة احترافية',
-    'hero-subtitle': 'مع منصة بَنان التعليمية',
-    'hero-description': 'منصة تعليمية متكاملة لتطوير مهارات الطباعة السريعة والمهارات الرقمية باللغتين العربية والإنجليزية',
+    'hero-title': 'نؤهل الجيل القادم\nلمهارات المستقبل',
+    'hero-subtitle': '',
+    'hero-description': 'منصة تعليمية ذكية مدعومة بالذكاء الاصطناعي لتعليم الطباعة باللمس والمهارات الرقمية للطلاب في السعودية والخليج',
     'start-learning-btn': 'ابدأ التعلم الآن',
     'journey-title': 'رحلة التعلم معنا',
     'journey-description': 'طريقك نحو إتقان الطباعة السريعة في 4 خطوات بسيطة',
@@ -71,20 +71,20 @@ const translations: Record<Language, Record<string, string>> = {
     'feature-3': '✓ شهادة إنجاز معتمدة',
     'register-btn': 'سجل الآن',
     'lang-toggle': 'English',
-    'features-title': 'لماذا تختار بَنان؟',
-    'features-description': 'منصة تعليمية شاملة مصممة لتطوير مهاراتك الرقمية',
-    'feature1-title': 'طباعة باللمس احترافية',
-    'feature1-desc': 'تعلم الطباعة السريعة باللمس بطريقة علمية مع دروس تفاعلية متدرجة',
-    'feature2-title': 'مهارات الذكاء الاصطناعي',
-    'feature2-desc': 'تعلم كيفية استخدام أدوات الذكاء الاصطناعي وكتابة الأوامر الفعالة',
-    'feature3-title': 'تعلم تفاعلي وممتع',
-    'feature3-desc': 'ألعاب وتحديات تجعل التعلم ممتعاً ومحفزاً',
-    'feature4-title': 'تتبع تقدمك',
-    'feature4-desc': 'إحصائيات دقيقة وتقارير مفصلة عن أدائك وتطورك',
+    'features-title': 'مميزات منصة بنان',
+    'features-description': 'تقنيات متطورة ومحتوى مخصص\nلتعليم الطباعة باللمس والمهارات الرقمية بطريقة تفاعلية وممتعة',
+    'feature1-title': 'الطباعة باللمس',
+    'feature1-desc': 'تعلم الطباعة باللمس باللغتين العربية والإنجليزية مع دروس تفاعلية مخصصة للمنطقة',
+    'feature2-title': 'الذكاء الاصطناعي التكيفي',
+    'feature2-desc': 'نظام ذكي يتكيف مع مستوى الطالب ويقدم تجربة تعليمية شخصية ومتطورة',
+    'feature3-title': 'التعلم التفاعلي والألعاب',
+    'feature3-desc': 'ألعاب تعليمية ممتعة وتحديات تحفز الطلاب على التطور المستمر',
+    'feature4-title': 'تتبع التقدم المباشر',
+    'feature4-desc': 'لوحة تحكم متقدمة لمتابعة تقدم الطلاب وتحليل الأداء بتفصيل',
     'feature5-title': 'شهادات معتمدة',
-    'feature5-desc': 'احصل على شهادة إنجاز معتمدة عند إتمام البرنامج',
-    'feature6-title': 'دعم متعدد اللغات',
-    'feature6-desc': 'تعلم بالعربية والإنجليزية بواجهة سهلة الاستخدام',
+    'feature5-desc': 'شهادات إتمام معتمدة تضيف قيمة لملف الطالب الأكاديمي والمهني',
+    'feature6-title': 'محتوى ثقافي محلي',
+    'feature6-desc': 'محتوى مصمم خصيصاً للثقافة السعودية والخليجية مع مراعاة القيم المحلية',
     'contact-title': 'تواصل معنا',
     'contact-description': 'نحن هنا لمساعدتك في رحلتك التعليمية',
     'phone-title': 'الهاتف',
@@ -186,7 +186,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const [language, setLanguage] = useState<Language>('ar');
 
   const t = (key: string): string => {
-    return translations[language][key] || key;
+    return translations[language][key] !== undefined ? translations[language][key] : key;
   };
 
   const isRTL = language === 'ar';

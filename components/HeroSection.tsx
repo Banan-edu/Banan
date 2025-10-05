@@ -33,11 +33,18 @@ export function HeroSection({ onRegisterClick }: HeroSectionProps) {
             <div className="space-y-4">
               <h1 className={`text-5xl lg:text-7xl font-bold hero-text-shadow ${isRTL ? 'arabic-hero-title arabic-text' : ''}`}>
                 <span className="block text-white leading-tight mb-3 animate-fade-in-up">
-                  {t('hero-title')}
+                  {t('hero-title').split('\n').map((line, i) => (
+                    <span key={i}>
+                      {line}
+                      {i === 0 && <br />}
+                    </span>
+                  ))}
                 </span>
-                <span className="block text-purple-200 text-4xl lg:text-5xl leading-tight animate-fade-in-up" style={{animationDelay: '0.2s'}}>
-                  {t('hero-subtitle')}
-                </span>
+                {t('hero-subtitle') && (
+                  <span className="block text-purple-200 text-4xl lg:text-5xl leading-tight animate-fade-in-up" style={{animationDelay: '0.2s'}}>
+                    {t('hero-subtitle')}
+                  </span>
+                )}
               </h1>
               <div className="w-24 h-1 bg-gradient-to-r from-purple-300 to-indigo-100 mx-auto"></div>
             </div>
