@@ -1,5 +1,13 @@
 {
   "/api/auth/login/route": "app/api/auth/login/route.js",
-  "/page": "app/page.js",
-  "/login/page": "app/login/page.js"
+  "/api/auth/me/route": "app/api/auth/me/route.js",
+  "/api/auth/logout/route": "app/api/auth/logout/route.js",
+  "/api/student/courses/route": "app/api/student/courses/route.js",
+  "/api/student/course/[id]/route": "app/api/student/course/[id]/route.js",
+  "/api/student/lesson/[id]/route": "app/api/student/lesson/[id]/route.js",
+  "/login/page": "app/login/page.js",
+  "/admin/page": "app/admin/page.js",
+  "/student/page": "app/student/page.js",
+  "/student/course/[id]/page": "app/student/course/[id]/page.js",
+  "/student/lesson/[id]/page": "app/student/lesson/[id]/page.js"
 }
