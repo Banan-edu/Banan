@@ -1,0 +1,253 @@
+Build "بَنان (Banan)" – Multilingual Touch Typing Learning Platform
+I want to build a fully interactive, multilingual educational platform named بَنان (Banan) (Arabic: بنان) using:
+
+Next.js (frontend + backend via API routes)
+Tailwind CSS (styling)
+PostgreSQL (database)
+JWT + Cookies (authentication/session)
+Socket.IO (real-time features)
+
+The platform should support Arabic and English with scalable language architecture.
+
+👥 User Roles & Permissions
+
+Admin – Full control over the platform, manages billing for instructors.
+School Admin – Manages one or more schools.
+Billing Admin – Access only to billing features.
+Instructor – Manages their school, classes, students, and content.
+Student – Learns through courses, lessons, and tests.
+
+Each role has specific access levels and can be assigned granular permissions.
+
+📚 Modules & Features
+
+🏫 Schools
+
+Table View: Name, Address, Classes Count, Admins Count, Instructors Count, Students Count.
+Add School: Name, Country, Full Address, Phone.
+Details View:
+
+Overview: Name, Classes, Instructors, Students.
+Admins Table: Name, School, Last Login, Unassign.
+Record History: Time, Description, By, Event.
+Practice Calendar.
+Punchcard Activity Chart.
+
+
+
+
+👨‍🏫 Instructors
+
+Table View: Name, Role, Classes, Last Login.
+Add Instructor:
+
+Name, Email, ID, Password (optional or via email invite).
+Role:
+
+Instructor (with permission checkboxes: CRUD students, rename/delete classes, access all students).
+Account Admin.
+School Admin (select schools or all).
+Billing Admin.
+
+
+
+
+Details View:
+
+Overview: Name, Classes, Schools, Last Activity/Login.
+Record History.
+Classes Table: Name, Students Count, Date Active, Unassign.
+Add/Assign Class.
+
+
+
+
+👨‍🎓 Students
+
+Table View: Name, ID, Last Activity, Grade.
+Add Student:
+
+Single: Name, Email, ID, Password, Grade.
+Bulk Import: CSV or form.
+
+
+Details View:
+
+Overview: Name, Classes Count, School, Email, Last Login/Activity, Log in as Student.
+Typing Performance: Speed, Accuracy, Time, Charts.
+Record History.
+Badges: Assign from list.
+Practice Calendar Analytics.
+Classes Tab: Class Name, Students Count, Enroll Date, Instructor, Disenroll.
+Progress Tab:
+
+Course Cards: Clear Progress, View Lessons, Adjust Difficulty.
+Stats: Total Score, Stars, Time, Attempts, Difficulty WPM & Accuracy.
+Doughnut Charts.
+
+
+Live Activity Feed: Time, Name, Lesson, Stars, Score, Duration, Performance Videos.
+
+
+
+
+🏫 Classes
+
+Table View: Name, Activity Chart, Students Count, Instructor, Creation Date, Grade.
+Add Class:
+
+Name, Description, Grade, Instructor(s), Course(s).
+
+
+Details View:
+
+Overview: Students, Instructors, Schools, Created/Updated Date, Most Active Day, Class Code Toggle.
+Settings:
+
+Start of Week, Min Stars to Pass, Daily/Weekly Goals.
+Scoreboard Visibility: public, private, leaderboard.
+Backspace Behavior: default, disable.
+Typing Restrictions:
+
+Lock virtual keyboard, language/layout, hands, sound FX, voice-over, error blocking.
+
+
+UI Restrictions: theme, font, replay button.
+Jungle Junior: Show lowercase letters.
+
+
+Typing Performance: Speed, Accuracy, Time, Charts.
+Record History.
+Class Activity: Punchcard.
+Students Tab: Name, Difficulty, Grade, Last Activity, Add/Enroll.
+Instructors Tab: Name, Role, Classes Count, School, Last Login, Unassign.
+Courses Tab:
+
+Assign Courses.
+Course Cards: Name, Description, Enrolled Classes, Editor, Language, Grade, Lessons.
+Buttons: Clear Progress, View Stats, Options:
+
+Prerequisites, Speed Adjustment, Accuracy Requirement, Lesson Progress Limit, Placement Test.
+
+
+Lesson Progress Chart.
+Doughnut Chart: Active vs Total Students.
+
+
+Scoreboard Tab: Student Performance Table.
+Live Activity Feed: Time, Name, Lesson, Stars, Score, Duration, Performance Videos.
+
+
+
+
+📘 Courses
+
+Card View: Name, Instructor, Type (Typing, Coding, Game), Grade Range, Classes, Lessons.
+Add Course:
+
+Name, Description, Language, Grade From/To.
+
+
+Details View:
+
+Overview: Name, Description, Type, Assigned Classes, Editors, Language, Grade, Lessons.
+Buttons:
+
+Assign to Class.
+View/Edit Lessons.
+
+
+
+
+
+
+📗 Lessons
+
+Organized by Sections.
+Add Lesson:
+
+Name, Text + Alt Texts.
+Dynamic Typing Mode:
+
+Progressive Duals-to-Words, Duals and Words, Words Only, Sentences/Snippets.
+
+
+Objectives:
+
+Complete Lesson: Score, Time Limit.
+Performance Goals: Score, Time, Goal Speed, Min Speed, Min Accuracy.
+
+
+Settings:
+
+Disable Backspace, Block on Error, Meaningful Words, Placement Test.
+
+
+Instructions:
+
+Title, Slide Tag, Instruction Text, Highlight Character, Image/YouTube URL, Audio (MP3).
+
+
+Coding Lessons:
+
+Select Code Language for syntax highlighting and formatting.
+
+
+
+
+
+
+🧪 Tests
+
+Table View: Name, Date Created, Managed By, Completed By, Availability, Status (From → To).
+Add Test:
+
+Name, Description, Start/End Date.
+Text + Alt Texts.
+Target Audience:
+
+Selected Students, Students from Schools, All in Subscription.
+
+
+Attempts: Open, Once, Specific Number.
+Time Limit: Checkbox + Minutes.
+Passing Requirements:
+
+Everyone passes.
+Only those meeting: Min Accuracy %, Min Speed WPM.
+
+
+Show Score to Student: Speed Goal, Max Score.
+Options:
+
+Disable Backspace.
+Issue Certificate on Pass.
+
+
+
+
+Details View:
+
+Overview: Name, Description, Active Dates, Created/Modified, Text, Settings.
+Students Tab: Add by Class or Individually, Table of Name, Grade, Date Added, Completion Status.
+Instructors Tab: Name, Role, School, Unassign.
+Results Tab: Name, Score, Speed, Accuracy, Attempts, Completion Time, Certificate Issued.
+
+
+
+
+📊 Analytics & Dashboard (Planned)
+
+Home dashboard for each role.
+Activity history.
+Performance charts.
+Practice trends.
+Leaderboards.
+
+
+💳 Billing & Support (Planned)
+
+Role-based billing access.
+Instructor payments.
+School subscriptions.
+Support ticket system or live chat.
