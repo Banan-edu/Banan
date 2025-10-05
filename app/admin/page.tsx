@@ -67,17 +67,26 @@ export default function AdminDashboard() {
         <h2 className="text-3xl font-bold text-gray-900 mb-8">Admin Dashboard</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <button className="bg-white rounded-xl shadow-md p-8 hover:shadow-xl transition-shadow text-left">
+          <button 
+            onClick={() => router.push('/admin/schools')}
+            className="bg-white rounded-xl shadow-md p-8 hover:shadow-xl transition-shadow text-left"
+          >
             <h3 className="text-xl font-semibold text-gray-900 mb-2">Schools</h3>
             <p className="text-gray-600">Manage schools and administrators</p>
           </button>
           
-          <button className="bg-white rounded-xl shadow-md p-8 hover:shadow-xl transition-shadow text-left">
+          <button 
+            onClick={() => router.push('/admin/instructors')}
+            className="bg-white rounded-xl shadow-md p-8 hover:shadow-xl transition-shadow text-left"
+          >
             <h3 className="text-xl font-semibold text-gray-900 mb-2">Instructors</h3>
             <p className="text-gray-600">Manage instructor accounts and permissions</p>
           </button>
           
-          <button className="bg-white rounded-xl shadow-md p-8 hover:shadow-xl transition-shadow text-left">
+          <button 
+            onClick={() => router.push('/admin/students')}
+            className="bg-white rounded-xl shadow-md p-8 hover:shadow-xl transition-shadow text-left"
+          >
             <h3 className="text-xl font-semibold text-gray-900 mb-2">Students</h3>
             <p className="text-gray-600">Manage student accounts and progress</p>
           </button>

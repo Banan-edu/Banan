@@ -1,6 +1,4 @@
 {
-  "/_not-found/page": "app/_not-found/page.js",
-  "/api/instructor/classes/route": "app/api/instructor/classes/route.js",
   "/student/course/[id]/page": "app/student/course/[id]/page.js",
   "/student/lesson/[id]/page": "app/student/lesson/[id]/page.js",
   "/instructor/page": "app/instructor/page.js",
