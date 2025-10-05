@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Sidebar, studentLinks } from '@/components/Sidebar';
+import { useLanguage } from '@/app/contexts/LanguageContext';
 
 interface Course {
   id: number;
@@ -16,6 +18,7 @@ export default function StudentDashboard() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const { isRTL } = useLanguage();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -43,11 +46,6 @@ export default function StudentDashboard() {
     fetchData();
   }, [router]);
 
-  const handleLogout = async () => {
-    await fetch('/api/auth/logout', { method: 'POST' });
-    router.push('/login');
-  };
-
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -57,37 +55,27 @@ export default function StudentDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16 items-center">
-            <div className="flex items-center space-x-4">
-              <h1 className="text-2xl font-bold text-blue-600">بَنان</h1>
-              <span className="text-gray-600">Student Portal</span>
-            </div>
-            <div className="flex items-center space-x-4">
-              <span className="text-gray-700">{user?.name}</span>
-              <button
-                onClick={handleLogout}
-                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
-              >
-                Logout
-              </button>
-            </div>
-          </div>
-        </div>
-      </nav>
+    <div className={`flex ${isRTL ? 'flex-row-reverse' : ''} min-h-screen bg-gray-50`}>
+      <Sidebar links={studentLinks} userRole="student" />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-2">My Courses</h2>
-          <p className="text-gray-600">Select a course to start practicing</p>
+      <main className="flex-1 px-8 py-8">
+        <div className={`mb-8 ${isRTL ? 'text-right' : 'text-left'}`}>
+          <h2 className={`text-3xl font-bold text-gray-900 mb-2 ${isRTL ? 'font-arabic' : ''}`}>
+            {isRTL ? 'دوراتي' : 'My Courses'}
+          </h2>
+          <p className={`text-gray-600 ${isRTL ? 'font-arabic' : ''}`}>
+            {isRTL ? 'اختر دورة لبدء الممارسة' : 'Select a course to start practicing'}
+          </p>
         </div>
 
         {courses.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-gray-500 text-lg">No courses assigned yet</p>
-            <p className="text-gray-400 mt-2">Contact your instructor to get started</p>
+          <div className={`text-center py-12 ${isRTL ? 'font-arabic' : ''}`}>
+            <p className="text-gray-500 text-lg">
+              {isRTL ? 'لم يتم تعيين أي دورات بعد' : 'No courses assigned yet'}
+            </p>
+            <p className="text-gray-400 mt-2">
+              {isRTL ? 'اتصل بمعلمك للبدء' : 'Contact your instructor to get started'}
+            </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
