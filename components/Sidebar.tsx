@@ -102,27 +102,27 @@ export const studentLinks: SidebarLink[] = [
     icon: <BookOpen className="w-5 h-5" />
   },
   {
-    href: '/student/analytics',
+    href: '/student/analysis',
     labelAr: 'التحليلات',
-    labelEn: 'Analytics',
+    labelEn: 'Analysis',
     icon: <BarChart3 className="w-5 h-5" />
   },
   {
-    href: '/student/goals',
-    labelAr: 'الأهداف',
-    labelEn: 'Goals',
-    icon: <Target className="w-5 h-5" />
-  },
-  {
-    href: '/student/badges',
+    href: '/student/badge',
     labelAr: 'الشارات',
-    labelEn: 'Badges',
+    labelEn: 'Badge',
     icon: <Award className="w-5 h-5" />
   },
   {
-    href: '/student/settings',
+    href: '/student/scoreboard',
+    labelAr: 'لوحة النتائج',
+    labelEn: 'Scoreboard',
+    icon: <Target className="w-5 h-5" />
+  },
+  {
+    href: '/student/setting',
     labelAr: 'الإعدادات',
-    labelEn: 'Settings',
+    labelEn: 'Setting',
     icon: <Settings className="w-5 h-5" />
   }
 ];
@@ -135,22 +135,10 @@ export const instructorLinks: SidebarLink[] = [
     icon: <Home className="w-5 h-5" />
   },
   {
-    href: '/instructor/classes',
-    labelAr: 'الصفوف',
-    labelEn: 'Classes',
-    icon: <Users className="w-5 h-5" />
-  },
-  {
     href: '/instructor/courses',
     labelAr: 'الدورات',
     labelEn: 'Courses',
     icon: <BookOpen className="w-5 h-5" />
-  },
-  {
-    href: '/instructor/analytics',
-    labelAr: 'التحليلات',
-    labelEn: 'Analytics',
-    icon: <BarChart3 className="w-5 h-5" />
   },
   {
     href: '/instructor/students',
@@ -159,15 +147,60 @@ export const instructorLinks: SidebarLink[] = [
     icon: <GraduationCap className="w-5 h-5" />
   },
   {
-    href: '/instructor/schedule',
-    labelAr: 'الجدول',
-    labelEn: 'Schedule',
+    href: '/instructor/school',
+    labelAr: 'المدرسة',
+    labelEn: 'School',
+    icon: <Users className="w-5 h-5" />
+  },
+  {
+    href: '/instructor/tests',
+    labelAr: 'الاختبارات',
+    labelEn: 'Tests',
     icon: <Calendar className="w-5 h-5" />
   },
   {
-    href: '/instructor/settings',
-    labelAr: 'الإعدادات',
-    labelEn: 'Settings',
-    icon: <Settings className="w-5 h-5" />
+    href: '/instructor/instructor',
+    labelAr: 'المعلم',
+    labelEn: 'Instructor',
+    icon: <GraduationCap className="w-5 h-5" />
+  }
+];
+
+export const adminLinks: SidebarLink[] = [
+  {
+    href: '/admin',
+    labelAr: 'الرئيسية',
+    labelEn: 'Home',
+    icon: <Home className="w-5 h-5" />
+  },
+  {
+    href: '/admin/courses',
+    labelAr: 'الدورات',
+    labelEn: 'Courses',
+    icon: <BookOpen className="w-5 h-5" />
+  },
+  {
+    href: '/admin/students',
+    labelAr: 'الطلاب',
+    labelEn: 'Students',
+    icon: <GraduationCap className="w-5 h-5" />
+  },
+  {
+    href: '/admin/school',
+    labelAr: 'المدرسة',
+    labelEn: 'School',
+    icon: <Users className="w-5 h-5" />
+  },
+  {
+    href: '/admin/tests',
+    labelAr: 'الاختبارات',
+    labelEn: 'Tests',
+    icon: <Calendar className="w-5 h-5" />
+  },
+  {
+    href: '/admin/instructor',
+    labelAr: 'المعلم',
+    labelEn: 'Instructor',
+    icon: <GraduationCap className="w-5 h-5" />
   }
 ];
