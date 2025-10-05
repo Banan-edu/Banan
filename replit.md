@@ -28,13 +28,24 @@ Banan is a Next.js-based educational platform that supports:
 ├── app/                    # Next.js app directory
 │   ├── api/               # API routes
 │   │   ├── auth/         # Authentication endpoints
-│   │   └── student/      # Student-specific endpoints
+│   │   ├── student/      # Student-specific endpoints
+│   │   ├── instructor/   # Instructor management APIs
+│   │   │   ├── classes/  # Class CRUD operations
+│   │   │   └── courses/  # Course and lesson management
+│   │   └── admin/        # Admin management APIs
+│   │       ├── schools/  # School management
+│   │       └── users/    # User management (instructors/students)
 │   ├── login/            # Login page
 │   ├── student/          # Student portal
 │   │   ├── course/[id]   # Course map with zigzag layout
 │   │   └── lesson/[id]   # Typing practice component
 │   ├── instructor/       # Instructor portal
+│   │   ├── classes/      # Class management dashboard
+│   │   └── courses/      # Course and lesson editor
 │   └── admin/            # Admin portal
+│       ├── schools/      # School management interface
+│       ├── instructors/  # Instructor management
+│       └── students/     # Student management
 ├── server/                # Server utilities
 │   └── db.ts             # Database connection
 ├── shared/               # Shared types and schemas
@@ -78,14 +89,42 @@ The platform includes comprehensive tables for:
 - Syntax highlighting for coding practice
 
 ### Instructor Features
-- Dashboard with class and course statistics
-- Class management interface
-- Course creation capabilities
+- **Class Management Dashboard** (`/instructor/classes`)
+  - View all assigned classes with student counts
+  - Create new classes with name and description
+  - View assigned courses per class
+  - Multi-class support with proper join table (classInstructors)
+
+- **Course Management** (`/instructor/courses`)
+  - View all created and editable courses
+  - Create new courses with title, description, and language
+  - Course statistics: sections and lessons count
+  - Multi-course support with courseEditors join table
+
+- **Course Detail & Lesson Editor** (`/instructor/courses/[id]`)
+  - Organize courses into sections
+  - Create text and coding lessons
+  - Specify programming language for coding lessons
+  - Lesson content editor with proper formatting
+  - Authorization: only creators and editors can access
 
 ### Admin Features
-- School management
-- Instructor and student management
-- Full platform oversight
+- **School Management** (`/admin/schools`)
+  - View all schools in the platform
+  - Create new schools with name, country, address, phone
+  - View instructor count per school
+  - Full CRUD operations
+
+- **Instructor Management** (`/admin/instructors`)
+  - View all instructors
+  - Create new instructor accounts
+  - Assign instructors to schools
+  - Monitor instructor activity
+
+- **Student Management** (`/admin/students`)
+  - View all students
+  - Create new student accounts
+  - Full user management capabilities
 
 ## Test Accounts
 
@@ -165,8 +204,29 @@ npm run seed
    - Language switcher
    - Multilingual UI
 
-## Recent Changes
+## Recent Changes (October 2025)
 
+### Instructor Portal Complete ✅
+- Built complete class management with multi-class support
+- Built course creation and editing system
+- Built section and lesson management
+- Fixed authorization bugs: using inArray() for multi-item queries
+- Added course ownership verification (creator + editor support)
+
+### Admin Portal Complete ✅
+- Built school management with proper schema fields
+- Built instructor management with school assignment
+- Built student management interface
+- All CRUD operations functional and secure
+
+### Bug Fixes & Security
+- Fixed WebSocket configuration (bufferUtil error) with conditional loading
+- Fixed Drizzle ORM queries to use proper join tables
+- Fixed authorization: verify enrollment/ownership before access
+- Fixed class/course listings to return ALL items (not just first)
+- All routes properly validate user roles and permissions
+
+### Earlier Changes
 - Initial platform setup with Next.js and PostgreSQL
 - Comprehensive database schema with all entities
 - Authentication system with JWT and cookies
