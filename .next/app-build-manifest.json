@@ -55,6 +55,11 @@
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/api/instructor/schools/[id]/practice/route.js"
+    ],
+    "/instructor/school/add/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/instructor/school/add/page.js"
     ]
   }
 }
