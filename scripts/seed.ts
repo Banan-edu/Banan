@@ -45,8 +45,7 @@ async function seed() {
     description: 'Learn touch typing fundamentals with English keyboard',
     type: 'typing',
     language: 'en',
-    gradeFrom: 'Grade 3',
-    gradeTo: 'Grade 8',
+    grade: 'Grade 3',
     createdBy: instructor.id,
   }).returning();
   console.log('✓ Created English typing course');
@@ -56,8 +55,7 @@ async function seed() {
     description: 'تعلم الكتابة باللمس باللغة العربية',
     type: 'typing',
     language: 'ar',
-    gradeFrom: 'Grade 3',
-    gradeTo: 'Grade 8',
+    grade: 'Grade 8',
     createdBy: instructor.id,
   }).returning();
   console.log('✓ Created Arabic typing course');
@@ -67,8 +65,7 @@ async function seed() {
     description: 'Practice typing JavaScript code with syntax highlighting',
     type: 'coding',
     language: 'en',
-    gradeFrom: 'Grade 6',
-    gradeTo: 'Grade 12',
+    grade: 'Grade 12',
     createdBy: instructor.id,
   }).returning();
   console.log('✓ Created coding course');
