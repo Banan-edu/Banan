@@ -2,130 +2,63 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Plus, Building } from 'lucide-react';
+import { Sidebar, adminLinks } from '@/components/Sidebar';
+import { useLanguage } from '@/app/contexts/LanguageContext';
+import SchoolsTable from '@/components/schools/SchoolsTable';
 
-export default function AdminSchoolsPage() {
-  const [schools, setSchools] = useState<any[]>([]);
+export default function SchoolsPage() {
   const [loading, setLoading] = useState(true);
-  const [showCreateModal, setShowCreateModal] = useState(false);
-  const [formData, setFormData] = useState({
-    name: '',
-    country: '',
-    address: '',
-    phone: '',
-  });
   const router = useRouter();
+  const { isRTL } = useLanguage();
 
   useEffect(() => {
-    fetchSchools();
-  }, []);
-
-  const fetchSchools = async () => {
-    try {
-      const res = await fetch('/api/admin/schools');
-      if (!res.ok) {
+    const checkAuth = async () => {
+      try {
+        const res = await fetch('/api/auth/me');
+        if (!res.ok) {
+          router.push('/login');
+          return;
+        }
+        const data = await res.json();
+        if (data.user.role !== 'admin' && data.user.role !== 'school_admin') {
+          router.push('/');
+          return;
+        }
+      } catch (error) {
+        console.error('Error checking auth:', error);
         router.push('/login');
-        return;
+      } finally {
+        setLoading(false);
       }
-      const data = await res.json();
-      setSchools(data.schools);
-    } catch (error) {
-      console.error('Error fetching schools:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
 
-  const handleCreate = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const res = await fetch('/api/admin/schools', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
-      if (res.ok) {
-        setShowCreateModal(false);
-        setFormData({ name: '', country: '', address: '', phone: '' });
-        fetchSchools();
-      }
-    } catch (error) {
-      console.error('Error creating school:', error);
-    }
-  };
+    checkAuth();
+  }, [router]);
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center"><div className="text-xl">Loading...</div></div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-xl">Loading...</div>
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16 items-center">
-            <div className="flex items-center space-x-4">
-              <button onClick={() => router.push('/admin')} className="text-2xl font-bold text-blue-600">بَنان</button>
-              <span className="text-gray-600">Admin - Schools</span>
-            </div>
-            <button onClick={() => router.push('/admin')} className="px-4 py-2 text-gray-600 hover:text-gray-900">Back</button>
-          </div>
-        </div>
-      </nav>
+    <div className={`flex ${isRTL ? 'flex-row-reverse' : ''} min-h-screen bg-gray-50`}>
+      <Sidebar links={adminLinks} userRole="admin" />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex justify-between items-center mb-8">
-          <h2 className="text-3xl font-bold text-gray-900">Schools</h2>
-          <button onClick={() => setShowCreateModal(true)} className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-            <Plus className="w-5 h-5" /> Add School
-          </button>
+      <main className="flex-1 px-8 py-8">
+        <div className={`mb-8 ${isRTL ? 'text-right' : 'text-left'}`}>
+          <h1 className={`text-3xl font-bold text-gray-900 ${isRTL ? 'font-arabic' : ''}`}>
+            {isRTL ? 'إدارة المدارس' : 'Schools Management'}
+          </h1>
+          <p className={`text-gray-600 mt-2 ${isRTL ? 'font-arabic' : ''}`}>
+            {isRTL ? 'إدارة المدارس والمسؤولين والإحصائيات' : 'Manage schools, administrators, and statistics'}
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {schools.map((school) => (
-            <div key={school.id} className="bg-white rounded-xl shadow-md p-6">
-              <div className="flex items-start gap-3">
-                <Building className="w-8 h-8 text-blue-600" />
-                <div className="flex-1">
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">{school.name}</h3>
-                  {school.country && <p className="text-gray-600 text-sm mb-1">{school.country}</p>}
-                  {school.address && <p className="text-gray-600 text-sm mb-1">{school.address}</p>}
-                  {school.phone && <p className="text-gray-600 text-sm mb-1">{school.phone}</p>}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+        <SchoolsTable />
       </main>
-
-      {showCreateModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full">
-            <h3 className="text-xl font-bold mb-4">Add New School</h3>
-            <form onSubmit={handleCreate}>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">School Name *</label>
-                <input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required />
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">Country *</label>
-                <input type="text" value={formData.country} onChange={(e) => setFormData({ ...formData, country: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required />
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">Address *</label>
-                <input type="text" value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required />
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
-                <input type="tel" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
-              </div>
-              <div className="flex gap-3">
-                <button type="button" onClick={() => setShowCreateModal(false)} className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">Cancel</button>
-                <button type="submit" className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Create</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
