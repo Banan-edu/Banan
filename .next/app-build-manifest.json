@@ -31,10 +31,30 @@
       "static/chunks/main-app.js",
       "static/chunks/app/api/auth/me/route.js"
     ],
-    "/_not-found/page": [
+    "/instructor/schools/[id]/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/_not-found/page.js"
+      "static/chunks/app/instructor/schools/[id]/page.js"
+    ],
+    "/api/instructor/schools/[id]/route": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/api/instructor/schools/[id]/route.js"
+    ],
+    "/api/instructor/schools/[id]/admins/route": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/api/instructor/schools/[id]/admins/route.js"
+    ],
+    "/api/instructor/schools/[id]/history/route": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/api/instructor/schools/[id]/history/route.js"
+    ],
+    "/api/instructor/schools/[id]/practice/route": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/api/instructor/schools/[id]/practice/route.js"
     ]
   }
 }

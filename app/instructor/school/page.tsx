@@ -10,7 +10,7 @@ export default function InstructorSchoolsPage() {
   const router = useRouter();
 
   const handleSchoolClick = (schoolId: number) => {
-    router.push(`/instructor/school/${schoolId}`);
+    router.push(`/instructor/schools/${schoolId}`);
   };
 
   return (
