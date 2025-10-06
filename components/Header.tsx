@@ -134,7 +134,7 @@ console.log(isLoggedIn)
               <Button
                 onClick={() => router.push('/login')}
                 variant="outline"
-                className="bg-blue-600 text-blue-500 border-blue-600 px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                className="bg-blue-600 text-white border-blue-600 px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
               >
                 {isRTL ? 'تسجيل الدخول' : 'Login'}
               </Button>

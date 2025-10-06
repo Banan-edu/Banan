@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, timestamp, jsonb, pgEnum } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, timestamp, jsonb, pgEnum, varchar } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
 export const userRoleEnum = pgEnum('user_role', ['admin', 'school_admin', 'billing_admin', 'instructor', 'student']);
@@ -48,9 +48,9 @@ export const schoolAdmins = pgTable("school_admins", {
 
 export const classes = pgTable("classes", {
   id: serial("id").primaryKey(),
-  name: text("name").notNull(),
+  name: varchar("name", { length: 255 }).notNull(),
   description: text("description"),
-  grade: text("grade"),
+  grade: varchar("grade", { length: 50 }),
   code: text("code").unique(),
   schoolId: integer("school_id").references(() => schools.id, { onDelete: 'cascade' }),
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -96,8 +96,7 @@ export const courses = pgTable("courses", {
   description: text("description"),
   type: courseTypeEnum("type").notNull().default('typing'),
   language: languageEnum("language").notNull().default('en'),
-  gradeFrom: text("grade_from"),
-  gradeTo: text("grade_to"),
+  grade: text("grade"),
   createdBy: integer("created_by").references(() => users.id),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),

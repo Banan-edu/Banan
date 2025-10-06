@@ -3,14 +3,14 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Users, BookOpen, Plus } from 'lucide-react';
+import { useLanguage } from '@/app/contexts/LanguageContext';
+import { Sidebar, instructorLinks } from '@/components/Sidebar';
 
 export default function InstructorClassesPage() {
   const [classes, setClasses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showCreateModal, setShowCreateModal] = useState(false);
-  const [newClassName, setNewClassName] = useState('');
-  const [newClassDescription, setNewClassDescription] = useState('');
   const router = useRouter();
+  const { isRTL } = useLanguage();
 
   useEffect(() => {
     fetchClasses();
@@ -32,28 +32,19 @@ export default function InstructorClassesPage() {
     }
   };
 
-  const handleCreateClass = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    try {
-      const res = await fetch('/api/instructor/classes', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          name: newClassName, 
-          description: newClassDescription 
-        }),
-      });
-
-      if (res.ok) {
-        setShowCreateModal(false);
-        setNewClassName('');
-        setNewClassDescription('');
-        fetchClasses();
-      }
-    } catch (error) {
-      console.error('Error creating class:', error);
-    }
+  const ActivitySparkline = ({ data }: { data: number[] }) => {
+    const max = Math.max(...data, 1);
+    return (
+      <div className="flex items-end gap-0.5 h-8 w-20">
+        {data.map((value, index) => (
+          <div
+            key={index}
+            className="flex-1 bg-blue-500 rounded-sm"
+            style={{ height: `${(value / max) * 100}%` }}
+          />
+        ))}
+      </div>
+    );
   };
 
   if (loading) {
@@ -65,117 +56,94 @@ export default function InstructorClassesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16 items-center">
-            <div className="flex items-center space-x-4">
-              <button onClick={() => router.push('/instructor')} className="text-2xl font-bold text-blue-600">
-                بَنان
-              </button>
-              <span className="text-gray-600">Instructor - Classes</span>
-            </div>
-            <button
-              onClick={() => router.push('/instructor')}
-              className="px-4 py-2 text-gray-600 hover:text-gray-900"
-            >
-              Back to Dashboard
-            </button>
-          </div>
-        </div>
-      </nav>
+    <div className={`flex min-h-screen bg-gray-50`}>
+      <Sidebar links={instructorLinks} userRole="instructor" />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex justify-between items-center mb-8">
-          <h2 className="text-3xl font-bold text-gray-900">My Classes</h2>
+      <main className="flex-1 px-8 py-8">
+        <div className={`flex justify-between items-center mb-8`}>
+          <h2 className={`text-3xl font-bold text-gray-900 ${isRTL ? 'font-arabic' : ''}`}>
+            {isRTL ? 'الفصول الدراسية' : 'My Classes'}
+          </h2>
           <button
-            onClick={() => setShowCreateModal(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            onClick={() => router.push('/instructor/classes/add')}
+            className={`flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 ${isRTL ? 'flex-row-reverse font-arabic' : ''}`}
           >
             <Plus className="w-5 h-5" />
-            Create Class
+            {isRTL ? 'إضافة فصل' : 'Add Class'}
           </button>
         </div>
 
         {classes.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-gray-500 text-lg">No classes yet. Create your first class to get started!</p>
+            <p className={`text-gray-500 text-lg ${isRTL ? 'font-arabic' : ''}`}>
+              {isRTL ? 'لا توجد فصول حتى الآن. قم بإنشاء أول فصل للبدء!' : 'No classes yet. Create your first class to get started!'}
+            </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {classes.map((classItem) => (
-              <div
-                key={classItem.id}
-                className="bg-white rounded-xl shadow-md p-6 hover:shadow-xl transition-shadow cursor-pointer"
-                onClick={() => router.push(`/instructor/classes/${classItem.id}`)}
-              >
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">{classItem.name}</h3>
-                {classItem.description && (
-                  <p className="text-gray-600 mb-4">{classItem.description}</p>
-                )}
-                <div className="flex items-center gap-4 text-sm text-gray-500">
-                  <div className="flex items-center gap-1">
-                    <Users className="w-4 h-4" />
-                    <span>{classItem.studentCount} students</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <BookOpen className="w-4 h-4" />
-                    <span>{classItem.courseCount} courses</span>
-                  </div>
-                </div>
-              </div>
-            ))}
+          <div className="bg-white rounded-xl shadow-md overflow-hidden">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className={`px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider ${isRTL ? 'text-right' : ''}`}>
+                    {isRTL ? 'اسم الفصل' : 'Class Name'}
+                  </th>
+                  <th className={`px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider ${isRTL ? 'text-right' : ''}`}>
+                    {isRTL ? 'النشاط' : 'Activity'}
+                  </th>
+                  <th className={`px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider ${isRTL ? 'text-right' : ''}`}>
+                    {isRTL ? 'عدد الطلاب' : 'Students Count'}
+                  </th>
+                  <th className={`px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider ${isRTL ? 'text-right' : ''}`}>
+                    {isRTL ? 'المعلمون' : 'Instructor(s)'}
+                  </th>
+                  <th className={`px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider ${isRTL ? 'text-right' : ''}`}>
+                    {isRTL ? 'تاريخ الإنشاء' : 'Creation Date'}
+                  </th>
+                  <th className={`px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider ${isRTL ? 'text-right' : ''}`}>
+                    {isRTL ? 'الصف' : 'Grade'}
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {classes.map((classItem) => (
+                  <tr key={classItem.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <button
+                        onClick={() => router.push(`/instructor/classes/${classItem.id}`)}
+                        className="text-blue-600 hover:text-blue-800 font-medium"
+                      >
+                        {classItem.name}
+                      </button>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <ActivitySparkline data={classItem.activityData || [3, 5, 2, 8, 4, 7, 6]} />
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center gap-1">
+                        <Users className="w-4 h-4 text-gray-500" />
+                        <span>{classItem.studentCount || 0}</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className="text-gray-900">
+                        {classItem.instructors || 'N/A'}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-gray-500">
+                      {new Date(classItem.createdAt).toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
+                        {classItem.grade || 'Unassigned'}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
       </main>
-
-      {showCreateModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full">
-            <h3 className="text-xl font-bold mb-4">Create New Class</h3>
-            <form onSubmit={handleCreateClass}>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Class Name *
-                </label>
-                <input
-                  type="text"
-                  value={newClassName}
-                  onChange={(e) => setNewClassName(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Description
-                </label>
-                <textarea
-                  value={newClassDescription}
-                  onChange={(e) => setNewClassDescription(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  rows={3}
-                />
-              </div>
-              <div className="flex gap-3">
-                <button
-                  type="button"
-                  onClick={() => setShowCreateModal(false)}
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                >
-                  Create
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

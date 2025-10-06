@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Not authorized' }, { status: 401 });
   }
 
-  const { name, description } = await req.json();
+  const { name, description, grade, instructorIds, courseIds } = await req.json();
 
   if (!name) {
     return NextResponse.json({ error: 'Class name is required' }, { status: 400 });
@@ -78,13 +78,38 @@ export async function POST(req: NextRequest) {
     .values({
       name,
       description: description || null,
+      grade: grade || 'Unassigned',
     })
     .returning();
 
+  // Add current instructor
   await db.insert(classInstructors).values({
     classId: newClass.id,
     userId: session.userId,
   });
+
+  // Add additional instructors if provided
+  if (instructorIds && instructorIds.length > 0) {
+    const instructorValues = instructorIds
+      .filter((id: number) => id !== session.userId)
+      .map((id: number) => ({
+        classId: newClass.id,
+        userId: id,
+      }));
+    
+    if (instructorValues.length > 0) {
+      await db.insert(classInstructors).values(instructorValues);
+    }
+  }
+
+  // Assign courses if provided
+  if (courseIds && courseIds.length > 0) {
+    const courseValues = courseIds.map((courseId: number) => ({
+      classId: newClass.id,
+      courseId,
+    }));
+    await db.insert(classCourses).values(courseValues);
+  }
 
   return NextResponse.json({ class: newClass });
 }

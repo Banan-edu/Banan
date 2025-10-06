@@ -3,12 +3,12 @@
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useLanguage } from '@/app/contexts/LanguageContext';
-import { 
-  Home, 
-  BookOpen, 
-  BarChart3, 
-  Users, 
-  Award, 
+import {
+  Home,
+  BookOpen,
+  BarChart3,
+  Users,
+  Award,
   Settings,
   GraduationCap,
   Target,
@@ -52,11 +52,10 @@ export function Sidebar({ links, userRole }: SidebarProps) {
               <li key={link.href}>
                 <Link
                   href={link.href}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                    isActive
+                  className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive
                       ? 'bg-blue-50 text-blue-600 font-semibold'
                       : 'text-gray-700 hover:bg-gray-50 hover:text-blue-600'
-                  } ${isRTL ? 'flex-row-reverse' : ''}`}
+                    } ${isRTL ? 'flex-row-reverse' : ''}`}
                 >
                   <span className="flex-shrink-0">{link.icon}</span>
                   <span className={isRTL ? 'font-arabic' : ''}>
@@ -72,9 +71,8 @@ export function Sidebar({ links, userRole }: SidebarProps) {
       <div className="p-4 border-t border-gray-200">
         <Link
           href="/login"
-          className={`flex items-center gap-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 transition-colors ${
-            isRTL ? 'flex-row-reverse' : ''
-          }`}
+          className={`flex items-center gap-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 transition-colors ${isRTL ? 'flex-row-reverse' : ''
+            }`}
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -101,30 +99,30 @@ export const studentLinks: SidebarLink[] = [
     labelEn: 'Courses',
     icon: <BookOpen className="w-5 h-5" />
   },
-  {
-    href: '/student/analysis',
-    labelAr: 'التحليلات',
-    labelEn: 'Analysis',
-    icon: <BarChart3 className="w-5 h-5" />
-  },
-  {
-    href: '/student/badge',
-    labelAr: 'الشارات',
-    labelEn: 'Badge',
-    icon: <Award className="w-5 h-5" />
-  },
-  {
-    href: '/student/scoreboard',
-    labelAr: 'لوحة النتائج',
-    labelEn: 'Scoreboard',
-    icon: <Target className="w-5 h-5" />
-  },
-  {
-    href: '/student/setting',
-    labelAr: 'الإعدادات',
-    labelEn: 'Setting',
-    icon: <Settings className="w-5 h-5" />
-  }
+  // {
+  //   href: '/student/analysis',
+  //   labelAr: 'التحليلات',
+  //   labelEn: 'Analysis',
+  //   icon: <BarChart3 className="w-5 h-5" />
+  // },
+  // {
+  //   href: '/student/badge',
+  //   labelAr: 'الشارات',
+  //   labelEn: 'Badge',
+  //   icon: <Award className="w-5 h-5" />
+  // },
+  // {
+  //   href: '/student/scoreboard',
+  //   labelAr: 'لوحة النتائج',
+  //   labelEn: 'Scoreboard',
+  //   icon: <Target className="w-5 h-5" />
+  // },
+  // {
+  //   href: '/student/setting',
+  //   labelAr: 'الإعدادات',
+  //   labelEn: 'Setting',
+  //   icon: <Settings className="w-5 h-5" />
+  // }
 ];
 
 export const instructorLinks: SidebarLink[] = [
@@ -133,6 +131,12 @@ export const instructorLinks: SidebarLink[] = [
     labelAr: 'الرئيسية',
     labelEn: 'Home',
     icon: <Home className="w-5 h-5" />
+  },
+  {
+    href: '/instructor/classes',
+    labelAr: 'الصفوف',
+    labelEn: 'Classes',
+    icon: <Target className="w-5 h-5" />
   },
   {
     href: '/instructor/courses',
@@ -152,18 +156,18 @@ export const instructorLinks: SidebarLink[] = [
     labelEn: 'School',
     icon: <Users className="w-5 h-5" />
   },
-  {
-    href: '/instructor/tests',
-    labelAr: 'الاختبارات',
-    labelEn: 'Tests',
-    icon: <Calendar className="w-5 h-5" />
-  },
-  {
-    href: '/instructor/instructor',
-    labelAr: 'المعلم',
-    labelEn: 'Instructor',
-    icon: <GraduationCap className="w-5 h-5" />
-  }
+  // {
+  //   href: '/instructor/tests',
+  //   labelAr: 'الاختبارات',
+  //   labelEn: 'Tests',
+  //   icon: <Calendar className="w-5 h-5" />
+  // },
+  // {
+  //   href: '/instructor/instructor',
+  //   labelAr: 'المعلم',
+  //   labelEn: 'Instructor',
+  //   icon: <GraduationCap className="w-5 h-5" />
+  // }
 ];
 
 export const adminLinks: SidebarLink[] = [

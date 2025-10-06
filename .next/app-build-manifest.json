@@ -16,211 +16,35 @@
       "static/chunks/main-app.js",
       "static/chunks/app/login/page.js"
     ],
-    "/api/auth/login/route": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/api/auth/login/route.js"
-    ],
-    "/instructor/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/instructor/page.js"
-    ],
-    "/api/auth/me/route": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/api/auth/me/route.js"
-    ],
-    "/instructor/courses/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/instructor/courses/page.js"
-    ],
-    "/api/instructor/courses/route": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/api/instructor/courses/route.js"
-    ],
-    "/api/instructor/schools/route": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/api/instructor/schools/route.js"
-    ],
     "/instructor/students/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/instructor/students/page.js"
-    ],
-    "/instructor/schools/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/instructor/schools/page.js"
     ],
     "/api/instructor/students/route": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/api/instructor/students/route.js"
     ],
-    "/instructor/students/[id]/page": [
+    "/instructor/classes/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/instructor/students/[id]/page.js"
-    ],
-    "/instructor/students/add/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/instructor/students/add/page.js"
-    ],
-    "/api/instructor/students/create/route": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/api/instructor/students/create/route.js"
+      "static/chunks/app/instructor/classes/page.js"
     ],
     "/api/instructor/classes/route": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/api/instructor/classes/route.js"
     ],
-    "/api/instructor/students/[id]/route": [
+    "/instructor/classes/[id]/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/api/instructor/students/[id]/route.js"
+      "static/chunks/app/instructor/classes/[id]/page.js"
     ],
-    "/api/instructor/students/[id]/performance/route": [
+    "/api/instructor/classes/[id]/route": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/api/instructor/students/[id]/performance/route.js"
-    ],
-    "/api/instructor/students/[id]/history/route": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/api/instructor/students/[id]/history/route.js"
-    ],
-    "/api/instructor/badges/route": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/api/instructor/badges/route.js"
-    ],
-    "/api/instructor/students/[id]/badges/route": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/api/instructor/students/[id]/badges/route.js"
-    ],
-    "/api/instructor/students/[id]/practice/route": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/api/instructor/students/[id]/practice/route.js"
-    ],
-    "/api/instructor/students/[id]/classes/route": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/api/instructor/students/[id]/classes/route.js"
-    ],
-    "/api/instructor/students/[id]/progress/route": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/api/instructor/students/[id]/progress/route.js"
-    ],
-    "/api/instructor/students/[id]/activity/route": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/api/instructor/students/[id]/activity/route.js"
-    ],
-    "/api/instructor/students/[id]/login-as/route": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/api/instructor/students/[id]/login-as/route.js"
-    ],
-    "/student/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/student/page.js"
-    ],
-    "/api/student/courses/route": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/api/student/courses/route.js"
-    ],
-    "/instructor/courses/[id]/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/instructor/courses/[id]/page.js"
-    ],
-    "/api/instructor/courses/[id]/route": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/api/instructor/courses/[id]/route.js"
-    ],
-    "/api/instructor/courses/[id]/sections/route": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/api/instructor/courses/[id]/sections/route.js"
-    ],
-    "/api/instructor/courses/[id]/lessons/route": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/api/instructor/courses/[id]/lessons/route.js"
-    ],
-    "/instructor/schools/[id]/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/instructor/schools/[id]/page.js"
-    ],
-    "/api/instructor/schools/[id]/route": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/api/instructor/schools/[id]/route.js"
-    ],
-    "/api/instructor/schools/[id]/admins/route": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/api/instructor/schools/[id]/admins/route.js"
-    ],
-    "/api/instructor/schools/[id]/history/route": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/api/instructor/schools/[id]/history/route.js"
-    ],
-    "/api/instructor/schools/[id]/practice/route": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/api/instructor/schools/[id]/practice/route.js"
-    ],
-    "/instructor/schools/add/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/instructor/schools/add/page.js"
-    ],
-    "/api/student/course/[id]/route": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/api/student/course/[id]/route.js"
-    ],
-    "/student/lesson/[id]/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/student/lesson/[id]/page.css",
-      "static/chunks/app/student/lesson/[id]/page.js"
-    ],
-    "/api/student/lesson/[id]/route": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/api/student/lesson/[id]/route.js"
-    ],
-    "/student/courses/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/student/courses/page.js"
-    ],
-    "/student/courses/[id]/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/student/courses/[id]/page.js"
-    ],
-    "/_not-found/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/_not-found/page.js"
+      "static/chunks/app/api/instructor/classes/[id]/route.js"
     ]
   }
 }
