@@ -59,24 +59,24 @@ console.log(isLoggedIn)
           
           {isLoggedIn === true ? (
             <nav className={`hidden md:flex gap-8 ${isRTL ? 'space-x-reverse' : ''}`}>
-              <a
+              <Link
                 href="/"
                 className={`text-gray-700 hover:text-blue-600 transition-colors ${isRTL ? 'arabic-text font-arabic' : ''}`}
               >
                 {isRTL ? 'الرئيسية' : 'Home'}
-              </a>
-              <a
+              </Link>
+              <Link
                 href="/#pricing"
                 className={`text-gray-700 hover:text-blue-600 transition-colors ${isRTL ? 'arabic-text font-arabic' : ''}`}
               >
                 {isRTL ? 'الأسعار' : 'Pricing'}
-              </a>
-              <a
+              </Link>
+              <Link
                 href="/student"
                 className={`text-gray-700 hover:text-blue-600 transition-colors ${isRTL ? 'arabic-text font-arabic' : ''}`}
               >
                 {isRTL ? 'لوحة التحكم' : 'Dashboard'}
-              </a>
+              </Link>
             </nav>
           ) : isLoggedIn === false ? (
             <nav className={`hidden md:flex gap-8 ${isRTL ? 'space-x-reverse' : ''}`}>
@@ -154,9 +154,9 @@ console.log(isLoggedIn)
             <div className="flex flex-col space-y-2">
               {isLoggedIn === true ? (
                 <>
-                  <a href="/" className="text-gray-700 hover:text-blue-600 transition-colors py-2 text-left">{isRTL ? 'الرئيسية' : 'Home'}</a>
-                  <a href="/#pricing" className="text-gray-700 hover:text-blue-600 transition-colors py-2 text-left">{isRTL ? 'الأسعار' : 'Pricing'}</a>
-                  <a href="/student" className="text-gray-700 hover:text-blue-600 transition-colors py-2 text-left">{isRTL ? 'لوحة التحكم' : 'Dashboard'}</a>
+                  <Link href="/" className="text-gray-700 hover:text-blue-600 transition-colors py-2 text-left">{isRTL ? 'الرئيسية' : 'Home'}</Link>
+                  <Link href="/#pricing" className="text-gray-700 hover:text-blue-600 transition-colors py-2 text-left">{isRTL ? 'الأسعار' : 'Pricing'}</Link>
+                  <Link href="/student" className="text-gray-700 hover:text-blue-600 transition-colors py-2 text-left">{isRTL ? 'لوحة التحكم' : 'Dashboard'}</Link>
                 </>
               ) : (
                 <>
