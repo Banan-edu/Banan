@@ -11,8 +11,8 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     return NextResponse.json({ error: 'Not authorized' }, { status: 401 });
   }
 
-  const courseId = parseInt(params.id);
-
+  const { id } = await params;
+  const courseId = parseInt(id);
   const [course] = await db
     .select()
     .from(courses)

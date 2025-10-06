@@ -1,4 +1,14 @@
 {
+  "/api/instructor/students/[id]/activity/route": "app/api/instructor/students/[id]/activity/route.js",
   "/api/instructor/schools/route": "app/api/instructor/schools/route.js",
-  "/instructor/school/page": "app/instructor/school/page.js"
+  "/api/instructor/schools/[id]/route": "app/api/instructor/schools/[id]/route.js",
+  "/api/instructor/schools/[id]/admins/route": "app/api/instructor/schools/[id]/admins/route.js",
+  "/api/instructor/schools/[id]/history/route": "app/api/instructor/schools/[id]/history/route.js",
+  "/api/instructor/schools/[id]/practice/route": "app/api/instructor/schools/[id]/practice/route.js",
+  "/_not-found/page": "app/_not-found/page.js",
+  "/instructor/courses/page": "app/instructor/courses/page.js",
+  "/instructor/students/page": "app/instructor/students/page.js",
+  "/instructor/students/[id]/page": "app/instructor/students/[id]/page.js",
+  "/instructor/schools/page": "app/instructor/schools/page.js",
+  "/instructor/schools/[id]/page": "app/instructor/schools/[id]/page.js"
 }

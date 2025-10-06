@@ -41,7 +41,7 @@ export default function InstructorDashboard() {
   }
 
   return (
-    <div className={`flex ${isRTL ? 'flex-row-reverse' : ''} min-h-screen bg-gray-50`}>
+    <div className={`flex min-h-screen bg-gray-50`}>
       <Sidebar links={instructorLinks} userRole="instructor" />
 
       <main className="flex-1 px-8 py-8">

@@ -147,7 +147,7 @@ export const instructorLinks: SidebarLink[] = [
     icon: <GraduationCap className="w-5 h-5" />
   },
   {
-    href: '/instructor/school',
+    href: '/instructor/schools',
     labelAr: 'المدرسة',
     labelEn: 'School',
     icon: <Users className="w-5 h-5" />

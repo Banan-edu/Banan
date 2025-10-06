@@ -1,21 +1,48 @@
+
 'use client';
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Sidebar, studentLinks } from '@/components/Sidebar';
 import { useLanguage } from '@/app/contexts/LanguageContext';
+import { 
+  BookOpen, 
+  Trophy, 
+  Clock, 
+  Target, 
+  TrendingUp,
+  Calendar,
+  Award,
+  BarChart3
+} from 'lucide-react';
 
-interface Course {
+interface DashboardStats {
+  totalCourses: number;
+  completedLessons: number;
+  totalLessons: number;
+  totalStars: number;
+  totalScore: number;
+  averageAccuracy: number;
+  averageSpeed: number;
+  totalTimeSpent: number;
+  streak: number;
+}
+
+interface RecentActivity {
   id: number;
-  name: string;
-  description: string;
-  language: string;
-  lessonsCount: number;
+  lessonName: string;
+  courseName: string;
+  score: number;
+  stars: number;
+  accuracy: number;
+  speed: number;
+  completedAt: string;
 }
 
 export default function StudentDashboard() {
   const [user, setUser] = useState<any>(null);
-  const [courses, setCourses] = useState<Course[]>([]);
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const { isRTL } = useLanguage();
@@ -31,10 +58,12 @@ export default function StudentDashboard() {
         const data = await res.json();
         setUser(data.user);
         
-        const coursesRes = await fetch('/api/student/courses');
-        if (coursesRes.ok) {
-          const coursesData = await coursesRes.json();
-          setCourses(coursesData.courses || []);
+        // Fetch dashboard stats
+        const statsRes = await fetch('/api/student/dashboard/stats');
+        if (statsRes.ok) {
+          const statsData = await statsRes.json();
+          setStats(statsData.stats);
+          setRecentActivity(statsData.recentActivity || []);
         }
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -54,52 +83,231 @@ export default function StudentDashboard() {
     );
   }
 
+  const formatTime = (seconds: number) => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    return hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
+  };
+
+  const progressPercentage = stats && stats.totalLessons > 0
+    ? Math.round((stats.completedLessons / stats.totalLessons) * 100)
+    : 0;
+
   return (
-    <div className={`flex ${isRTL ? 'flex-row-reverse' : ''} min-h-screen bg-gray-50`}>
+    <div className={`flex min-h-screen bg-gray-50`}>
       <Sidebar links={studentLinks} userRole="student" />
 
       <main className="flex-1 px-8 py-8">
+        {/* Header */}
         <div className={`mb-8 ${isRTL ? 'text-right' : 'text-left'}`}>
           <h2 className={`text-3xl font-bold text-gray-900 mb-2 ${isRTL ? 'font-arabic' : ''}`}>
-            {isRTL ? 'دوراتي' : 'My Courses'}
+            {isRTL ? 'مرحباً' : 'Welcome'}, {user?.name || 'Student'}!
           </h2>
           <p className={`text-gray-600 ${isRTL ? 'font-arabic' : ''}`}>
-            {isRTL ? 'اختر دورة لبدء الممارسة' : 'Select a course to start practicing'}
+            {isRTL ? 'إليك ملخص تقدمك' : "Here's your learning progress"}
           </p>
         </div>
 
-        {courses.length === 0 ? (
-          <div className={`text-center py-12 ${isRTL ? 'font-arabic' : ''}`}>
-            <p className="text-gray-500 text-lg">
-              {isRTL ? 'لم يتم تعيين أي دورات بعد' : 'No courses assigned yet'}
-            </p>
-            <p className="text-gray-400 mt-2">
-              {isRTL ? 'اتصل بمعلمك للبدء' : 'Contact your instructor to get started'}
-            </p>
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {/* Total Courses */}
+          <div className="bg-white rounded-xl shadow-md p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-blue-100 rounded-lg">
+                <BookOpen className="w-6 h-6 text-blue-600" />
+              </div>
+              <span className="text-2xl font-bold text-gray-900">
+                {stats?.totalCourses || 0}
+              </span>
+            </div>
+            <h3 className={`text-gray-600 ${isRTL ? 'font-arabic' : ''}`}>
+              {isRTL ? 'الدورات' : 'Courses'}
+            </h3>
           </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {courses.map((course) => (
-              <div
-                key={course.id}
-                onClick={() => router.push(`/student/course/${course.id}`)}
-                className="bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow cursor-pointer p-6"
-              >
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-xl font-semibold text-gray-900">{course.name}</h3>
-                  <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
-                    {course.language === 'ar' ? 'Arabic' : 'English'}
+
+          {/* Completed Lessons */}
+          <div className="bg-white rounded-xl shadow-md p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-green-100 rounded-lg">
+                <Target className="w-6 h-6 text-green-600" />
+              </div>
+              <span className="text-2xl font-bold text-gray-900">
+                {stats?.completedLessons || 0}/{stats?.totalLessons || 0}
+              </span>
+            </div>
+            <h3 className={`text-gray-600 ${isRTL ? 'font-arabic' : ''}`}>
+              {isRTL ? 'الدروس المكتملة' : 'Lessons Completed'}
+            </h3>
+          </div>
+
+          {/* Total Stars */}
+          <div className="bg-white rounded-xl shadow-md p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-yellow-100 rounded-lg">
+                <Trophy className="w-6 h-6 text-yellow-600" />
+              </div>
+              <span className="text-2xl font-bold text-gray-900">
+                {stats?.totalStars || 0}
+              </span>
+            </div>
+            <h3 className={`text-gray-600 ${isRTL ? 'font-arabic' : ''}`}>
+              {isRTL ? 'النجوم' : 'Total Stars'}
+            </h3>
+          </div>
+
+          {/* Total Time */}
+          <div className="bg-white rounded-xl shadow-md p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-purple-100 rounded-lg">
+                <Clock className="w-6 h-6 text-purple-600" />
+              </div>
+              <span className="text-2xl font-bold text-gray-900">
+                {formatTime(stats?.totalTimeSpent || 0)}
+              </span>
+            </div>
+            <h3 className={`text-gray-600 ${isRTL ? 'font-arabic' : ''}`}>
+              {isRTL ? 'وقت التدريب' : 'Practice Time'}
+            </h3>
+          </div>
+        </div>
+
+        {/* Performance Overview */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          {/* Overall Progress */}
+          <div className="bg-white rounded-xl shadow-md p-6">
+            <h3 className={`text-xl font-semibold text-gray-900 mb-4 ${isRTL ? 'font-arabic text-right' : ''}`}>
+              {isRTL ? 'التقدم العام' : 'Overall Progress'}
+            </h3>
+            <div className="space-y-4">
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className={`text-gray-600 ${isRTL ? 'font-arabic' : ''}`}>
+                    {isRTL ? 'إكمال الدروس' : 'Lesson Completion'}
                   </span>
+                  <span className="font-semibold text-gray-900">{progressPercentage}%</span>
                 </div>
-                <p className="text-gray-600 mb-4">{course.description || 'No description'}</p>
-                <div className="flex items-center justify-between text-sm text-gray-500">
-                  <span>{course.lessonsCount || 0} lessons</span>
-                  <span className="text-blue-600 font-medium">Start →</span>
+                <div className="w-full bg-gray-200 rounded-full h-3">
+                  <div 
+                    className="bg-blue-600 h-3 rounded-full transition-all duration-300"
+                    style={{ width: `${progressPercentage}%` }}
+                  ></div>
                 </div>
               </div>
-            ))}
+
+              <div className="grid grid-cols-2 gap-4 pt-4">
+                <div className="text-center p-4 bg-blue-50 rounded-lg">
+                  <div className="text-2xl font-bold text-blue-600">
+                    {stats?.averageSpeed || 0}
+                  </div>
+                  <div className={`text-sm text-gray-600 ${isRTL ? 'font-arabic' : ''}`}>
+                    {isRTL ? 'متوسط السرعة' : 'Avg Speed'} (WPM)
+                  </div>
+                </div>
+                <div className="text-center p-4 bg-green-50 rounded-lg">
+                  <div className="text-2xl font-bold text-green-600">
+                    {stats?.averageAccuracy || 0}%
+                  </div>
+                  <div className={`text-sm text-gray-600 ${isRTL ? 'font-arabic' : ''}`}>
+                    {isRTL ? 'متوسط الدقة' : 'Avg Accuracy'}
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-        )}
+
+          {/* Quick Actions */}
+          <div className="bg-white rounded-xl shadow-md p-6">
+            <h3 className={`text-xl font-semibold text-gray-900 mb-4 ${isRTL ? 'font-arabic text-right' : ''}`}>
+              {isRTL ? 'إجراءات سريعة' : 'Quick Actions'}
+            </h3>
+            <div className="space-y-3">
+              <button
+                onClick={() => router.push('/student/courses')}
+                className={`w-full flex items-center gap-3 p-4 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors ${isRTL ? 'flex-row-reverse' : ''}`}
+              >
+                <BookOpen className="w-5 h-5 text-blue-600" />
+                <span className={`text-blue-900 font-medium ${isRTL ? 'font-arabic' : ''}`}>
+                  {isRTL ? 'تصفح الدورات' : 'Browse Courses'}
+                </span>
+              </button>
+
+              <button
+                onClick={() => router.push('/student/analysis')}
+                className={`w-full flex items-center gap-3 p-4 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors ${isRTL ? 'flex-row-reverse' : ''}`}
+              >
+                <BarChart3 className="w-5 h-5 text-purple-600" />
+                <span className={`text-purple-900 font-medium ${isRTL ? 'font-arabic' : ''}`}>
+                  {isRTL ? 'عرض التحليلات' : 'View Analytics'}
+                </span>
+              </button>
+
+              <button
+                onClick={() => router.push('/student/badge')}
+                className={`w-full flex items-center gap-3 p-4 bg-yellow-50 hover:bg-yellow-100 rounded-lg transition-colors ${isRTL ? 'flex-row-reverse' : ''}`}
+              >
+                <Award className="w-5 h-5 text-yellow-600" />
+                <span className={`text-yellow-900 font-medium ${isRTL ? 'font-arabic' : ''}`}>
+                  {isRTL ? 'الشارات' : 'My Badges'}
+                </span>
+              </button>
+
+              <button
+                onClick={() => router.push('/student/scoreboard')}
+                className={`w-full flex items-center gap-3 p-4 bg-green-50 hover:bg-green-100 rounded-lg transition-colors ${isRTL ? 'flex-row-reverse' : ''}`}
+              >
+                <Trophy className="w-5 h-5 text-green-600" />
+                <span className={`text-green-900 font-medium ${isRTL ? 'font-arabic' : ''}`}>
+                  {isRTL ? 'لوحة المتصدرين' : 'Leaderboard'}
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Recent Activity */}
+        <div className="bg-white rounded-xl shadow-md p-6">
+          <h3 className={`text-xl font-semibold text-gray-900 mb-4 ${isRTL ? 'font-arabic text-right' : ''}`}>
+            {isRTL ? 'النشاط الأخير' : 'Recent Activity'}
+          </h3>
+          
+          {recentActivity.length === 0 ? (
+            <div className={`text-center py-8 text-gray-500 ${isRTL ? 'font-arabic' : ''}`}>
+              {isRTL ? 'لا يوجد نشاط حديث' : 'No recent activity'}
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {recentActivity.map((activity) => (
+                <div 
+                  key={activity.id}
+                  className={`flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors ${isRTL ? 'flex-row-reverse' : ''}`}
+                >
+                  <div className={`flex-1 ${isRTL ? 'text-right' : ''}`}>
+                    <h4 className="font-semibold text-gray-900">{activity.lessonName}</h4>
+                    <p className="text-sm text-gray-600">{activity.courseName}</p>
+                  </div>
+                  <div className={`flex items-center gap-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                    <div className="text-center">
+                      <div className="text-yellow-600 font-semibold">★ {activity.stars}</div>
+                      <div className="text-xs text-gray-500">
+                        {isRTL ? 'نجوم' : 'Stars'}
+                      </div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-blue-600 font-semibold">{activity.speed}</div>
+                      <div className="text-xs text-gray-500">WPM</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-green-600 font-semibold">{activity.accuracy}%</div>
+                      <div className="text-xs text-gray-500">
+                        {isRTL ? 'دقة' : 'Accuracy'}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </main>
     </div>
   );

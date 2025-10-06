@@ -87,7 +87,7 @@ export default function SchoolDetailPage() {
         const data = await res.json();
         setSchool(data.school);
       } else {
-        router.push('/instructor/school');
+        router.push('/instructor/schools');
       }
     } catch (error) {
       console.error('Error fetching school:', error);
@@ -157,14 +157,14 @@ export default function SchoolDetailPage() {
   ];
 
   return (
-    <div className={`flex ${isRTL ? 'flex-row-reverse' : ''} min-h-screen bg-gray-50`}>
+    <div className={`flex min-h-screen bg-gray-50`}>
       <Sidebar links={instructorLinks} userRole="instructor" />
 
       <main className="flex-1 px-8 py-8">
         {/* Header with back button */}
-        <div className={`mb-8 ${isRTL ? 'text-right' : 'text-left'}`}>
+        <div className={`mb-8 `}>
           <button
-            onClick={() => router.push('/instructor/school')}
+            onClick={() => router.push('/instructor/schools')}
             className={`flex items-center gap-2 text-blue-600 hover:text-blue-700 mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}
           >
             <ArrowLeft className={`w-5 h-5 ${isRTL ? 'rotate-180' : ''}`} />
@@ -209,12 +209,12 @@ export default function SchoolDetailPage() {
 
         {/* Tabs */}
         <div className="bg-white rounded-lg shadow">
-          <div className={`border-b border-gray-200 ${isRTL ? 'flex-row-reverse' : ''} flex`}>
+          <div className={`border-b border-gray-200 flex`}>
             {tabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`px-6 py-4 flex items-center gap-2 border-b-2 font-medium transition-colors ${isRTL ? 'flex-row-reverse' : ''} ${
+                className={`px-6 py-4 flex items-center gap-2 border-b-2 font-medium transition-colors ${
                   activeTab === tab.id
                     ? 'border-blue-600 text-blue-600'
                     : 'border-transparent text-gray-600 hover:text-gray-900'

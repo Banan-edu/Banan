@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { Plus, List, Code, Type } from 'lucide-react';
+import { instructorLinks, Sidebar } from '@/components/Sidebar';
 
 export default function InstructorCourseDetailPage() {
   const [course, setCourse] = useState<any>(null);
@@ -93,25 +94,8 @@ export default function InstructorCourseDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16 items-center">
-            <div className="flex items-center space-x-4">
-              <button onClick={() => router.push('/instructor')} className="text-2xl font-bold text-blue-600">
-                بَنان
-              </button>
-              <span className="text-gray-600">Course: {course?.name}</span>
-            </div>
-            <button
-              onClick={() => router.push('/instructor/courses')}
-              className="px-4 py-2 text-gray-600 hover:text-gray-900"
-            >
-              Back to Courses
-            </button>
-          </div>
-        </div>
-      </nav>
+    <div className="flex min-h-screen bg-gray-50">
+          <Sidebar links={instructorLinks} userRole="instructor" />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex justify-between items-center mb-8">

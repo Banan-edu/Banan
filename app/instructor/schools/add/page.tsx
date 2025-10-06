@@ -47,7 +47,7 @@ export default function AddSchoolPage() {
       });
 
       if (res.ok) {
-        router.push('/instructor/school');
+        router.push('/instructor/schools');
       } else {
         const data = await res.json();
         setError(data.error || 'Failed to create school');
@@ -68,13 +68,13 @@ export default function AddSchoolPage() {
   };
 
   return (
-    <div className={`flex ${isRTL ? 'flex-row-reverse' : ''} min-h-screen bg-gray-50`}>
+    <div className={`flex min-h-screen bg-gray-50`}>
       <Sidebar links={instructorLinks} userRole="instructor" />
 
       <main className="flex-1 px-8 py-8">
         <div className={`mb-8 ${isRTL ? 'text-right' : 'text-left'}`}>
           <button
-            onClick={() => router.push('/instructor/school')}
+            onClick={() => router.push('/instructor/schools')}
             className={`flex items-center gap-2 text-blue-600 hover:text-blue-700 mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}
           >
             <ArrowLeft className={`w-5 h-5 ${isRTL ? 'rotate-180' : ''}`} />
@@ -176,7 +176,7 @@ export default function AddSchoolPage() {
               </button>
               <button
                 type="button"
-                onClick={() => router.push('/instructor/school')}
+                onClick={() => router.push('/instructor/schools')}
                 className={`px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors ${isRTL ? 'font-arabic' : ''}`}
               >
                 {isRTL ? 'إلغاء' : 'Cancel'}

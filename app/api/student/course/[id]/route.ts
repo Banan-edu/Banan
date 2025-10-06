@@ -10,8 +10,8 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
   if (!session || session.role !== 'student') {
     return NextResponse.json({ error: 'Not authorized' }, { status: 401 });
   }
-
-  const courseId = parseInt(params.id);
+  const { id } = await params;
+  const courseId = parseInt(id);
 
   const studentClasses = await db
     .select({ classId: classStudents.classId })

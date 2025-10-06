@@ -45,8 +45,8 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
       sectionId,
       name,
       type,
-      content,
-      language: type === 'coding' ? language : null,
+      text: content,
+      codeLanguage: type === 'coding' ? language : null,
       order: existingLessons.length + 1,
     })
     .returning();

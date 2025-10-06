@@ -1,6 +1,8 @@
 import { Pool, neonConfig } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-serverless';
 import * as schema from "@shared/schema";
+import dotenv from 'dotenv';
+dotenv.config();
 
 if (typeof WebSocket === 'undefined') {
   const ws = require('ws');

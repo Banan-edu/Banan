@@ -1,0 +1,327 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useLanguage } from '@/app/contexts/LanguageContext';
+import { Sidebar, instructorLinks } from '@/components/Sidebar';
+import { ArrowLeft } from 'lucide-react';
+
+const GRADES = [
+  'unassigned',
+  'Grade 1',
+  'Grade 2',
+  'Grade 3',
+  'Grade 4',
+  'Grade 5',
+  'Grade 6',
+  'Grade 7',
+  'Grade 8',
+  'Grade 9',
+  'Grade 10',
+  'Grade 11',
+  'Grade 12',
+];
+
+export default function AddStudentPage() {
+  const router = useRouter();
+  const { isRTL } = useLanguage();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [classes, setClasses] = useState<any[]>([]);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    studentId: '',
+    password: '',
+    grade: GRADES[0],
+    classId: 'none',
+  });
+
+  // Fetch instructor classes
+  useEffect(() => {
+    const fetchClasses = async () => {
+      try {
+        const res = await fetch('/api/instructor/classes');
+        if (res.ok) {
+          const data = await res.json();
+          setClasses(data.classes || []);
+        } else {
+          console.error('Failed to fetch classes');
+        }
+      } catch (error) {
+        console.error('Error fetching classes:', error);
+      }
+    };
+
+    fetchClasses();
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+
+    try {
+      const res = await fetch('/api/instructor/students/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (res.ok) {
+        router.push('/instructor/students');
+      } else {
+        const data = await res.json();
+        setError(data.error || 'Failed to add student');
+      }
+    } catch (error) {
+      console.error('Error creating student:', error);
+      setError('Failed to add student');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  return (
+    <div
+      className={`flex ${isRTL ? 'flex-row-reverse' : ''} min-h-screen bg-gray-50`}
+    >
+      <Sidebar links={instructorLinks} userRole="instructor" />
+
+      <main className="flex-1 px-8 py-8">
+        {/* Header */}
+        <div className={`mb-8 ${isRTL ? 'text-right' : 'text-left'}`}>
+          <button
+            onClick={() => router.push('/instructor/students')}
+            className={`flex items-center gap-2 text-blue-600 hover:text-blue-700 mb-4 ${
+              isRTL ? 'flex-row-reverse' : ''
+            }`}
+          >
+            <ArrowLeft className={`w-5 h-5 ${isRTL ? 'rotate-180' : ''}`} />
+            <span className={isRTL ? 'font-arabic' : ''}>
+              {isRTL ? 'العودة للطلاب' : 'Back to Students'}
+            </span>
+          </button>
+
+          <h1
+            className={`text-3xl font-bold text-gray-900 ${
+              isRTL ? 'font-arabic' : ''
+            }`}
+          >
+            {isRTL ? 'إضافة طالب جديد' : 'Add New Student'}
+          </h1>
+          <p
+            className={`text-gray-600 mt-2 ${
+              isRTL ? 'font-arabic' : ''
+            }`}
+          >
+            {isRTL
+              ? 'أدخل معلومات الطالب الجديد'
+              : 'Enter the new student information'}
+          </p>
+        </div>
+
+        {/* Form */}
+        <div className="bg-white rounded-lg shadow p-8 max-w-2xl">
+          {error && (
+            <div
+              className={`mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 ${
+                isRTL ? 'text-right font-arabic' : ''
+              }`}
+            >
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Name */}
+            <div>
+              <label
+                className={`block text-sm font-medium text-gray-700 mb-2 ${
+                  isRTL ? 'text-right font-arabic' : ''
+                }`}
+              >
+                {isRTL ? 'اسم الطالب' : 'Student Name'}{' '}
+                <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                required
+                className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                  isRTL ? 'text-right font-arabic' : ''
+                }`}
+                placeholder={isRTL ? 'أدخل اسم الطالب' : 'Enter student name'}
+              />
+            </div>
+
+            {/* Email */}
+            <div>
+              <label
+                className={`block text-sm font-medium text-gray-700 mb-2 ${
+                  isRTL ? 'text-right font-arabic' : ''
+                }`}
+              >
+                {isRTL ? 'البريد الإلكتروني' : 'Email Address'}{' '}
+                <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                  isRTL ? 'text-right font-arabic' : ''
+                }`}
+                placeholder={isRTL ? 'أدخل البريد الإلكتروني' : 'Enter email'}
+              />
+            </div>
+
+            {/* Student ID */}
+            <div>
+              <label
+                className={`block text-sm font-medium text-gray-700 mb-2 ${
+                  isRTL ? 'text-right font-arabic' : ''
+                }`}
+              >
+                {isRTL ? 'رقم الطالب' : 'Student ID'}{' '}
+                <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                name="studentId"
+                value={formData.studentId}
+                onChange={handleChange}
+                required
+                className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                  isRTL ? 'text-right font-arabic' : ''
+                }`}
+                placeholder={isRTL ? 'أدخل رقم الطالب' : 'Enter student ID'}
+              />
+            </div>
+
+            {/* Password */}
+            <div>
+              <label
+                className={`block text-sm font-medium text-gray-700 mb-2 ${
+                  isRTL ? 'text-right font-arabic' : ''
+                }`}
+              >
+                {isRTL ? 'كلمة المرور' : 'Password'}{' '}
+                <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+                className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                  isRTL ? 'text-right font-arabic' : ''
+                }`}
+                placeholder={isRTL ? 'أدخل كلمة المرور' : 'Enter password'}
+              />
+            </div>
+
+            {/* Grade */}
+            <div>
+              <label
+                className={`block text-sm font-medium text-gray-700 mb-2 ${
+                  isRTL ? 'text-right font-arabic' : ''
+                }`}
+              >
+                {isRTL ? 'الصف الدراسي' : 'Grade'}{' '}
+                <span className="text-red-500">*</span>
+              </label>
+              <select
+                name="grade"
+                value={formData.grade}
+                onChange={handleChange}
+                required
+                className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                  isRTL ? 'text-right font-arabic' : ''
+                }`}
+              >
+                {GRADES.map((grade) => (
+                  <option key={grade} value={grade}>
+                    {grade}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Class Selection */}
+            <div>
+              <label
+                className={`block text-sm font-medium text-gray-700 mb-2 ${
+                  isRTL ? 'text-right font-arabic' : ''
+                }`}
+              >
+                {isRTL ? 'الفصل الدراسي' : 'Class'}
+              </label>
+              <select
+                name="classId"
+                value={formData.classId}
+                onChange={handleChange}
+                className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                  isRTL ? 'text-right font-arabic' : ''
+                }`}
+              >
+                <option value="none">
+                  {isRTL ? 'بدون فصل' : 'No Class'}
+                </option>
+                {classes.map((cls) => (
+                  <option key={cls.id} value={cls.id}>
+                    {cls.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Submit Buttons */}
+            <div className={`flex gap-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
+              <button
+                type="submit"
+                disabled={loading}
+                className={`px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed ${
+                  isRTL ? 'font-arabic' : ''
+                }`}
+              >
+                {loading
+                  ? isRTL
+                    ? 'جاري الإضافة...'
+                    : 'Adding...'
+                  : isRTL
+                  ? 'إضافة الطالب'
+                  : 'Add Student'}
+              </button>
+              <button
+                type="button"
+                onClick={() => router.push('/instructor/students')}
+                className={`px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors ${
+                  isRTL ? 'font-arabic' : ''
+                }`}
+              >
+                {isRTL ? 'إلغاء' : 'Cancel'}
+              </button>
+            </div>
+          </form>
+        </div>
+      </main>
+    </div>
+  );
+}
