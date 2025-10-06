@@ -50,6 +50,21 @@
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/api/instructor/schools/create/route.js"
+    ],
+    "/instructor/schools/[id]/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/instructor/schools/[id]/page.js"
+    ],
+    "/api/instructor/schools/[id]/admins/route": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/api/instructor/schools/[id]/admins/route.js"
+    ],
+    "/api/instructor/schools/[id]/route": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/api/instructor/schools/[id]/route.js"
     ]
   }
 }

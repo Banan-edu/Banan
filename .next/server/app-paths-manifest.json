@@ -1,9 +1,11 @@
 {
-  "/api/instructor/schools/create/route": "app/api/instructor/schools/create/route.js",
+  "/api/instructor/schools/[id]/admins/route": "app/api/instructor/schools/[id]/admins/route.js",
+  "/api/instructor/schools/[id]/route": "app/api/instructor/schools/[id]/route.js",
   "/api/instructor/schools/route": "app/api/instructor/schools/route.js",
-  "/page": "app/page.js",
+  "/api/auth/me/route": "app/api/auth/me/route.js",
   "/login/page": "app/login/page.js",
   "/instructor/page": "app/instructor/page.js",
   "/instructor/school/page": "app/instructor/school/page.js",
-  "/instructor/school/add/page": "app/instructor/school/add/page.js"
+  "/instructor/school/add/page": "app/instructor/school/add/page.js",
+  "/instructor/schools/[id]/page": "app/instructor/schools/[id]/page.js"
 }
