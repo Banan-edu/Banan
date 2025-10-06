@@ -3,15 +3,18 @@ import { getSession } from '@/lib/auth';
 import { db } from '@server/db';
 import { courses, courseEditors, sections, lessons } from '@shared/schema';
 import { eq, and, or } from 'drizzle-orm';
+type RouteContext = {
+  params: Promise<{ id: string }>;
+};
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(req: NextRequest, context: RouteContext) {
   const session = await getSession();
 
   if (!session || session.role !== 'instructor') {
     return NextResponse.json({ error: 'Not authorized' }, { status: 401 });
   }
 
-  const { id } = await params;
+  const { id } = await context.params;
   const courseId = parseInt(id);
   const [course] = await db
     .select()
@@ -24,7 +27,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
   }
 
   const isCreator = course.createdBy === session.userId;
-  
+
   const [editorAccess] = await db
     .select()
     .from(courseEditors)
