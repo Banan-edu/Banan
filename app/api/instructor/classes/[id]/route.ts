@@ -3,11 +3,17 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth';
 import { db } from '@server/db';
 import { classes, classInstructors, classStudents, classCourses, courses, users, schools } from '@shared/schema';
-import { and, eq, inArray } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
+
+type RouteContext = {
+    params: {
+        id: string;
+    };
+};
 
 export async function GET(
     req: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: RouteContext
 ) {
     const session = await getSession();
 
