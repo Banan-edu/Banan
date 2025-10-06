@@ -19,7 +19,17 @@ interface School {
   studentCount: number;
 }
 
-export default function SchoolsTable() {
+interface SchoolsTableProps {
+  apiEndpoint?: string;
+  hideAddButton?: boolean;
+  onRowClick?: (schoolId: number) => void;
+}
+
+export default function SchoolsTable({ 
+  apiEndpoint = '/api/admin/schools',
+  hideAddButton = false,
+  onRowClick
+}: SchoolsTableProps) {
   const [schools, setSchools] = useState<School[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -29,7 +39,7 @@ export default function SchoolsTable() {
 
   const fetchSchools = async () => {
     try {
-      const res = await fetch('/api/admin/schools');
+      const res = await fetch(apiEndpoint);
       if (res.ok) {
         const data = await res.json();
         setSchools(data.schools);
@@ -78,13 +88,15 @@ export default function SchoolsTable() {
             className={`w-full ${isRTL ? 'pr-10 text-right font-arabic' : 'pl-10'} py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
           />
         </div>
-        <Button
-          onClick={() => setIsAddModalOpen(true)}
-          className={`bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 ${isRTL ? 'flex-row-reverse font-arabic' : ''}`}
-        >
-          <Plus className="w-5 h-5" />
-          {isRTL ? 'إضافة مدرسة جديدة' : 'Add New School'}
-        </Button>
+        {!hideAddButton && (
+          <Button
+            onClick={() => setIsAddModalOpen(true)}
+            className={`bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 ${isRTL ? 'flex-row-reverse font-arabic' : ''}`}
+          >
+            <Plus className="w-5 h-5" />
+            {isRTL ? 'إضافة مدرسة جديدة' : 'Add New School'}
+          </Button>
+        )}
       </div>
 
       <div className="bg-white rounded-lg shadow overflow-hidden">
@@ -124,7 +136,7 @@ export default function SchoolsTable() {
                   <tr
                     key={school.id}
                     className="hover:bg-gray-50 cursor-pointer transition-colors"
-                    onClick={() => router.push(`/admin/school/${school.id}`)}
+                    onClick={() => onRowClick ? onRowClick(school.id) : router.push(`/admin/school/${school.id}`)}
                   >
                     <td className={`px-6 py-4 ${isRTL ? 'text-right font-arabic' : 'text-left'}`}>
                       <div className="font-medium text-blue-600 hover:text-blue-800">
@@ -157,11 +169,13 @@ export default function SchoolsTable() {
         </div>
       </div>
 
-      <AddSchoolModal
-        isOpen={isAddModalOpen}
-        onClose={() => setIsAddModalOpen(false)}
-        onSchoolAdded={handleSchoolAdded}
-      />
+      {!hideAddButton && (
+        <AddSchoolModal
+          isOpen={isAddModalOpen}
+          onClose={() => setIsAddModalOpen(false)}
+          onSchoolAdded={handleSchoolAdded}
+        />
+      )}
     </div>
   );
 }

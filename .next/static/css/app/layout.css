@@ -684,6 +684,12 @@ video {
 .mt-4 {
   margin-top: 1rem;
 }
+.ml-64 {
+  margin-left: 16rem;
+}
+.mr-64 {
+  margin-right: 16rem;
+}
 .line-clamp-2 {
   overflow: hidden;
   display: -webkit-box;
