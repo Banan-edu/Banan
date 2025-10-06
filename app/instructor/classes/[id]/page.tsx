@@ -254,7 +254,7 @@ export default function ClassDetailsPage() {
                   onChange={(e) => setSettings({...settings, scoreboardVisibility: e.target.value})}
                   className="w-full px-3 py-2 border rounded-lg"
                 >
-                  <option value="students-see-scores">Students see each other's scores</option>
+                  <option value="students-see-scores">Students see each other&apos;s scores</option>
                   <option value="private">Private scores</option>
                   <option value="leaderboard">Leaderboard only</option>
                 </select>
