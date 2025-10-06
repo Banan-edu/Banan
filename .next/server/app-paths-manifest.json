@@ -1,8 +1,4 @@
 {
-  "/api/instructor/schools/create/route": "app/api/instructor/schools/create/route.js",
   "/api/instructor/schools/route": "app/api/instructor/schools/route.js",
-  "/instructor/page": "app/instructor/page.js",
-  "/instructor/school/page": "app/instructor/school/page.js",
-  "/instructor/schools/[id]/page": "app/instructor/schools/[id]/page.js",
-  "/instructor/school/add/page": "app/instructor/school/add/page.js"
+  "/instructor/school/page": "app/instructor/school/page.js"
 }

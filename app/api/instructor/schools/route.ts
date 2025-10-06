@@ -11,6 +11,14 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Not authorized' }, { status: 401 });
   }
 
+  // Get schools where instructor is admin
+  const adminSchools = await db
+    .select({ schoolId: schoolAdmins.schoolId })
+    .from(schoolAdmins)
+    .where(eq(schoolAdmins.userId, session.userId));
+
+  const adminSchoolIds = adminSchools.map(s => s.schoolId).filter((id): id is number => id !== null);
+
   // Get classes where this instructor teaches
   const instructorClasses = await db
     .select({ classId: classInstructors.classId })
@@ -19,17 +27,19 @@ export async function GET(req: NextRequest) {
 
   const classIds = instructorClasses.map(c => c.classId);
 
-  if (classIds.length === 0) {
-    return NextResponse.json({ schools: [] });
+  // Get schools from those classes
+  let teachingSchoolIds: number[] = [];
+  if (classIds.length > 0) {
+    const classesWithSchools = await db
+      .select({ schoolId: classes.schoolId })
+      .from(classes)
+      .where(inArray(classes.id, classIds));
+
+    teachingSchoolIds = classesWithSchools.map(c => c.schoolId).filter(id => id !== null) as number[];
   }
 
-  // Get schools from those classes
-  const classesWithSchools = await db
-    .select({ schoolId: classes.schoolId })
-    .from(classes)
-    .where(inArray(classes.id, classIds));
-
-  const schoolIds = [...new Set(classesWithSchools.map(c => c.schoolId).filter(id => id !== null))];
+  // Merge and deduplicate school IDs
+  const schoolIds = [...new Set([...adminSchoolIds, ...teachingSchoolIds])];
 
   if (schoolIds.length === 0) {
     return NextResponse.json({ schools: [] });
