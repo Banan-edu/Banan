@@ -46,13 +46,6 @@ export const schoolAdmins = pgTable("school_admins", {
   assignedAt: timestamp("assigned_at").defaultNow().notNull(),
 });
 
-export const schoolInstructors = pgTable("school_instructors", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
-  schoolId: integer("school_id").notNull().references(() => schools.id, { onDelete: 'cascade' }),
-  assignedAt: timestamp("assigned_at").defaultNow().notNull(),
-});
-
 export const classes = pgTable("classes", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
