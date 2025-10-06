@@ -3,17 +3,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth';
 import { db } from '@server/db';
 import { classes, classInstructors, classStudents, classCourses, courses, users, schools } from '@shared/schema';
-import { and, eq } from 'drizzle-orm';
+import { and, eq, inArray } from 'drizzle-orm';
 
 type RouteContext = {
-    params: {
-        id: string;
-    };
+  params: Promise<{ id: string }>;
 };
 
 export async function GET(
     req: NextRequest,
-    { params }: RouteContext
+   context: RouteContext
 ) {
     const session = await getSession();
 
@@ -21,7 +19,7 @@ export async function GET(
         return NextResponse.json({ error: 'Not authorized' }, { status: 401 });
     }
 
-    const { id } = await params;
+    const { id } = await context.params;
     const classId = parseInt(id);
 
     if (isNaN(classId)) {
