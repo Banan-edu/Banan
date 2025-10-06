@@ -4,9 +4,13 @@ import { db } from '@server/db';
 import { schools, classes, classInstructors, activityLog, users } from '@shared/schema';
 import { eq, and, inArray, desc } from 'drizzle-orm';
 
+type RouteContext = {
+  params: Promise<{ id: string }>;
+};
+
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  context: RouteContext
 ) {
   const session = await getSession();
 
@@ -14,7 +18,7 @@ export async function GET(
     return NextResponse.json({ error: 'Not authorized' }, { status: 401 });
   }
 
-  const { id } = await params;
+  const { id } = await context.params;
   const schoolId = parseInt(id);
 
   if (isNaN(schoolId)) {

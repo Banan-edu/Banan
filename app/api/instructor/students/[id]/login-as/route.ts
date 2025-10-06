@@ -5,9 +5,13 @@ import { db } from '@server/db';
 import { users, instructorPermissions } from '@shared/schema';
 import { eq, and } from 'drizzle-orm';
 
+type RouteContext = {
+  params: Promise<{ id: string }>;
+};
+
 export async function POST(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  context: RouteContext
 ) {
   const session = await getSession();
 
@@ -26,7 +30,7 @@ export async function POST(
   //   return NextResponse.json({ error: 'Not authorized' }, { status: 403 });
   // }
 
-  const { id } = await params;
+  const { id } = await context.params;
   const studentId = parseInt(id);
 
   const [student] = await db

@@ -4,10 +4,13 @@ import { getSession } from '@/lib/auth';
 import { db } from '@server/db';
 import { users, classStudents, classes, schools, instructorPermissions } from '@shared/schema';
 import { eq, and, inArray } from 'drizzle-orm';
+type RouteContext = {
+  params: Promise<{ id: string }>;
+};
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  context: RouteContext
 ) {
   const session = await getSession();
 
@@ -15,19 +18,19 @@ export async function GET(
     return NextResponse.json({ error: 'Not authorized' }, { status: 401 });
   }
 
-  const { id } = await params;
+  const { id } = await context.params;
   const studentId = parseInt(id);
   // Check permissions
-//   const [permissions] = await db
-//   .select()
-//   .from(instructorPermissions)
-//   .where(eq(instructorPermissions.userId, session.userId))
-//   .limit(1);
-  
-//   console.log(permissions)
-//   if (!permissions?.canAccessAllStudents && !permissions?.canCrudStudents) {
-//     return NextResponse.json({ error: 'Not authorized' }, { status: 403 });
-//   }
+  //   const [permissions] = await db
+  //   .select()
+  //   .from(instructorPermissions)
+  //   .where(eq(instructorPermissions.userId, session.userId))
+  //   .limit(1);
+
+  //   console.log(permissions)
+  //   if (!permissions?.canAccessAllStudents && !permissions?.canCrudStudents) {
+  //     return NextResponse.json({ error: 'Not authorized' }, { status: 403 });
+  //   }
 
   // Get student data
   const [student] = await db
@@ -63,7 +66,7 @@ export async function GET(
         .from(schools)
         .where(eq(schools.id, firstClass.schoolId))
         .limit(1);
-      
+
       schoolName = school?.name || 'N/A';
     }
   }

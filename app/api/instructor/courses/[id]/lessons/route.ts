@@ -4,14 +4,19 @@ import { db } from '@server/db';
 import { lessons, sections, courses } from '@shared/schema';
 import { eq, and } from 'drizzle-orm';
 
-export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+type RouteContext = {
+  params: Promise<{ id: string }>;
+};
+
+export async function POST(req: NextRequest, context: RouteContext) {
   const session = await getSession();
 
   if (!session || session.role !== 'instructor') {
     return NextResponse.json({ error: 'Not authorized' }, { status: 401 });
   }
 
-  const courseId = parseInt(params.id);
+  const { id } = await context.params;
+  const courseId = parseInt(id);
   const { sectionId, name, type, content, language } = await req.json();
 
   const [section] = await db

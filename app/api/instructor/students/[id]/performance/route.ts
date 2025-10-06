@@ -4,10 +4,12 @@ import { getSession } from '@/lib/auth';
 import { db } from '@server/db';
 import { lessonProgress } from '@shared/schema';
 import { eq, avg, sum } from 'drizzle-orm';
-
+type RouteContext = {
+  params: Promise<{ id: string }>;
+};
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  context: RouteContext
 ) {
   const session = await getSession();
 
@@ -15,7 +17,7 @@ export async function GET(
     return NextResponse.json({ error: 'Not authorized' }, { status: 401 });
   }
 
-  const { id } = await params;
+  const { id } = await context.params;
   const studentId = parseInt(id);
 
   const [performance] = await db

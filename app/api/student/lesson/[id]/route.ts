@@ -4,14 +4,18 @@ import { db } from '@server/db';
 import { lessons, lessonProgress, sections, courses, classCourses, classStudents } from '@shared/schema';
 import { eq, and, inArray } from 'drizzle-orm';
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+type RouteContext = {
+  params: Promise<{ id: string }>;
+};
+
+export async function GET(req: NextRequest, context: RouteContext) {
   const session = await getSession();
 
   if (!session || session.role !== 'student') {
     return NextResponse.json({ error: 'Not authorized' }, { status: 401 });
   }
-
-  const lessonId = parseInt(params.id);
+  const { id } = await context.params;
+  const lessonId = parseInt(id);
 
   const [lesson] = await db
     .select()
@@ -77,7 +81,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
 
   const lessonId = parseInt(params.id);
   const body = await req.json();
-  
+
   const speed = Math.max(0, Math.min(200, parseInt(body.speed) || 0));
   const accuracy = Math.max(0, Math.min(100, parseInt(body.accuracy) || 0));
   const timeSpent = Math.max(0, Math.min(3600, parseInt(body.timeSpent) || 0));
@@ -142,12 +146,12 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     const [updated] = await db
       .update(lessonProgress)
       .set({
-        score: Math.max(existing.score, score),
-        speed: Math.max(existing.speed, speed),
-        accuracy: Math.max(existing.accuracy, accuracy),
-        stars: Math.max(existing.stars, stars),
-        timeSpent: existing.timeSpent + timeSpent,
-        attempts: existing.attempts + 1,
+        score: Math.max((existing.score || 0), score),
+        speed: Math.max((existing.speed || 0), speed),
+        accuracy: Math.max((existing.accuracy || 0), accuracy),
+        stars: Math.max((existing.stars || 0), stars),
+        timeSpent: (existing.timeSpent || 0) + timeSpent,
+        attempts: (existing.attempts || 0) + 1,
         completed: completed || existing.completed,
         lastAttemptAt: new Date(),
         completedAt: completed && !existing.completed ? new Date() : existing.completedAt,

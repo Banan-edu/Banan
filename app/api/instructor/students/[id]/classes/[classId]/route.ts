@@ -4,10 +4,13 @@ import { getSession } from '@/lib/auth';
 import { db } from '@server/db';
 import { classStudents } from '@shared/schema';
 import { and, eq } from 'drizzle-orm';
+type RouteContext = {
+  params: Promise<{ id: string; classId: string }>;
+};
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string; classId: string }> }
+  context: RouteContext
 ) {
   const session = await getSession();
 
@@ -15,7 +18,7 @@ export async function DELETE(
     return NextResponse.json({ error: 'Not authorized' }, { status: 401 });
   }
 
-  const { id, classId } = await params;
+  const { id, classId } = await context.params;
   const studentId = parseInt(id);
   const classIdNum = parseInt(classId);
 
