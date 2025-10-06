@@ -72,14 +72,14 @@ export async function GET(req: NextRequest, context: RouteContext) {
   return NextResponse.json({ lesson, progress });
 }
 
-export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(req: NextRequest, context: RouteContext) {
   const session = await getSession();
 
   if (!session || session.role !== 'student') {
     return NextResponse.json({ error: 'Not authorized' }, { status: 401 });
   }
-
-  const lessonId = parseInt(params.id);
+  const { id } = await context.params;
+  const lessonId = parseInt(id);
   const body = await req.json();
 
   const speed = Math.max(0, Math.min(200, parseInt(body.speed) || 0));
