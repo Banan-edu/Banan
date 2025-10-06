@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth';
 import { db } from '@server/db';
-import { schools, schoolAdmins, activityLog } from '@shared/schema';
+import { schools, schoolAdmins, schoolInstructors, activityLog } from '@shared/schema';
 
 export async function POST(req: NextRequest) {
   const session = await getSession();
@@ -30,6 +30,12 @@ export async function POST(req: NextRequest) {
 
     // Assign instructor as school admin
     await db.insert(schoolAdmins).values({
+      userId: session.userId,
+      schoolId: newSchool.id,
+    });
+
+    // Assign instructor as school instructor
+    await db.insert(schoolInstructors).values({
       userId: session.userId,
       schoolId: newSchool.id,
     });

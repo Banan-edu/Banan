@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth';
 import { db } from '@server/db';
-import { schools, classes, schoolAdmins, classInstructors, classStudents } from '@shared/schema';
+import { schools, classes, schoolAdmins, schoolInstructors, classInstructors, classStudents } from '@shared/schema';
 import { eq, sql, and, inArray } from 'drizzle-orm';
 
 export async function GET(req: NextRequest) {
@@ -18,6 +18,14 @@ export async function GET(req: NextRequest) {
     .where(eq(schoolAdmins.userId, session.userId));
 
   const adminSchoolIds = adminSchools.map(s => s.schoolId).filter((id): id is number => id !== null);
+
+  // Get schools where user is explicitly assigned as instructor
+  const assignedInstructorSchools = await db
+    .select({ schoolId: schoolInstructors.schoolId })
+    .from(schoolInstructors)
+    .where(eq(schoolInstructors.userId, session.userId));
+
+  const instructorSchoolIds = assignedInstructorSchools.map(s => s.schoolId).filter((id): id is number => id !== null);
 
   // Get classes where this instructor teaches
   const instructorClasses = await db
@@ -38,8 +46,8 @@ export async function GET(req: NextRequest) {
     teachingSchoolIds = classesWithSchools.map(c => c.schoolId).filter(id => id !== null) as number[];
   }
 
-  // Merge and deduplicate school IDs
-  const schoolIds = [...new Set([...adminSchoolIds, ...teachingSchoolIds])];
+  // Merge and deduplicate school IDs from all three sources
+  const schoolIds = [...new Set([...adminSchoolIds, ...instructorSchoolIds, ...teachingSchoolIds])];
 
   if (schoolIds.length === 0) {
     return NextResponse.json({ schools: [] });
