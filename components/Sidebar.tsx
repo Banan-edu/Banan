@@ -151,17 +151,17 @@ export const instructorLinks: SidebarLink[] = [
     icon: <GraduationCap className="w-5 h-5" />
   },
   {
+    href: '/instructor/tests',
+    labelAr: 'الاختبارات',
+    labelEn: 'Tests',
+    icon: <Calendar className="w-5 h-5" />
+  },
+  {
     href: '/instructor/schools',
     labelAr: 'المدرسة',
     labelEn: 'School',
     icon: <Users className="w-5 h-5" />
   },
-  // {
-  //   href: '/instructor/tests',
-  //   labelAr: 'الاختبارات',
-  //   labelEn: 'Tests',
-  //   icon: <Calendar className="w-5 h-5" />
-  // },
   // {
   //   href: '/instructor/instructor',
   //   labelAr: 'المعلم',

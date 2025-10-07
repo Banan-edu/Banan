@@ -1,1 +1,396 @@
-{"version":3,"caseSensitive":false,"basePath":"","rewrites":{"beforeFiles":[],"afterFiles":[],"fallback":[]},"redirects":[{"source":"/:path+/","destination":"/:path+","permanent":true,"internal":true,"regex":"^(?:\\/((?:[^\\/]+?)(?:\\/(?:[^\\/]+?))*))\\/$"}],"headers":[]}
+{
+  "version": 3,
+  "pages404": true,
+  "caseSensitive": false,
+  "basePath": "",
+  "redirects": [
+    {
+      "source": "/:path+/",
+      "destination": "/:path+",
+      "internal": true,
+      "statusCode": 308,
+      "regex": "^(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))/$"
+    }
+  ],
+  "headers": [],
+  "rewrites": {
+    "beforeFiles": [],
+    "afterFiles": [],
+    "fallback": []
+  },
+  "dynamicRoutes": [
+    {
+      "page": "/api/instructor/classes/[id]",
+      "regex": "^/api/instructor/classes/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/instructor/classes/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/instructor/courses/[id]",
+      "regex": "^/api/instructor/courses/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/instructor/courses/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/instructor/courses/[id]/lessons",
+      "regex": "^/api/instructor/courses/([^/]+?)/lessons(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/instructor/courses/(?<nxtPid>[^/]+?)/lessons(?:/)?$"
+    },
+    {
+      "page": "/api/instructor/courses/[id]/sections",
+      "regex": "^/api/instructor/courses/([^/]+?)/sections(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/instructor/courses/(?<nxtPid>[^/]+?)/sections(?:/)?$"
+    },
+    {
+      "page": "/api/instructor/schools/[id]",
+      "regex": "^/api/instructor/schools/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/instructor/schools/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/instructor/schools/[id]/admins",
+      "regex": "^/api/instructor/schools/([^/]+?)/admins(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/instructor/schools/(?<nxtPid>[^/]+?)/admins(?:/)?$"
+    },
+    {
+      "page": "/api/instructor/schools/[id]/history",
+      "regex": "^/api/instructor/schools/([^/]+?)/history(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/instructor/schools/(?<nxtPid>[^/]+?)/history(?:/)?$"
+    },
+    {
+      "page": "/api/instructor/schools/[id]/practice",
+      "regex": "^/api/instructor/schools/([^/]+?)/practice(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/instructor/schools/(?<nxtPid>[^/]+?)/practice(?:/)?$"
+    },
+    {
+      "page": "/api/instructor/students/[id]",
+      "regex": "^/api/instructor/students/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/instructor/students/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/instructor/students/[id]/activity",
+      "regex": "^/api/instructor/students/([^/]+?)/activity(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/instructor/students/(?<nxtPid>[^/]+?)/activity(?:/)?$"
+    },
+    {
+      "page": "/api/instructor/students/[id]/badges",
+      "regex": "^/api/instructor/students/([^/]+?)/badges(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/instructor/students/(?<nxtPid>[^/]+?)/badges(?:/)?$"
+    },
+    {
+      "page": "/api/instructor/students/[id]/classes",
+      "regex": "^/api/instructor/students/([^/]+?)/classes(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/instructor/students/(?<nxtPid>[^/]+?)/classes(?:/)?$"
+    },
+    {
+      "page": "/api/instructor/students/[id]/classes/[classId]",
+      "regex": "^/api/instructor/students/([^/]+?)/classes/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid",
+        "nxtPclassId": "nxtPclassId"
+      },
+      "namedRegex": "^/api/instructor/students/(?<nxtPid>[^/]+?)/classes/(?<nxtPclassId>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/instructor/students/[id]/history",
+      "regex": "^/api/instructor/students/([^/]+?)/history(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/instructor/students/(?<nxtPid>[^/]+?)/history(?:/)?$"
+    },
+    {
+      "page": "/api/instructor/students/[id]/login-as",
+      "regex": "^/api/instructor/students/([^/]+?)/login\\-as(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/instructor/students/(?<nxtPid>[^/]+?)/login\\-as(?:/)?$"
+    },
+    {
+      "page": "/api/instructor/students/[id]/performance",
+      "regex": "^/api/instructor/students/([^/]+?)/performance(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/instructor/students/(?<nxtPid>[^/]+?)/performance(?:/)?$"
+    },
+    {
+      "page": "/api/instructor/students/[id]/practice",
+      "regex": "^/api/instructor/students/([^/]+?)/practice(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/instructor/students/(?<nxtPid>[^/]+?)/practice(?:/)?$"
+    },
+    {
+      "page": "/api/instructor/students/[id]/progress",
+      "regex": "^/api/instructor/students/([^/]+?)/progress(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/instructor/students/(?<nxtPid>[^/]+?)/progress(?:/)?$"
+    },
+    {
+      "page": "/api/instructor/students/[id]/progress/[courseId]",
+      "regex": "^/api/instructor/students/([^/]+?)/progress/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid",
+        "nxtPcourseId": "nxtPcourseId"
+      },
+      "namedRegex": "^/api/instructor/students/(?<nxtPid>[^/]+?)/progress/(?<nxtPcourseId>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/instructor/tests/[id]",
+      "regex": "^/api/instructor/tests/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/instructor/tests/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/student/course/[id]",
+      "regex": "^/api/student/course/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/student/course/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/student/lesson/[id]",
+      "regex": "^/api/student/lesson/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/student/lesson/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/instructor/classes/[id]",
+      "regex": "^/instructor/classes/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/instructor/classes/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/instructor/courses/[id]",
+      "regex": "^/instructor/courses/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/instructor/courses/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/instructor/schools/[id]",
+      "regex": "^/instructor/schools/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/instructor/schools/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/instructor/students/[id]",
+      "regex": "^/instructor/students/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/instructor/students/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/instructor/tests/[id]",
+      "regex": "^/instructor/tests/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/instructor/tests/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/student/courses/[id]",
+      "regex": "^/student/courses/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/student/courses/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/student/lesson/[id]",
+      "regex": "^/student/lesson/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/student/lesson/(?<nxtPid>[^/]+?)(?:/)?$"
+    }
+  ],
+  "staticRoutes": [
+    {
+      "page": "/",
+      "regex": "^/(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/(?:/)?$"
+    },
+    {
+      "page": "/_not-found",
+      "regex": "^/_not\\-found(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/_not\\-found(?:/)?$"
+    },
+    {
+      "page": "/admin",
+      "regex": "^/admin(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin(?:/)?$"
+    },
+    {
+      "page": "/admin/instructors",
+      "regex": "^/admin/instructors(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/instructors(?:/)?$"
+    },
+    {
+      "page": "/admin/schools",
+      "regex": "^/admin/schools(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/schools(?:/)?$"
+    },
+    {
+      "page": "/admin/students",
+      "regex": "^/admin/students(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/students(?:/)?$"
+    },
+    {
+      "page": "/instructor",
+      "regex": "^/instructor(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/instructor(?:/)?$"
+    },
+    {
+      "page": "/instructor/classes",
+      "regex": "^/instructor/classes(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/instructor/classes(?:/)?$"
+    },
+    {
+      "page": "/instructor/classes/add",
+      "regex": "^/instructor/classes/add(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/instructor/classes/add(?:/)?$"
+    },
+    {
+      "page": "/instructor/courses",
+      "regex": "^/instructor/courses(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/instructor/courses(?:/)?$"
+    },
+    {
+      "page": "/instructor/schools",
+      "regex": "^/instructor/schools(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/instructor/schools(?:/)?$"
+    },
+    {
+      "page": "/instructor/schools/add",
+      "regex": "^/instructor/schools/add(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/instructor/schools/add(?:/)?$"
+    },
+    {
+      "page": "/instructor/students",
+      "regex": "^/instructor/students(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/instructor/students(?:/)?$"
+    },
+    {
+      "page": "/instructor/students/add",
+      "regex": "^/instructor/students/add(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/instructor/students/add(?:/)?$"
+    },
+    {
+      "page": "/instructor/students/import",
+      "regex": "^/instructor/students/import(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/instructor/students/import(?:/)?$"
+    },
+    {
+      "page": "/instructor/tests",
+      "regex": "^/instructor/tests(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/instructor/tests(?:/)?$"
+    },
+    {
+      "page": "/instructor/tests/add",
+      "regex": "^/instructor/tests/add(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/instructor/tests/add(?:/)?$"
+    },
+    {
+      "page": "/login",
+      "regex": "^/login(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/login(?:/)?$"
+    },
+    {
+      "page": "/student",
+      "regex": "^/student(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/student(?:/)?$"
+    },
+    {
+      "page": "/student/courses",
+      "regex": "^/student/courses(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/student/courses(?:/)?$"
+    }
+  ],
+  "dataRoutes": [],
+  "rsc": {
+    "header": "rsc",
+    "varyHeader": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+    "prefetchHeader": "next-router-prefetch",
+    "didPostponeHeader": "x-nextjs-postponed",
+    "contentTypeHeader": "text/x-component",
+    "suffix": ".rsc",
+    "prefetchSuffix": ".prefetch.rsc",
+    "prefetchSegmentHeader": "next-router-segment-prefetch",
+    "prefetchSegmentSuffix": ".segment.rsc",
+    "prefetchSegmentDirSuffix": ".segments"
+  },
+  "rewriteHeaders": {
+    "pathHeader": "x-nextjs-rewritten-path",
+    "queryHeader": "x-nextjs-rewritten-query"
+  }
+}

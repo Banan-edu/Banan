@@ -95,7 +95,7 @@ export default function AddStudentPage() {
 
   return (
     <div
-      className={`flex ${isRTL ? 'flex-row-reverse' : ''} min-h-screen bg-gray-50`}
+      className={`flex  min-h-screen bg-gray-50`}
     >
       <Sidebar links={instructorLinks} userRole="instructor" />
 
@@ -293,7 +293,7 @@ export default function AddStudentPage() {
             </div>
 
             {/* Submit Buttons */}
-            <div className={`flex gap-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
+            <div className={`flex gap-4 `}>
               <button
                 type="submit"
                 disabled={loading}
