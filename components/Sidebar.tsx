@@ -53,8 +53,8 @@ export function Sidebar({ links, userRole }: SidebarProps) {
                 <Link
                   href={link.href}
                   className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive
-                      ? 'bg-blue-50 text-blue-600 font-semibold'
-                      : 'text-gray-700 hover:bg-gray-50 hover:text-blue-600'
+                    ? 'bg-blue-50 text-blue-600 font-semibold'
+                    : 'text-gray-700 hover:bg-gray-50 hover:text-blue-600'
                     } ${isRTL ? 'flex-row-reverse' : ''}`}
                 >
                   <span className="flex-shrink-0">{link.icon}</span>
@@ -178,10 +178,16 @@ export const adminLinks: SidebarLink[] = [
     icon: <Home className="w-5 h-5" />
   },
   {
-    href: '/admin/courses',
-    labelAr: 'الدورات',
-    labelEn: 'Courses',
-    icon: <BookOpen className="w-5 h-5" />
+    href: '/admin/school',
+    labelAr: 'المدرسة',
+    labelEn: 'School',
+    icon: <Users className="w-5 h-5" />
+  },
+  {
+    href: '/admin/instructor',
+    labelAr: 'المعلم',
+    labelEn: 'Instructor',
+    icon: <GraduationCap className="w-5 h-5" />
   },
   {
     href: '/admin/students',
@@ -190,10 +196,16 @@ export const adminLinks: SidebarLink[] = [
     icon: <GraduationCap className="w-5 h-5" />
   },
   {
-    href: '/admin/school',
-    labelAr: 'المدرسة',
-    labelEn: 'School',
-    icon: <Users className="w-5 h-5" />
+    href: '/admin/courses',
+    labelAr: 'الدورات',
+    labelEn: 'Courses',
+    icon: <BookOpen className="w-5 h-5" />
+  },
+  {
+    href: '/instructor/classes',
+    labelAr: 'الصفوف',
+    labelEn: 'Classes',
+    icon: <Target className="w-5 h-5" />
   },
   {
     href: '/admin/tests',
@@ -201,10 +213,4 @@ export const adminLinks: SidebarLink[] = [
     labelEn: 'Tests',
     icon: <Calendar className="w-5 h-5" />
   },
-  {
-    href: '/admin/instructor',
-    labelAr: 'المعلم',
-    labelEn: 'Instructor',
-    icon: <GraduationCap className="w-5 h-5" />
-  }
 ];
