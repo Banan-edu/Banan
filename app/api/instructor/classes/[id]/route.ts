@@ -6,12 +6,12 @@ import { classes, classInstructors, classStudents, classCourses, courses, users,
 import { and, eq, inArray } from 'drizzle-orm';
 
 type RouteContext = {
-  params: Promise<{ id: string }>;
+    params: Promise<{ id: string }>;
 };
 
 export async function GET(
     req: NextRequest,
-   context: RouteContext
+    context: RouteContext
 ) {
     const session = await getSession();
 
@@ -106,7 +106,7 @@ export async function GET(
 
 export async function PATCH(
     req: NextRequest,
-    { params }: { params: Promise<{ id: string }> }
+    context: RouteContext
 ) {
     const session = await getSession();
 
@@ -114,7 +114,7 @@ export async function PATCH(
         return NextResponse.json({ error: 'Not authorized' }, { status: 401 });
     }
 
-    const { id } = await params;
+    const { id } = await context.params;
     const classId = parseInt(id);
     const updates = await req.json();
 
@@ -140,4 +140,48 @@ export async function PATCH(
         .returning();
 
     return NextResponse.json({ class: updatedClass });
+}
+
+export async function DELETE(
+    req: NextRequest,
+    context: RouteContext
+) {
+    const session = await getSession();
+
+    if (!session || session.role !== 'instructor') {
+        return NextResponse.json({ error: 'Not authorized' }, { status: 401 });
+    }
+
+    const { id } = await context.params;
+    const classId = parseInt(id);
+
+    // Verify instructor has access to this class
+    const instructorAccess = await db
+        .select()
+        .from(classInstructors)
+        .where(
+            and(
+                eq(classInstructors.classId, classId),
+                eq(classInstructors.userId, session.userId)
+            )
+        );
+
+    if (instructorAccess.length === 0) {
+        return NextResponse.json({ error: 'Not authorized to delete this class' }, { status: 403 });
+    }
+
+    try {
+        // Delete related records first
+        await db.delete(classStudents).where(eq(classStudents.classId, classId));
+        await db.delete(classCourses).where(eq(classCourses.classId, classId));
+        await db.delete(classInstructors).where(eq(classInstructors.classId, classId));
+
+        // Delete the class
+        await db.delete(classes).where(eq(classes.id, classId));
+
+        return NextResponse.json({ success: true });
+    } catch (error) {
+        console.error('Error deleting class:', error);
+        return NextResponse.json({ error: 'Failed to delete class' }, { status: 500 });
+    }
 }

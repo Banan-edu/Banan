@@ -1,14 +1,17 @@
+
 'use client';
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Users, BookOpen, Plus } from 'lucide-react';
+import { Users, BookOpen, Plus, Trash2 } from 'lucide-react';
 import { useLanguage } from '@/app/contexts/LanguageContext';
 import { Sidebar, instructorLinks } from '@/components/Sidebar';
 
 export default function InstructorClassesPage() {
   const [classes, setClasses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [classToDelete, setClassToDelete] = useState<any>(null);
   const router = useRouter();
   const { isRTL } = useLanguage();
 
@@ -24,11 +27,56 @@ export default function InstructorClassesPage() {
         return;
       }
       const data = await res.json();
-      setClasses(data.classes);
+
+      // Fetch activity data for each class
+      const classesWithActivity = await Promise.all(
+        data.classes.map(async (classItem: any) => {
+          try {
+            const activityRes = await fetch(`/api/instructor/classes/${classItem.id}/activity`);
+            if (activityRes.ok) {
+              const activityData = await activityRes.json();
+              return { ...classItem, activityData: activityData.activityData };
+            }
+          } catch (error) {
+            console.error(`Error fetching activity for class ${classItem.id}:`, error);
+          }
+          return { ...classItem, activityData: [0, 0, 0, 0, 0, 0, 0] };
+        })
+      );
+
+      setClasses(classesWithActivity);
     } catch (error) {
       console.error('Error fetching classes:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+
+  const handleDeleteClick = (classItem: any) => {
+    setClassToDelete(classItem);
+    setShowDeleteModal(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!classToDelete) return;
+
+    try {
+      const res = await fetch(`/api/instructor/classes/${classToDelete.id}`, {
+        method: 'DELETE',
+      });
+
+      if (res.ok) {
+        setShowDeleteModal(false);
+        setClassToDelete(null);
+        fetchClasses();
+      } else {
+        const error = await res.json();
+        alert(error.error || 'Failed to delete class');
+      }
+    } catch (error) {
+      console.error('Error deleting class:', error);
+      alert('Failed to delete class');
     }
   };
 
@@ -102,6 +150,9 @@ export default function InstructorClassesPage() {
                   <th className={`px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider ${isRTL ? 'text-right' : ''}`}>
                     {isRTL ? 'الصف' : 'Grade'}
                   </th>
+                  <th className={`px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider ${isRTL ? 'text-right' : ''}`}>
+                    {isRTL ? 'الإجراءات' : 'Actions'}
+                  </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -116,7 +167,7 @@ export default function InstructorClassesPage() {
                       </button>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <ActivitySparkline data={classItem.activityData || [3, 5, 2, 8, 4, 7, 6]} />
+                      <ActivitySparkline data={classItem.activityData || [0, 0, 0, 0, 0, 0, 0]} />
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center gap-1">
@@ -126,7 +177,7 @@ export default function InstructorClassesPage() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className="text-gray-900">
-                        {classItem.instructors || 'N/A'}
+                        {classItem.instructorCount || 'N/A'}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-gray-500">
@@ -137,10 +188,54 @@ export default function InstructorClassesPage() {
                         {classItem.grade || 'Unassigned'}
                       </span>
                     </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <button
+                        onClick={() => handleDeleteClick(classItem)}
+                        className={`text-red-600 hover:text-red-800 flex items-center gap-1 ${isRTL ? 'font-arabic' : ''}`}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                        {isRTL ? 'حذف' : 'Delete'}
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
+          </div>
+        )}
+
+        {showDeleteModal && classToDelete && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className={`bg-white rounded-lg p-6 max-w-md w-full ${isRTL ? 'font-arabic' : ''}`}>
+              <h3 className={`text-xl font-bold mb-4 text-gray-900 ${isRTL ? 'text-right' : ''}`}>
+                {isRTL ? 'تأكيد الحذف' : 'Confirm Delete'}
+              </h3>
+              <p className={`text-gray-600 mb-6 ${isRTL ? 'text-right' : ''}`}>
+                {isRTL
+                  ? `هل أنت متأكد من حذف الفصل "${classToDelete.name}"؟ سيتم حذف جميع البيانات المرتبطة بهذا الفصل.`
+                  : `Are you sure you want to delete the class "${classToDelete.name}"? All associated data will be removed.`
+                }
+              </p>
+              <div className={`flex gap-3 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowDeleteModal(false);
+                    setClassToDelete(null);
+                  }}
+                  className={`flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 ${isRTL ? 'font-arabic' : ''}`}
+                >
+                  {isRTL ? 'إلغاء' : 'Cancel'}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleDeleteConfirm}
+                  className={`flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 ${isRTL ? 'font-arabic' : ''}`}
+                >
+                  {isRTL ? 'حذف' : 'Delete'}
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </main>

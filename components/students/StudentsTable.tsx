@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/app/contexts/LanguageContext';
-import { Plus, Search } from 'lucide-react';
+import { Plus, Search, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import AddStudentModal from './AddStudentModal';
 
@@ -21,12 +21,14 @@ interface StudentsTableProps {
     apiEndpoint?: string;
     hideAddButton?: boolean;
     onRowClick?: (studentId: number) => void;
+    showDelete?: boolean;
 }
 
 export default function StudentsTable({
     apiEndpoint = '/api/instructor/students',
     hideAddButton = false,
     onRowClick,
+    showDelete = false,
 }: StudentsTableProps) {
     const [students, setStudents] = useState<Student[]>([]);
     const [loading, setLoading] = useState(true);
@@ -51,7 +53,7 @@ export default function StudentsTable({
 
     useEffect(() => {
         fetchStudents();
-    }, []);
+    }, [apiEndpoint]);
 
     const filteredStudents = students.filter((student) =>
         student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -62,6 +64,22 @@ export default function StudentsTable({
     const handleStudentAdded = () => {
         fetchStudents();
         setIsAddModalOpen(false);
+    };
+
+    const handleDelete = async (e: React.MouseEvent, studentId: number) => {
+        e.stopPropagation();
+        if (!confirm('Are you sure you want to delete this student?')) return;
+
+        try {
+            const res = await fetch(`/api/instructor/students/${studentId}`, {
+                method: 'DELETE',
+            });
+            if (res.ok) {
+                fetchStudents();
+            }
+        } catch (error) {
+            console.error('Error deleting student:', error);
+        }
     };
 
     if (loading) {
@@ -143,13 +161,18 @@ export default function StudentsTable({
                                 >
                                     {isRTL ? 'آخر تسجيل دخول' : 'Last Login'}
                                 </th>
+                                {showDelete && (
+                                    <th className={`px-6 py-3 text-sm font-semibold text-gray-700 ${isRTL ? 'text-right font-arabic' : 'text-left'}`}>
+                                        {isRTL ? 'الإجراءات' : 'Actions'}
+                                    </th>
+                                )}
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-200">
                             {filteredStudents.length === 0 ? (
                                 <tr>
                                     <td
-                                        colSpan={5}
+                                        colSpan={showDelete ? 6 : 5}
                                         className={`px-6 py-8 text-center text-gray-500 ${isRTL ? 'font-arabic' : ''
                                             }`}
                                     >
@@ -160,7 +183,7 @@ export default function StudentsTable({
                                 filteredStudents.map((student) => (
                                     <tr
                                         key={student.id}
-                                        className="hover:bg-gray-50 cursor-pointer transition-colors"
+                                        className="hover:bg-gray-50 transition-colors"
                                         onClick={() =>
                                             onRowClick
                                                 ? onRowClick(student.id)
@@ -201,6 +224,17 @@ export default function StudentsTable({
                                                 ? new Date(student.lastLogin).toLocaleString()
                                                 : '-'}
                                         </td>
+                                        {showDelete && (
+                                            <td className={`px-6 py-4 ${isRTL ? 'text-right' : 'text-left'}`}>
+                                                <button
+                                                    onClick={(e) => handleDelete(e, student.id)}
+                                                    className="text-red-600 hover:text-red-900 flex items-center gap-1 transition-colors"
+                                                >
+                                                    <Trash2 className="w-4 h-4" />
+                                                    {isRTL ? 'حذف' : 'Delete'}
+                                                </button>
+                                            </td>
+                                        )}
                                     </tr>
                                 ))
                             )}

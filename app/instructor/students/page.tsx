@@ -88,6 +88,7 @@ export default function InstructorStudentsPage() {
                     apiEndpoint="/api/instructor/students"
                     hideAddButton={true}
                     onRowClick={handleStudentClick}
+                    showDelete={true}
                 />
             </main>
         </div>

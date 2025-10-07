@@ -35,6 +35,7 @@ export default function AddStudentPage() {
     password: '',
     grade: GRADES[0],
     classId: 'none',
+    accessibility: [] as string[],
   });
 
   // Fetch instructor classes
@@ -87,10 +88,24 @@ export default function AddStudentPage() {
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value, type } = e.target;
+    
+    if (type === 'checkbox' && name === 'accessibility') {
+      const checkbox = e.target as HTMLInputElement;
+      const updatedAccessibility = checkbox.checked
+        ? [...formData.accessibility, value]
+        : formData.accessibility.filter(item => item !== value);
+      
+      setFormData({
+        ...formData,
+        accessibility: updatedAccessibility,
+      });
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    }
   };
 
   return (
@@ -290,6 +305,167 @@ export default function AddStudentPage() {
                   </option>
                 ))}
               </select>
+            </div>
+
+            {/* Accessibility Options */}
+            <div className="pt-4 border-t border-gray-200">
+              <h3 className={`text-lg font-semibold text-gray-900 mb-4 ${
+                isRTL ? 'text-right font-arabic' : ''
+              }`}>
+                {isRTL ? 'إمكانية الوصول' : 'Accessibility'}
+              </h3>
+              
+              <div className="space-y-3">
+                {/* Blind */}
+                <label className={`flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer ${
+                  isRTL ? 'flex-row-reverse' : ''
+                }`}>
+                  <input
+                    type="checkbox"
+                    name="accessibility"
+                    value="blind"
+                    onChange={handleChange}
+                    className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                  />
+                  <div className={`flex-1 ${isRTL ? 'text-right' : ''}`}>
+                    <div className={`font-medium text-gray-900 ${isRTL ? 'font-arabic' : ''}`}>
+                      {isRTL ? 'كفيف' : 'Blind'}
+                    </div>
+                    <div className={`text-sm text-gray-600 ${isRTL ? 'font-arabic' : ''}`}>
+                      {isRTL 
+                        ? 'يفعل: تباين عالي، خط كبير جداً، إرشاد صوتي كامل، منع عند الخطأ، مسافة للخلف'
+                        : 'Activates: high contrast, extra-large font, fully guided voice-over, block-on-error, backspace'}
+                    </div>
+                    <div className={`text-sm text-gray-500 mt-1 ${isRTL ? 'font-arabic' : ''}`}>
+                      {isRTL ? 'يعطل: الألعاب، الدروس الإرشادية' : 'Deactivates: games, anchoring lessons'}
+                    </div>
+                  </div>
+                </label>
+
+                {/* Low Vision */}
+                <label className={`flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer ${
+                  isRTL ? 'flex-row-reverse' : ''
+                }`}>
+                  <input
+                    type="checkbox"
+                    name="accessibility"
+                    value="lowVision"
+                    onChange={handleChange}
+                    className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                  />
+                  <div className={`flex-1 ${isRTL ? 'text-right' : ''}`}>
+                    <div className={`font-medium text-gray-900 ${isRTL ? 'font-arabic' : ''}`}>
+                      {isRTL ? 'ضعف البصر' : 'Low Vision'}
+                    </div>
+                    <div className={`text-sm text-gray-600 ${isRTL ? 'font-arabic' : ''}`}>
+                      {isRTL 
+                        ? 'يفعل: خلفية افتراضية، خط كبير، إرشاد صوتي كامل'
+                        : 'Activates: default background, large font, fully guided voice-over'}
+                    </div>
+                    <div className={`text-sm text-gray-500 mt-1 ${isRTL ? 'font-arabic' : ''}`}>
+                      {isRTL ? 'يعطل: الألعاب' : 'Deactivates: games'}
+                    </div>
+                  </div>
+                </label>
+
+                {/* Dyslexic */}
+                <label className={`flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer ${
+                  isRTL ? 'flex-row-reverse' : ''
+                }`}>
+                  <input
+                    type="checkbox"
+                    name="accessibility"
+                    value="dyslexic"
+                    onChange={handleChange}
+                    className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                  />
+                  <div className={`flex-1 ${isRTL ? 'text-right' : ''}`}>
+                    <div className={`font-medium text-gray-900 ${isRTL ? 'font-arabic' : ''}`}>
+                      {isRTL ? 'عسر القراءة' : 'Dyslexic'}
+                    </div>
+                    <div className={`text-sm text-gray-600 ${isRTL ? 'font-arabic' : ''}`}>
+                      {isRTL 
+                        ? 'يفعل: خط كبير مصمم خصيصاً لمن يعانون من عسر القراءة'
+                        : 'Activates: large font designed specifically for dyslexic users'}
+                    </div>
+                  </div>
+                </label>
+
+                {/* Right Hand Only */}
+                <label className={`flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer ${
+                  isRTL ? 'flex-row-reverse' : ''
+                }`}>
+                  <input
+                    type="checkbox"
+                    name="accessibility"
+                    value="rightHandOnly"
+                    onChange={handleChange}
+                    className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                  />
+                  <div className={`flex-1 ${isRTL ? 'text-right' : ''}`}>
+                    <div className={`font-medium text-gray-900 ${isRTL ? 'font-arabic' : ''}`}>
+                      {isRTL ? 'اليد اليمنى فقط' : 'Right Hand Only'}
+                    </div>
+                    <div className={`text-sm text-gray-600 ${isRTL ? 'font-arabic' : ''}`}>
+                      {isRTL 
+                        ? 'يفعل: دليل افتراضي لليد اليمنى'
+                        : 'Activates: right-hand virtual guide'}
+                    </div>
+                    <div className={`text-sm text-gray-500 mt-1 ${isRTL ? 'font-arabic' : ''}`}>
+                      {isRTL ? 'يعطل: الدروس الإرشادية' : 'Deactivates: anchoring lessons'}
+                    </div>
+                  </div>
+                </label>
+
+                {/* Left Hand Only */}
+                <label className={`flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer ${
+                  isRTL ? 'flex-row-reverse' : ''
+                }`}>
+                  <input
+                    type="checkbox"
+                    name="accessibility"
+                    value="leftHandOnly"
+                    onChange={handleChange}
+                    className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                  />
+                  <div className={`flex-1 ${isRTL ? 'text-right' : ''}`}>
+                    <div className={`font-medium text-gray-900 ${isRTL ? 'font-arabic' : ''}`}>
+                      {isRTL ? 'اليد اليسرى فقط' : 'Left Hand Only'}
+                    </div>
+                    <div className={`text-sm text-gray-600 ${isRTL ? 'font-arabic' : ''}`}>
+                      {isRTL 
+                        ? 'يفعل: دليل افتراضي لليد اليسرى'
+                        : 'Activates: left-hand virtual guide'}
+                    </div>
+                    <div className={`text-sm text-gray-500 mt-1 ${isRTL ? 'font-arabic' : ''}`}>
+                      {isRTL ? 'يعطل: الدروس الإرشادية' : 'Deactivates: anchoring lessons'}
+                    </div>
+                  </div>
+                </label>
+
+                {/* Hard of Hearing */}
+                <label className={`flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer ${
+                  isRTL ? 'flex-row-reverse' : ''
+                }`}>
+                  <input
+                    type="checkbox"
+                    name="accessibility"
+                    value="hardOfHearing"
+                    onChange={handleChange}
+                    className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                  />
+                  <div className={`flex-1 ${isRTL ? 'text-right' : ''}`}>
+                    <div className={`font-medium text-gray-900 ${isRTL ? 'font-arabic' : ''}`}>
+                      {isRTL ? 'ضعف السمع' : 'Hard of Hearing'}
+                    </div>
+                    <div className={`text-sm text-gray-600 ${isRTL ? 'font-arabic' : ''}`}>
+                      {isRTL 
+                        ? 'يفعل: ترجمة للفيديوهات'
+                        : 'Activates: closed captioning for videos'}
+                    </div>
+                  </div>
+                </label>
+              </div>
             </div>
 
             {/* Submit Buttons */}

@@ -5,192 +5,255 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/app/contexts/LanguageContext';
 import { Sidebar, instructorLinks } from '@/components/Sidebar';
-import { Upload, Download, ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Upload, X, Check } from 'lucide-react';
+
+interface StudentRow {
+  name: string;
+  email: string;
+  studentId: string;
+  password: string;
+  grade?: string;
+}
 
 export default function ImportStudentsPage() {
-    const { isRTL } = useLanguage();
-    const router = useRouter();
-    const [selectedFile, setSelectedFile] = useState<File | null>(null);
-    const [fileType, setFileType] = useState<'excel' | 'csv'>('excel');
+  const { isRTL } = useLanguage();
+  const router = useRouter();
+  const [step, setStep] = useState<'upload' | 'review'>('upload');
+  const [students, setStudents] = useState<StudentRow[]>([]);
+  const [file, setFile] = useState<File | null>(null);
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files[0]) {
-            setSelectedFile(e.target.files[0]);
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0];
+    if (selectedFile) {
+      setFile(selectedFile);
+    }
+  };
+
+  const parseCSV = (text: string): StudentRow[] => {
+    const lines = text.split('\n').filter(line => line.trim());
+    const headers = lines[0].split(',').map(h => h.trim());
+    
+    return lines.slice(1).map(line => {
+      const values = line.split(',').map(v => v.trim());
+      const row: any = {};
+      headers.forEach((header, index) => {
+        row[header] = values[index] || '';
+      });
+      return {
+        name: row.name || row['اسم الطالب'] || '',
+        email: row.email || row['البريد الإلكتروني'] || '',
+        studentId: row.studentId || row['رقم الطالب'] || '',
+        password: row.password || row['كلمة المرور'] || '',
+        grade: row.grade || row['الصف الدراسي'] || '',
+      };
+    });
+  };
+
+  const handleNext = async () => {
+    if (step === 'upload' && file) {
+      const text = await file.text();
+      const parsedStudents = parseCSV(text);
+      setStudents(parsedStudents);
+      setStep('review');
+    } else if (step === 'review') {
+      // Save students
+      try {
+        const res = await fetch('/api/instructor/students/import', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ students }),
+        });
+        
+        if (res.ok) {
+          router.push('/instructor/students');
         }
-    };
+      } catch (error) {
+        console.error('Error importing students:', error);
+      }
+    }
+  };
 
-    const handleUpload = () => {
-        if (!selectedFile) {
-            alert(isRTL ? 'الرجاء اختيار ملف' : 'Please select a file');
-            return;
-        }
-        // TODO: Implement file upload logic
-        alert(isRTL ? 'سيتم تنفيذ رفع الملف قريباً' : 'File upload will be implemented soon');
-    };
+  const removeStudent = (index: number) => {
+    setStudents(students.filter((_, i) => i !== index));
+  };
 
-    const exampleData = [
-        {
-            name: 'أحمد محمد',
-            email: 'ahmed@example.com',
-            studentId: 'STD001',
-            password: 'pass123',
-            grade: 'الصف الخامس'
-        },
-        {
-            name: 'فاطمة علي',
-            email: 'fatima@example.com',
-            studentId: 'STD002',
-            password: 'pass456',
-            grade: 'الصف السادس'
-        },
-        {
-            name: 'محمود حسن',
-            email: 'mahmoud@example.com',
-            studentId: 'STD003',
-            password: 'pass789',
-            grade: ''
-        }
-    ];
+  return (
+    <div className="flex min-h-screen bg-gray-50">
+      <Sidebar links={instructorLinks} userRole="instructor" />
 
-    return (
-        <div className="flex min-h-screen bg-gray-50">
-            <Sidebar links={instructorLinks} userRole="instructor" />
+      <main className="flex-1 px-8 py-8">
+        <button
+          onClick={() => router.push('/instructor/students')}
+          className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          {isRTL ? 'العودة للطلاب' : 'Back to Students'}
+        </button>
 
-            <main className="flex-1 px-8 py-8">
-                <button
-                    onClick={() => router.back()}
-                    className={`mb-6 flex items-center gap-2 text-gray-600 hover:text-gray-900 ${isRTL ? 'flex-row-reverse font-arabic' : ''}`}
-                >
-                    <ArrowLeft className={`w-5 h-5 ${isRTL ? 'rotate-180' : ''}`} />
-                    {isRTL ? 'رجوع' : 'Back'}
-                </button>
+        <h1 className={`text-3xl font-bold text-gray-900 mb-8 ${isRTL ? 'font-arabic' : ''}`}>
+          {isRTL ? 'استيراد الطلاب' : 'Import Students'}
+        </h1>
 
-                <div className={isRTL ? 'text-right' : 'text-left'}>
-                    <h1 className={`text-3xl font-bold text-gray-900 mb-2 ${isRTL ? 'font-arabic' : ''}`}>
-                        {isRTL ? 'استيراد الطلاب' : 'Import Students'}
-                    </h1>
-                    <p className={`text-gray-600 mb-8 ${isRTL ? 'font-arabic' : ''}`}>
-                        {isRTL ? 'رفع ملف يحتوي على بيانات الطلاب' : 'Upload a file containing student data'}
-                    </p>
-                </div>
+        {step === 'upload' && (
+          <div className="bg-white rounded-lg shadow-md p-6 ">
+            <h2 className={`text-xl font-semibold mb-4 ${isRTL ? 'font-arabic' : ''}`}>
+              {isRTL ? 'تحميل ملف الطلاب' : 'Upload Students File'}
+            </h2>
+            
+            <div className="mb-6">
+              <p className={`text-gray-600 mb-4 ${isRTL ? 'font-arabic' : ''}`}>
+                {isRTL 
+                  ? 'يرجى تحميل ملف CSV أو Excel يحتوي على بيانات الطلاب بالتنسيق التالي:' 
+                  : 'Please upload a CSV or Excel file containing student data in the following format:'}
+              </p>
+              
+              <div className="bg-gray-50 rounded-lg p-4 overflow-y-auto border border-gray-200">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-gray-300">
+                      <th className={`py-2 px-3 ${isRTL ? 'text-right font-arabic' : 'text-left'}`}>
+                        {isRTL ? 'اسم الطالب' : 'name'}
+                      </th>
+                      <th className={`py-2 px-3 ${isRTL ? 'text-right font-arabic' : 'text-left'}`}>
+                        {isRTL ? 'البريد الإلكتروني' : 'email'}
+                      </th>
+                      <th className={`py-2 px-3 ${isRTL ? 'text-right font-arabic' : 'text-left'}`}>
+                        {isRTL ? 'رقم الطالب' : 'studentId'}
+                      </th>
+                      <th className={`py-2 px-3 ${isRTL ? 'text-right font-arabic' : 'text-left'}`}>
+                        {isRTL ? 'كلمة المرور' : 'password'}
+                      </th>
+                      <th className={`py-2 px-3 ${isRTL ? 'text-right font-arabic' : 'text-left'}`}>
+                        {isRTL ? 'الصف الدراسي (اختياري)' : 'grade (optional)'}
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr className="border-b border-gray-200">
+                      <td className="py-2 px-3 text-gray-500">أحمد محمد</td>
+                      <td className="py-2 px-3 text-gray-500">ahmad@example.com</td>
+                      <td className="py-2 px-3 text-gray-500">S001</td>
+                      <td className="py-2 px-3 text-gray-500">pass123</td>
+                      <td className="py-2 px-3 text-gray-500">Grade 5</td>
+                    </tr>
+                    <tr>
+                      <td className="py-2 px-3 text-gray-500">فاطمة علي</td>
+                      <td className="py-2 px-3 text-gray-500">fatima@example.com</td>
+                      <td className="py-2 px-3 text-gray-500">S002</td>
+                      <td className="py-2 px-3 text-gray-500">pass456</td>
+                      <td className="py-2 px-3 text-gray-500">Grade 6</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
 
-                <div className="bg-white rounded-lg shadow p-6 mb-8">
-                    <h2 className={`text-xl font-semibold text-gray-900 mb-4 ${isRTL ? 'font-arabic text-right' : ''}`}>
-                        {isRTL ? 'اختر نوع الملف' : 'Select File Type'}
-                    </h2>
-                    
-                    <div className={`flex gap-4 mb-6 `}>
-                        <label className={`flex items-center gap-2 cursor-pointer ${isRTL ? 'flex-row-reverse font-arabic' : ''}`}>
-                            <input
-                                type="radio"
-                                name="fileType"
-                                value="excel"
-                                checked={fileType === 'excel'}
-                                onChange={(e) => setFileType(e.target.value as 'excel' | 'csv')}
-                                className="w-4 h-4"
-                            />
-                            <span>{isRTL ? 'اكسل (Excel)' : 'Excel'}</span>
-                        </label>
-                        <label className={`flex items-center gap-2 cursor-pointer ${isRTL ? 'flex-row-reverse font-arabic' : ''}`}>
-                            <input
-                                type="radio"
-                                name="fileType"
-                                value="csv"
-                                checked={fileType === 'csv'}
-                                onChange={(e) => setFileType(e.target.value as 'excel' | 'csv')}
-                                className="w-4 h-4"
-                            />
-                            <span>{isRTL ? 'سي إس في (CSV)' : 'CSV'}</span>
-                        </label>
-                    </div>
+            <div className="mb-6">
+              <label className={`block text-sm font-medium text-gray-700 mb-2 ${isRTL ? 'font-arabic' : ''}`}>
+                {isRTL ? 'اختر ملف (CSV أو Excel)' : 'Choose File (CSV or Excel)'}
+              </label>
+              <input
+                type="file"
+                accept=".csv,.xlsx,.xls"
+                onChange={handleFileChange}
+                className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none"
+              />
+            </div>
 
-                    <div className="mb-6">
-                        <label className={`block text-sm font-medium text-gray-700 mb-2 ${isRTL ? 'font-arabic text-right' : ''}`}>
-                            {isRTL ? 'اختر الملف' : 'Choose File'}
-                        </label>
-                        <input
-                            type="file"
-                            accept={fileType === 'excel' ? '.xlsx,.xls' : '.csv'}
-                            onChange={handleFileChange}
-                            className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none"
-                        />
-                        {selectedFile && (
-                            <p className={`mt-2 text-sm text-gray-600 ${isRTL ? 'font-arabic text-right' : ''}`}>
-                                {isRTL ? 'الملف المختار: ' : 'Selected: '}{selectedFile.name}
-                            </p>
-                        )}
-                    </div>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => router.push('/instructor/students')}
+                className={`px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 ${isRTL ? 'font-arabic' : ''}`}
+              >
+                {isRTL ? 'إلغاء' : 'Cancel'}
+              </button>
+              <button
+                onClick={handleNext}
+                disabled={!file}
+                className={`px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed ${isRTL ? 'font-arabic' : ''}`}
+              >
+                {isRTL ? 'التالي' : 'Next'}
+              </button>
+            </div>
+          </div>
+        )}
 
-                    <div className={`flex gap-4 `}>
+        {step === 'review' && (
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <h2 className={`text-xl font-semibold mb-4 ${isRTL ? 'font-arabic' : ''}`}>
+              {isRTL ? 'مراجعة الطلاب' : 'Review Students'}
+            </h2>
+            
+            <p className={`text-gray-600 mb-4 ${isRTL ? 'font-arabic' : ''}`}>
+              {isRTL 
+                ? `تم العثور على ${students.length} طالب. يرجى المراجعة وإزالة أي طالب غير مرغوب فيه.`
+                : `Found ${students.length} students. Please review and remove any unwanted students.`}
+            </p>
+
+            <div className="overflow-x-auto max-h-[500px] overflow-y-auto border border-gray-200 rounded-lg mb-6">
+              <table className="w-full">
+                <thead className="bg-gray-50 sticky top-0">
+                  <tr>
+                    <th className={`py-3 px-4 text-sm font-semibold ${isRTL ? 'text-right font-arabic' : 'text-left'}`}>
+                      {isRTL ? 'اسم الطالب' : 'Name'}
+                    </th>
+                    <th className={`py-3 px-4 text-sm font-semibold ${isRTL ? 'text-right font-arabic' : 'text-left'}`}>
+                      {isRTL ? 'البريد الإلكتروني' : 'Email'}
+                    </th>
+                    <th className={`py-3 px-4 text-sm font-semibold ${isRTL ? 'text-right font-arabic' : 'text-left'}`}>
+                      {isRTL ? 'رقم الطالب' : 'Student ID'}
+                    </th>
+                    <th className={`py-3 px-4 text-sm font-semibold ${isRTL ? 'text-right font-arabic' : 'text-left'}`}>
+                      {isRTL ? 'كلمة المرور' : 'Password'}
+                    </th>
+                    <th className={`py-3 px-4 text-sm font-semibold ${isRTL ? 'text-right font-arabic' : 'text-left'}`}>
+                      {isRTL ? 'الصف الدراسي' : 'Grade'}
+                    </th>
+                    <th className={`py-3 px-4 text-sm font-semibold ${isRTL ? 'text-right font-arabic' : 'text-left'}`}>
+                      {isRTL ? 'إجراء' : 'Action'}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {students.map((student, index) => (
+                    <tr key={index} className="hover:bg-gray-50">
+                      <td className="py-3 px-4">{student.name}</td>
+                      <td className="py-3 px-4">{student.email}</td>
+                      <td className="py-3 px-4">{student.studentId}</td>
+                      <td className="py-3 px-4">{student.password}</td>
+                      <td className="py-3 px-4">{student.grade || '-'}</td>
+                      <td className="py-3 px-4">
                         <button
-                            onClick={handleUpload}
-                            className={`bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 ${isRTL ? 'flex-row-reverse font-arabic' : ''}`}
+                          onClick={() => removeStudent(index)}
+                          className="text-red-600 hover:text-red-800"
                         >
-                            <Upload className="w-5 h-5" />
-                            {isRTL ? 'رفع الملف' : 'Upload File'}
+                          <X className="w-4 h-4" />
                         </button>
-                        <button
-                            className={`border border-gray-300 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-2 ${isRTL ? 'flex-row-reverse font-arabic' : ''}`}
-                        >
-                            <Download className="w-5 h-5" />
-                            {isRTL ? 'تحميل نموذج' : 'Download Template'}
-                        </button>
-                    </div>
-                </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
 
-                <div className="bg-white rounded-lg shadow overflow-hidden">
-                    <div className="px-6 py-4 border-b border-gray-200">
-                        <h2 className={`text-xl font-semibold text-gray-900 ${isRTL ? 'font-arabic text-right' : ''}`}>
-                            {isRTL ? 'هيكل البيانات المطلوب' : 'Required Data Structure'}
-                        </h2>
-                    </div>
-                    
-                    <div className="overflow-x-auto">
-                        <table className="w-full">
-                            <thead className="bg-gray-50 border-b border-gray-200">
-                                <tr>
-                                    <th className={`px-6 py-3 text-sm font-semibold text-gray-700 ${isRTL ? 'text-right font-arabic' : 'text-left'}`}>
-                                        {isRTL ? 'اسم الطالب' : 'name'}
-                                    </th>
-                                    <th className={`px-6 py-3 text-sm font-semibold text-gray-700 ${isRTL ? 'text-right font-arabic' : 'text-left'}`}>
-                                        {isRTL ? 'البريد الإلكتروني' : 'email'}
-                                    </th>
-                                    <th className={`px-6 py-3 text-sm font-semibold text-gray-700 ${isRTL ? 'text-right font-arabic' : 'text-left'}`}>
-                                        {isRTL ? 'رقم الطالب' : 'studentId'}
-                                    </th>
-                                    <th className={`px-6 py-3 text-sm font-semibold text-gray-700 ${isRTL ? 'text-right font-arabic' : 'text-left'}`}>
-                                        {isRTL ? 'كلمة المرور' : 'password'}
-                                    </th>
-                                    <th className={`px-6 py-3 text-sm font-semibold text-gray-700 ${isRTL ? 'text-right font-arabic' : 'text-left'}`}>
-                                        {isRTL ? 'الصف الدراسي (اختياري)' : 'grade (optional)'}
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-200">
-                                {exampleData.map((student, index) => (
-                                    <tr key={index} className="hover:bg-gray-50">
-                                        <td className={`px-6 py-4 text-sm text-gray-900 ${isRTL ? 'text-right font-arabic' : 'text-left'}`}>
-                                            {student.name}
-                                        </td>
-                                        <td className={`px-6 py-4 text-sm text-gray-700 ${isRTL ? 'text-right' : 'text-left'}`}>
-                                            {student.email}
-                                        </td>
-                                        <td className={`px-6 py-4 text-sm text-gray-700 ${isRTL ? 'text-right' : 'text-left'}`}>
-                                            {student.studentId}
-                                        </td>
-                                        <td className={`px-6 py-4 text-sm text-gray-700 ${isRTL ? 'text-right' : 'text-left'}`}>
-                                            {student.password}
-                                        </td>
-                                        <td className={`px-6 py-4 text-sm text-gray-700 ${isRTL ? 'text-right font-arabic' : 'text-left'}`}>
-                                            {student.grade || '-'}
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </main>
-        </div>
-    );
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => setStep('upload')}
+                className={`px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 ${isRTL ? 'font-arabic' : ''}`}
+              >
+                {isRTL ? 'رجوع' : 'Back'}
+              </button>
+              <button
+                onClick={handleNext}
+                className={`px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-2 ${isRTL ? 'font-arabic flex-row-reverse' : ''}`}
+              >
+                <Check className="w-4 h-4" />
+                {isRTL ? 'حفظ الطلاب' : 'Save Students'}
+              </button>
+            </div>
+          </div>
+        )}
+      </main>
+    </div>
+  );
 }

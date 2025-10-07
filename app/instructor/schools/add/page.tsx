@@ -75,7 +75,7 @@ export default function AddSchoolPage() {
         <div className={`mb-8 ${isRTL ? 'text-right' : 'text-left'}`}>
           <button
             onClick={() => router.push('/instructor/schools')}
-            className={`flex items-center gap-2 text-blue-600 hover:text-blue-700 mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}
+            className={`flex items-center gap-2 text-blue-600 hover:text-blue-700 mb-4 `}
           >
             <ArrowLeft className={`w-5 h-5 ${isRTL ? 'rotate-180' : ''}`} />
             <span className={isRTL ? 'font-arabic' : ''}>{isRTL ? 'العودة للمدارس' : 'Back to Schools'}</span>

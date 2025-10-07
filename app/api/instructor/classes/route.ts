@@ -48,10 +48,16 @@ export async function GET(req: NextRequest) {
         .innerJoin(courses, eq(classCourses.courseId, courses.id))
         .where(eq(classCourses.classId, classItem.id));
 
+      const instructors = await db
+        .select({ userId: classInstructors.userId })
+        .from(classInstructors)
+        .where(eq(classInstructors.classId, classItem.id));
+
       return {
         ...classItem,
         studentCount: students.length,
         courseCount: assignedCourses.length,
+        instructorCount: instructors.length,
         courses: assignedCourses,
       };
     })
