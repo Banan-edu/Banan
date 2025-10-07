@@ -1,0 +1,78 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { getSession } from '@/lib/auth';
+import { db } from '@server/db';
+import { schools, classes, schoolAdmins, classInstructors, users } from '@shared/schema';
+import { eq, and, inArray } from 'drizzle-orm';
+
+type RouteContext = {
+  params: Promise<{ id: string }>;
+};
+
+export async function GET(
+  req: NextRequest,
+  context: RouteContext
+) {
+  const session = await getSession();
+
+  if (!session || session.role !== 'admin') {
+    return NextResponse.json({ error: 'Not authorized' }, { status: 401 });
+  }
+
+  const { id } = await context.params;
+  const schoolId = parseInt(id);
+
+  if (isNaN(schoolId)) {
+    return NextResponse.json({ error: 'Invalid school ID' }, { status: 400 });
+  }
+
+  // Verify instructor teaches at this school
+  const instructorClasses = await db
+    .select({ classId: classInstructors.classId })
+    .from(classInstructors)
+    .where(eq(classInstructors.userId, session.userId));
+
+  const classIds = instructorClasses.map(c => c.classId);
+
+  if (classIds.length === 0) {
+    return NextResponse.json({ error: 'Not authorized' }, { status: 403 });
+  }
+
+  const classesWithSchools = await db
+    .select({ id: classes.id, schoolId: classes.schoolId })
+    .from(classes)
+    .where(inArray(classes.id, classIds));
+
+  const hasAccessToSchool = classesWithSchools.some(c => c.schoolId === schoolId);
+
+  if (!hasAccessToSchool) {
+    return NextResponse.json({ error: 'Not authorized' }, { status: 403 });
+  }
+
+  // Get school admins
+  const admins = await db
+    .select({
+      id: schoolAdmins.id,
+      userId: schoolAdmins.userId,
+      assignedAt: schoolAdmins.assignedAt,
+      name: users.name,
+      email: users.email,
+      lastLogin: users.lastLogin,
+    })
+    .from(schoolAdmins)
+    .innerJoin(users, eq(schoolAdmins.userId, users.id))
+    .where(eq(schoolAdmins.schoolId, schoolId));
+
+  // Get school name for display
+  const school = await db
+    .select({ name: schools.name })
+    .from(schools)
+    .where(eq(schools.id, schoolId))
+    .limit(1);
+
+  return NextResponse.json({
+    admins: admins.map(admin => ({
+      ...admin,
+      schoolName: school[0]?.name || '',
+    })),
+  });
+}

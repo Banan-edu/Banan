@@ -166,7 +166,7 @@ export default function AddSchoolPage() {
             </div>
 
             {/* Submit Button */}
-            <div className={`flex gap-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
+            <div className={`flex gap-4 daysH`}>
               <button
                 type="submit"
                 disabled={loading}

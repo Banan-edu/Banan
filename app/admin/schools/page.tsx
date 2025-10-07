@@ -44,7 +44,7 @@ export default function SchoolsPage() {
   }
 
   return (
-    <div className={`flex ${isRTL ? 'flex-row-reverse' : ''} min-h-screen bg-gray-50`}>
+    <div className={`flex daysH min-h-screen bg-gray-50`}>
       <Sidebar links={adminLinks} userRole="admin" />
 
       <main className="flex-1 px-8 py-8">

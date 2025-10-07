@@ -136,7 +136,7 @@ export default function SchoolsTable({
                   <tr
                     key={school.id}
                     className="hover:bg-gray-50 cursor-pointer transition-colors"
-                    onClick={() => onRowClick ? onRowClick(school.id) : router.push(`/admin/school/${school.id}`)}
+                    onClick={() => onRowClick ? onRowClick(school.id) : router.push(`/admin/schools/${school.id}`)}
                   >
                     <td className={`px-6 py-4 ${isRTL ? 'text-right font-arabic' : 'text-left'}`}>
                       <div className="font-medium text-blue-600 hover:text-blue-800">

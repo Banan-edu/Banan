@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useLanguage } from '@/app/contexts/LanguageContext';
-import { Sidebar, instructorLinks } from '@/components/Sidebar';
+import { Sidebar, adminLinks } from '@/components/Sidebar';
 import { ArrowLeft, Calendar, Clock, FileText, Home } from 'lucide-react';
 
 interface School {
@@ -82,12 +82,12 @@ export default function SchoolDetailPage() {
 
   const fetchSchoolData = async () => {
     try {
-      const res = await fetch(`/api/instructor/schools/${params.id}`);
+      const res = await fetch(`/api/admin/schools/${params.id}`);
       if (res.ok) {
         const data = await res.json();
         setSchool(data.school);
       } else {
-        router.push('/instructor/schools');
+        router.push('/admin/schools');
       }
     } catch (error) {
       console.error('Error fetching school:', error);
@@ -98,7 +98,7 @@ export default function SchoolDetailPage() {
 
   const fetchAdmins = async () => {
     try {
-      const res = await fetch(`/api/instructor/schools/${params.id}/admins`);
+      const res = await fetch(`/api/admin/schools/${params.id}/admins`);
       if (res.ok) {
         const data = await res.json();
         setAdmins(data.admins);
@@ -110,7 +110,7 @@ export default function SchoolDetailPage() {
 
   const fetchHistory = async () => {
     try {
-      const res = await fetch(`/api/instructor/schools/${params.id}/history`);
+      const res = await fetch(`/api/admin/schools/${params.id}/history`);
       if (res.ok) {
         const data = await res.json();
         setLogs(data.logs);
@@ -122,7 +122,7 @@ export default function SchoolDetailPage() {
 
   const fetchPracticeData = async () => {
     try {
-      const res = await fetch(`/api/instructor/schools/${params.id}/practice`);
+      const res = await fetch(`/api/admin/schools/${params.id}/practice`);
       if (res.ok) {
         const data = await res.json();
         setDailyActivity(data.dailyActivity);
@@ -158,13 +158,13 @@ export default function SchoolDetailPage() {
 
   return (
     <div className={`flex min-h-screen bg-gray-50`}>
-      <Sidebar links={instructorLinks} userRole="instructor" />
+      <Sidebar links={adminLinks} userRole="admin" />
 
       <main className="flex-1 px-8 py-8">
         {/* Header with back button */}
         <div className={`mb-8 `}>
           <button
-            onClick={() => router.push('/instructor/schools')}
+            onClick={() => router.push('/admin/schools')}
             className={`flex items-center gap-2 text-blue-600 hover:text-blue-700 mb-4 `}
           >
             <ArrowLeft className={`w-5 h-5 ${isRTL ? 'rotate-180' : ''}`} />
