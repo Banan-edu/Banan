@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
     const [user] = await db
       .select()
       .from(users)
-      .where(eq(users.email, email))
+      .where(eq(users.email, email.toLowerCase()))
       .limit(1);
 
     if (!user) {

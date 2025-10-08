@@ -3,9 +3,10 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLanguage } from '@/app/contexts/LanguageContext';
-import { Plus, Search } from 'lucide-react';
+import { Plus, Search, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import AddSchoolModal from './AddSchoolModal';
+import ConfirmDeleteModal from '../modals/ConfirmDelete';
 
 interface School {
   id: number;
@@ -22,16 +23,20 @@ interface School {
 interface SchoolsTableProps {
   apiEndpoint?: string;
   hideAddButton?: boolean;
+  showDelete?: boolean;
   onRowClick?: (schoolId: number) => void;
 }
 
-export default function SchoolsTable({ 
+export default function SchoolsTable({
   apiEndpoint = '/api/admin/schools',
   hideAddButton = false,
+  showDelete = false,
   onRowClick
 }: SchoolsTableProps) {
   const [schools, setSchools] = useState<School[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [DeleteLoading, setDeleteLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const { isRTL } = useLanguage();
@@ -63,6 +68,22 @@ export default function SchoolsTable({
   const handleSchoolAdded = () => {
     fetchSchools();
     setIsAddModalOpen(false);
+  };
+
+  const handleDelete = async (schoolId: number) => {
+    setDeleteLoading(true)
+    try {
+      const res = await fetch(`/api/admin/schools/${schoolId}`, {
+        method: 'DELETE',
+      });
+      if (res.ok) {
+        fetchSchools();
+        setDeleteLoading(false)
+        setShowDeleteModal(false)
+      }
+    } catch (error) {
+      console.error('Error deleting student:', error);
+    }
   };
 
   if (loading) {
@@ -122,6 +143,11 @@ export default function SchoolsTable({
                 <th className={`px-6 py-3 text-sm font-semibold text-gray-700 ${isRTL ? 'text-right font-arabic' : 'text-left'}`}>
                   {isRTL ? 'الطلاب' : 'Students'}
                 </th>
+                {showDelete && (
+                  <th className={`px-6 py-3 text-sm font-semibold text-gray-700 ${isRTL ? 'text-right font-arabic' : 'text-left'}`}>
+                    {isRTL ? 'الإجراءات' : 'Actions'}
+                  </th>
+                )}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
@@ -136,9 +162,10 @@ export default function SchoolsTable({
                   <tr
                     key={school.id}
                     className="hover:bg-gray-50 cursor-pointer transition-colors"
-                    onClick={() => onRowClick ? onRowClick(school.id) : router.push(`/admin/schools/${school.id}`)}
                   >
-                    <td className={`px-6 py-4 ${isRTL ? 'text-right font-arabic' : 'text-left'}`}>
+                    <td
+                      onClick={() => onRowClick ? onRowClick(school.id) : router.push(`/admin/schools/${school.id}`)}
+                      className={`px-6 py-4 ${isRTL ? 'text-right font-arabic' : 'text-left'}`}>
                       <div className="font-medium text-blue-600 hover:text-blue-800">
                         {school.name}
                       </div>
@@ -161,6 +188,25 @@ export default function SchoolsTable({
                     <td className={`px-6 py-4 text-sm text-gray-700 ${isRTL ? 'text-right' : 'text-left'}`}>
                       {school.studentCount}
                     </td>
+                    {showDelete && (
+                      <td className={`px-6 py-4 ${isRTL ? 'text-right' : 'text-left'}`}>
+                        <button
+                          onClick={() => setShowDeleteModal(true)}
+                          className="text-red-600 hover:text-red-900 flex items-center gap-1 transition-colors"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                          {isRTL ? 'حذف' : 'Delete'}
+                        </button>
+
+                        <ConfirmDeleteModal
+                          isOpen={showDeleteModal}
+                          onClose={() => setShowDeleteModal(false)}
+                          onConfirm={() => handleDelete(school.id)}
+                          itemName={isRTL ? "المدرسة" : "School"}
+                          loading={DeleteLoading}
+                        />
+                      </td>
+                    )}
                   </tr>
                 ))
               )}

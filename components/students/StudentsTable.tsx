@@ -6,6 +6,7 @@ import { useLanguage } from '@/app/contexts/LanguageContext';
 import { Plus, Search, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import AddStudentModal from './AddStudentModal';
+import ConfirmDeleteModal from '../modals/ConfirmDelete';
 
 interface Student {
     id: number;
@@ -34,6 +35,8 @@ export default function StudentsTable({
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [DeleteLoading, setDeleteLoading] = useState(false);
     const { isRTL } = useLanguage();
     const router = useRouter();
 
@@ -66,16 +69,16 @@ export default function StudentsTable({
         setIsAddModalOpen(false);
     };
 
-    const handleDelete = async (e: React.MouseEvent, studentId: number) => {
-        e.stopPropagation();
-        if (!confirm('Are you sure you want to delete this student?')) return;
-
+    const handleDelete = async (studentId: number) => {
+        setDeleteLoading(true)
         try {
-            const res = await fetch(`/api/instructor/students/${studentId}`, {
+            const res = await fetch(`${apiEndpoint}/${studentId}`, {
                 method: 'DELETE',
             });
             if (res.ok) {
                 fetchStudents();
+                setDeleteLoading(false)
+                setShowDeleteModal(false)
             }
         } catch (error) {
             console.error('Error deleting student:', error);
@@ -184,15 +187,15 @@ export default function StudentsTable({
                                     <tr
                                         key={student.id}
                                         className="hover:bg-gray-50 transition-colors"
-                                        onClick={() =>
-                                            onRowClick
-                                                ? onRowClick(student.id)
-                                                : router.push(`/instructor/students/${student.id}`)
-                                        }
                                     >
                                         <td
                                             className={`px-6 py-4 ${isRTL ? 'text-right font-arabic' : 'text-left'
                                                 }`}
+                                            onClick={() =>
+                                                onRowClick
+                                                    ? onRowClick(student.id)
+                                                    : router.push(`/instructor/students/${student.id}`)
+                                            }
                                         >
                                             <div className="font-medium text-blue-600 hover:text-blue-800">
                                                 {student.name}
@@ -227,12 +230,20 @@ export default function StudentsTable({
                                         {showDelete && (
                                             <td className={`px-6 py-4 ${isRTL ? 'text-right' : 'text-left'}`}>
                                                 <button
-                                                    onClick={(e) => handleDelete(e, student.id)}
+                                                    onClick={() => setShowDeleteModal(true)}
                                                     className="text-red-600 hover:text-red-900 flex items-center gap-1 transition-colors"
                                                 >
                                                     <Trash2 className="w-4 h-4" />
                                                     {isRTL ? 'حذف' : 'Delete'}
                                                 </button>
+
+                                                <ConfirmDeleteModal
+                                                    isOpen={showDeleteModal}
+                                                    onClose={() => setShowDeleteModal(false)}
+                                                    onConfirm={() => handleDelete(student.id)}
+                                                    itemName={isRTL ? "الطالب" : "Student"}
+                                                    loading={DeleteLoading}
+                                                />
                                             </td>
                                         )}
                                     </tr>
@@ -242,7 +253,6 @@ export default function StudentsTable({
                     </table>
                 </div>
             </div>
-
             {!hideAddButton && (
                 <AddStudentModal
                     isOpen={isAddModalOpen}

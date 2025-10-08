@@ -8,6 +8,7 @@ import SchoolsTable from '@/components/schools/SchoolsTable';
 
 export default function SchoolsPage() {
   const [loading, setLoading] = useState(true);
+  const [Role, setRole] = useState('school_admin');
   const router = useRouter();
   const { isRTL } = useLanguage();
 
@@ -20,6 +21,7 @@ export default function SchoolsPage() {
           return;
         }
         const data = await res.json();
+        setRole(data.user.role)
         if (data.user.role !== 'admin' && data.user.role !== 'school_admin') {
           router.push('/');
           return;
@@ -57,7 +59,7 @@ export default function SchoolsPage() {
           </p>
         </div>
 
-        <SchoolsTable />
+        <SchoolsTable showDelete={Role === 'admin' ? true:false} />
       </main>
     </div>
   );

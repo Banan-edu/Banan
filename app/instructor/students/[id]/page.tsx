@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -12,20 +11,16 @@ import {
   Clock,
   Activity,
   Award,
-  Calendar,
   BookOpen,
-  TrendingUp,
   Video,
   Plus,
   Trash2,
-  BarChart3,
   Settings,
   ArrowLeft,
+  X,
 } from 'lucide-react';
-import {StudentPerformanceTab} from '@/components/students/StudentPerformanceTab';
-import { StudentProgressTab } from '@/components/students/StudentProgressTab';
 
-type TabType = 'overview' | 'performance' | 'history' | 'badges' | 'practice' | 'classes' | 'progress' | 'activity';
+type TabType = 'overview' | 'classes' | 'progress' | 'activity';
 
 export default function StudentDetailPage() {
   const params = useParams();
@@ -75,10 +70,6 @@ export default function StudentDetailPage() {
 
   const tabs = [
     { id: 'overview', label: isRTL ? 'نظرة عامة' : 'Overview', icon: User },
-    { id: 'performance', label: isRTL ? 'الأداء' : 'Performance', icon: TrendingUp },
-    { id: 'history', label: isRTL ? 'السجل' : 'History', icon: Clock },
-    { id: 'badges', label: isRTL ? 'الشارات' : 'Badges', icon: Award },
-    { id: 'practice', label: isRTL ? 'التمرين' : 'Practice', icon: Calendar },
     { id: 'classes', label: isRTL ? 'الفصول' : 'Classes', icon: School },
     { id: 'progress', label: isRTL ? 'التقدم' : 'Progress', icon: BookOpen },
     { id: 'activity', label: isRTL ? 'النشاط المباشر' : 'Live Activity', icon: Video },
@@ -97,8 +88,19 @@ export default function StudentDetailPage() {
             <ArrowLeft className="w-4 h-4" />
             {isRTL ? 'العودة للطلاب' : 'Back to Students'}
           </button>
-          <h1 className="text-3xl font-bold text-gray-900">{student.user.name}</h1>
-          <p className="text-gray-600">{student.user.email}</p>
+          <div className='flex  justify-between items-center'>
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">{student.user.name}</h1>
+              <p className="text-gray-600">{student.user.email}</p>
+            </div>
+            <button
+              onClick={() => router.push(`/instructor/students/${student.user.id}/edit`)}
+              className="flex-1 md:flex-none px-6 py-3 border border-gray-500 text-gray rounded-lg hover:bg-gray-400 flex items-center gap-2 justify-center"
+            >
+              <Settings className="w-5 h-5" />
+              {isRTL ? 'تعديل المعلومات' : 'Edit Info'}
+            </button>
+          </div>
         </div>
 
         {/* Tabs */}
@@ -111,11 +113,10 @@ export default function StudentDetailPage() {
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id as TabType)}
-                    className={`py-4 px-3 border-b-2 font-medium text-sm whitespace-nowrap flex items-center gap-2 ${
-                      activeTab === tab.id
-                        ? 'border-blue-500 text-blue-600'
-                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                    }`}
+                    className={`py-4 px-3 border-b-2 font-medium text-sm whitespace-nowrap flex items-center gap-2 ${activeTab === tab.id
+                      ? 'border-blue-500 text-blue-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                      }`}
                   >
                     <Icon className="w-4 h-4" />
                     {tab.label}
@@ -126,11 +127,7 @@ export default function StudentDetailPage() {
           </div>
 
           <div className="p-6">
-            {activeTab === 'overview' && <OverviewTab student={student} isRTL={isRTL} />}
-            {activeTab === 'performance' && <StudentPerformanceTab studentId={studentId} isRTL={isRTL} />}
-            {activeTab === 'history' && <HistoryTab studentId={studentId} isRTL={isRTL} />}
-            {activeTab === 'badges' && <BadgesTab studentId={studentId} isRTL={isRTL} />}
-            {activeTab === 'practice' && <PracticeTab studentId={studentId} isRTL={isRTL} />}
+            {activeTab === 'overview' && <OverviewTab student={student} studentId={studentId} isRTL={isRTL} />}
             {activeTab === 'classes' && <ClassesTab studentId={studentId} isRTL={isRTL} fetchStudentData={fetchStudentData} />}
             {activeTab === 'progress' && <StudentProgressTab studentId={studentId} isRTL={isRTL} />}
             {activeTab === 'activity' && <ActivityTab studentId={studentId} isRTL={isRTL} />}
@@ -141,7 +138,7 @@ export default function StudentDetailPage() {
   );
 }
 
-function OverviewTab({ student, isRTL }: { student: any; isRTL: boolean }) {
+function OverviewTab({ student, studentId, isRTL }: { student: any; studentId: string; isRTL: boolean }) {
   const router = useRouter();
 
   const handleLoginAsStudent = async () => {
@@ -157,131 +154,31 @@ function OverviewTab({ student, isRTL }: { student: any; isRTL: boolean }) {
     }
   };
 
-  return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-gray-50 p-4 rounded-lg">
-          <div className="flex items-center gap-2 text-gray-600 mb-2">
-            <User className="w-4 h-4" />
-            <span className="text-sm font-medium">{isRTL ? 'الاسم' : 'Name'}</span>
-          </div>
-          <p className="text-lg font-semibold">{student.user.name}</p>
-        </div>
+  // Performance Data
+  const [performance, setPerformance] = useState<any>(null);
+  const [performanceLoading, setPerformanceLoading] = useState(true);
 
-        <div className="bg-gray-50 p-4 rounded-lg">
-          <div className="flex items-center gap-2 text-gray-600 mb-2">
-            <Mail className="w-4 h-4" />
-            <span className="text-sm font-medium">{isRTL ? 'البريد الإلكتروني' : 'Email'}</span>
-          </div>
-          <p className="text-lg font-semibold">{student.user.email}</p>
-        </div>
+  useEffect(() => {
+    fetchPerformance();
+  }, [studentId]);
 
-        <div className="bg-gray-50 p-4 rounded-lg">
-          <div className="flex items-center gap-2 text-gray-600 mb-2">
-            <School className="w-4 h-4" />
-            <span className="text-sm font-medium">{isRTL ? 'عدد الفصول' : 'Number of Classes'}</span>
-          </div>
-          <p className="text-lg font-semibold">{student.classCount || 0}</p>
-        </div>
+  const fetchPerformance = async () => {
+    try {
+      const res = await fetch(`/api/instructor/students/${studentId}/performance`);
+      if (res.ok) {
+        const data = await res.json();
+        setPerformance(data);
+      }
+    } catch (error) {
+      console.error('Error fetching performance:', error);
+    } finally {
+      setPerformanceLoading(false);
+    }
+  };
 
-        <div className="bg-gray-50 p-4 rounded-lg">
-          <div className="flex items-center gap-2 text-gray-600 mb-2">
-            <School className="w-4 h-4" />
-            <span className="text-sm font-medium">{isRTL ? 'المدرسة' : 'School Name'}</span>
-          </div>
-          <p className="text-lg font-semibold">{student.schoolName || 'N/A'}</p>
-        </div>
-
-        <div className="bg-gray-50 p-4 rounded-lg">
-          <div className="flex items-center gap-2 text-gray-600 mb-2">
-            <Clock className="w-4 h-4" />
-            <span className="text-sm font-medium">{isRTL ? 'آخر تسجيل دخول' : 'Last Login'}</span>
-          </div>
-          <p className="text-lg font-semibold">
-            {student.user.lastLogin ? new Date(student.user.lastLogin).toLocaleString() : 'Never'}
-          </p>
-        </div>
-
-        <div className="bg-gray-50 p-4 rounded-lg">
-          <div className="flex items-center gap-2 text-gray-600 mb-2">
-            <Activity className="w-4 h-4" />
-            <span className="text-sm font-medium">{isRTL ? 'آخر نشاط' : 'Last Activity'}</span>
-          </div>
-          <p className="text-lg font-semibold">
-            {student.user.lastActivity ? new Date(student.user.lastActivity).toLocaleString() : 'Never'}
-          </p>
-        </div>
-      </div>
-
-      <button
-        onClick={handleLoginAsStudent}
-        className="w-full md:w-auto px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2 justify-center"
-      >
-        <User className="w-5 h-5" />
-        {isRTL ? 'تسجيل الدخول كطالب' : 'Log in as Student'}
-      </button>
-    </div>
-  );
-}
-
-// function PerformanceTab({ studentId, isRTL }: { studentId: string; isRTL: boolean }) {
-//   const [performance, setPerformance] = useState<any>(null);
-//   const [loading, setLoading] = useState(true);
-
-//   useEffect(() => {
-//     fetchPerformance();
-//   }, [studentId]);
-
-//   const fetchPerformance = async () => {
-//     try {
-//       const res = await fetch(`/api/instructor/students/${studentId}/performance`);
-//       if (res.ok) {
-//         const data = await res.json();
-//         setPerformance(data);
-//       }
-//     } catch (error) {
-//       console.error('Error fetching performance:', error);
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   if (loading) return <div>Loading...</div>;
-
-//   return (
-//     <div className="space-y-6">
-//       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-//         <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-lg">
-//           <div className="text-sm text-blue-600 font-medium mb-2">{isRTL ? 'السرعة' : 'Speed'}</div>
-//           <div className="text-3xl font-bold text-blue-900">{performance?.avgSpeed || 0} WPM</div>
-//         </div>
-
-//         <div className="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-lg">
-//           <div className="text-sm text-green-600 font-medium mb-2">{isRTL ? 'الدقة' : 'Accuracy'}</div>
-//           <div className="text-3xl font-bold text-green-900">{performance?.avgAccuracy || 0}%</div>
-//         </div>
-
-//         <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-lg">
-//           <div className="text-sm text-purple-600 font-medium mb-2">{isRTL ? 'الوقت الإجمالي' : 'Total Time'}</div>
-//           <div className="text-3xl font-bold text-purple-900">
-//             {formatTime(performance?.totalTime || 0)}
-//           </div>
-//         </div>
-//       </div>
-
-//       <div className="bg-white border border-gray-200 rounded-lg p-6">
-//         <h3 className="text-lg font-semibold mb-4">{isRTL ? 'تفاصيل الأداء' : 'Performance Details'}</h3>
-//         <div className="h-64 flex items-center justify-center text-gray-500">
-//           {isRTL ? 'الرسم البياني سيتم إضافته قريباً' : 'Chart will be added soon'}
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
-function HistoryTab({ studentId, isRTL }: { studentId: string; isRTL: boolean }) {
+  // History Data
   const [history, setHistory] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [historyLoading, setHistoryLoading] = useState(true);
 
   useEffect(() => {
     fetchHistory();
@@ -297,56 +194,15 @@ function HistoryTab({ studentId, isRTL }: { studentId: string; isRTL: boolean })
     } catch (error) {
       console.error('Error fetching history:', error);
     } finally {
-      setLoading(false);
+      setHistoryLoading(false);
     }
   };
 
-  if (loading) return <div>Loading...</div>;
-
-  return (
-    <div className="overflow-x-auto">
-      <table className="min-w-full divide-y divide-gray-200">
-        <thead className="bg-gray-50">
-          <tr>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-              {isRTL ? 'الوقت' : 'Time'}
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-              {isRTL ? 'الوصف' : 'Description'}
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-              {isRTL ? 'بواسطة' : 'By'}
-            </th>
-          </tr>
-        </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
-          {history.length === 0 ? (
-            <tr>
-              <td colSpan={3} className="px-6 py-4 text-center text-gray-500">
-                {isRTL ? 'لا يوجد سجل' : 'No history'}
-              </td>
-            </tr>
-          ) : (
-            history.map((record) => (
-              <tr key={record.id}>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {new Date(record.createdAt).toLocaleString()}
-                </td>
-                <td className="px-6 py-4 text-sm text-gray-900">{record.description}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{record.userName}</td>
-              </tr>
-            ))
-          )}
-        </tbody>
-      </table>
-    </div>
-  );
-}
-
-function BadgesTab({ studentId, isRTL }: { studentId: string; isRTL: boolean }) {
+  // Badges Data
   const [badges, setBadges] = useState<any[]>([]);
   const [availableBadges, setAvailableBadges] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [badgesLoading, setBadgesLoading] = useState(true);
+  const [showBadges, setShowBadges] = useState(false);
 
   useEffect(() => {
     fetchBadges();
@@ -369,7 +225,7 @@ function BadgesTab({ studentId, isRTL }: { studentId: string; isRTL: boolean }) 
     } catch (error) {
       console.error('Error fetching badges:', error);
     } finally {
-      setLoading(false);
+      setBadgesLoading(false);
     }
   };
 
@@ -388,50 +244,9 @@ function BadgesTab({ studentId, isRTL }: { studentId: string; isRTL: boolean }) 
     }
   };
 
-  if (loading) return <div>Loading...</div>;
-
-  return (
-    <div className="space-y-6">
-      <div>
-        <h3 className="text-lg font-semibold mb-4">{isRTL ? 'الشارات المكتسبة' : 'Earned Badges'}</h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {badges.length === 0 ? (
-            <p className="text-gray-500 col-span-full">{isRTL ? 'لا توجد شارات' : 'No badges earned yet'}</p>
-          ) : (
-            badges.map((badge) => (
-              <div key={badge.id} className="bg-white border border-gray-200 rounded-lg p-4 text-center">
-                <Award className="w-12 h-12 mx-auto text-yellow-500 mb-2" />
-                <p className="font-semibold">{badge.name}</p>
-                <p className="text-sm text-gray-600">{badge.description}</p>
-              </div>
-            ))
-          )}
-        </div>
-      </div>
-
-      <div>
-        <h3 className="text-lg font-semibold mb-4">{isRTL ? 'منح شارة' : 'Assign Badge'}</h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {availableBadges.map((badge) => (
-            <button
-              key={badge.id}
-              onClick={() => assignBadge(badge.id)}
-              className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-center hover:bg-gray-100 transition"
-            >
-              <Award className="w-12 h-12 mx-auto text-gray-400 mb-2" />
-              <p className="font-semibold">{badge.name}</p>
-              <p className="text-sm text-gray-600">{badge.description}</p>
-            </button>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function PracticeTab({ studentId, isRTL }: { studentId: string; isRTL: boolean }) {
+  // Practice Data
   const [practiceData, setPracticeData] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const [practiceLoading, setPracticeLoading] = useState(true);
 
   useEffect(() => {
     fetchPracticeData();
@@ -447,18 +262,217 @@ function PracticeTab({ studentId, isRTL }: { studentId: string; isRTL: boolean }
     } catch (error) {
       console.error('Error fetching practice data:', error);
     } finally {
-      setLoading(false);
+      setPracticeLoading(false);
     }
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (performanceLoading || historyLoading || badgesLoading || practiceLoading) return <div>Loading...</div>;
 
   return (
-    <div className="space-y-6">
-      <h3 className="text-lg font-semibold">{isRTL ? 'تحليلات التمرين' : 'Practice Analytics'}</h3>
-      <div className="bg-white border border-gray-200 rounded-lg p-6">
-        <div className="h-96 flex items-center justify-center text-gray-500">
-          {isRTL ? 'الرسم البياني التقويمي سيتم إضافته قريباً' : 'Calendar heatmap will be added soon'}
+    <div className="space-y-12">
+      {/* Student Info Section */}
+      <div className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-gray-50 p-4 rounded-lg">
+            <div className="flex items-center gap-2 text-gray-600 mb-2">
+              <User className="w-4 h-4" />
+              <span className="text-sm font-medium">{isRTL ? 'الاسم' : 'Name'}</span>
+            </div>
+            <p className="text-lg font-semibold">{student.user.name}</p>
+          </div>
+
+          <div className="bg-gray-50 p-4 rounded-lg">
+            <div className="flex items-center gap-2 text-gray-600 mb-2">
+              <Mail className="w-4 h-4" />
+              <span className="text-sm font-medium">{isRTL ? 'البريد الإلكتروني' : 'Email'}</span>
+            </div>
+            <p className="text-lg font-semibold">{student.user.email}</p>
+          </div>
+
+          <div className="bg-gray-50 p-4 rounded-lg">
+            <div className="flex items-center gap-2 text-gray-600 mb-2">
+              <School className="w-4 h-4" />
+              <span className="text-sm font-medium">{isRTL ? 'عدد الفصول' : 'Number of Classes'}</span>
+            </div>
+            <p className="text-lg font-semibold">{student.classCount || 0}</p>
+          </div>
+
+          <div className="bg-gray-50 p-4 rounded-lg">
+            <div className="flex items-center gap-2 text-gray-600 mb-2">
+              <School className="w-4 h-4" />
+              <span className="text-sm font-medium">{isRTL ? 'المدرسة' : 'School Name'}</span>
+            </div>
+            <p className="text-lg font-semibold">{student.schoolName || 'N/A'}</p>
+          </div>
+
+          <div className="bg-gray-50 p-4 rounded-lg">
+            <div className="flex items-center gap-2 text-gray-600 mb-2">
+              <Clock className="w-4 h-4" />
+              <span className="text-sm font-medium">{isRTL ? 'آخر تسجيل دخول' : 'Last Login'}</span>
+            </div>
+            <p className="text-lg font-semibold">
+              {student.user.lastLogin ? new Date(student.user.lastLogin).toLocaleString() : 'Never'}
+            </p>
+          </div>
+
+          <div className="bg-gray-50 p-4 rounded-lg">
+            <div className="flex items-center gap-2 text-gray-600 mb-2">
+              <Activity className="w-4 h-4" />
+              <span className="text-sm font-medium">{isRTL ? 'آخر نشاط' : 'Last Activity'}</span>
+            </div>
+            <p className="text-lg font-semibold">
+              {student.user.lastActivity ? new Date(student.user.lastActivity).toLocaleString() : 'Never'}
+            </p>
+          </div>
+        </div>
+
+        <button
+          onClick={handleLoginAsStudent}
+          className="w-full md:w-auto px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2 justify-center"
+        >
+          <User className="w-5 h-5" />
+          {isRTL ? 'تسجيل الدخول كطالب' : 'Log in as Student'}
+        </button>
+      </div>
+
+      {/* Performance Section */}
+      <div className="space-y-6">
+        <h3 className="text-2xl font-bold text-gray-900">{isRTL ? 'الأداء' : 'Performance'}</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-lg">
+            <div className="text-sm text-blue-600 font-medium mb-2">{isRTL ? 'السرعة' : 'Speed'}</div>
+            <div className="text-3xl font-bold text-blue-900">{performance?.avgSpeed || 0} WPM</div>
+          </div>
+
+          <div className="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-lg">
+            <div className="text-sm text-green-600 font-medium mb-2">{isRTL ? 'الدقة' : 'Accuracy'}</div>
+            <div className="text-3xl font-bold text-green-900">{performance?.avgAccuracy || 0}%</div>
+          </div>
+
+          <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-lg">
+            <div className="text-sm text-purple-600 font-medium mb-2">{isRTL ? 'الوقت الإجمالي' : 'Total Time'}</div>
+            <div className="text-3xl font-bold text-purple-900">
+              {formatTime(performance?.totalTime || 0)}
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white border border-gray-200 rounded-lg p-6">
+          <h3 className="text-lg font-semibold mb-4">{isRTL ? 'تفاصيل الأداء' : 'Performance Details'}</h3>
+          <div className="h-64 flex items-center justify-center text-gray-500">
+            {isRTL ? 'الرسم البياني سيتم إضافته قريباً' : 'Chart will be added soon'}
+          </div>
+        </div>
+      </div>
+
+      {/* History Section */}
+      <div className="space-y-6">
+        <h3 className="text-2xl font-bold text-gray-900">{isRTL ? 'السجل' : 'History'}</h3>
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  {isRTL ? 'الوقت' : 'Time'}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  {isRTL ? 'الوصف' : 'Description'}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  {isRTL ? 'بواسطة' : 'By'}
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {history.length === 0 ? (
+                <tr>
+                  <td colSpan={3} className="px-6 py-4 text-center text-gray-500">
+                    {isRTL ? 'لا يوجد سجل' : 'No history'}
+                  </td>
+                </tr>
+              ) : (
+                history.map((record) => (
+                  <tr key={record.id}>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {new Date(record.createdAt).toLocaleString()}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-900">{record.description}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{record.userName}</td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Badges Section */}
+      <div className="space-y-6">
+        <h3 className="text-2xl font-bold text-gray-900">{isRTL ? 'الشارات' : 'Badges'}</h3>
+        <div>
+          <h4 className="text-lg font-semibold mb-4">{isRTL ? 'الشارات المكتسبة' : 'Earned Badges'}</h4>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {badges.length === 0 ? (
+              <p className="text-gray-500 col-span-full">{isRTL ? 'لا توجد شارات' : 'No badges earned yet'}</p>
+            ) : (
+              badges.map((badge) => (
+                <div key={badge.id} className="bg-white border border-gray-200 rounded-lg p-4 text-center">
+                  <Award className="w-12 h-12 mx-auto text-yellow-500 mb-2" />
+                  <p className="font-semibold">{badge.name}</p>
+                  <p className="text-sm text-gray-600">{badge.description}</p>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+        <button
+          onClick={() => setShowBadges(true)}
+          className="w-20 h-20 flex items-center justify-center rounded-full bg-blue-500 text-white shadow-md hover:bg-blue-600 transition-all"
+          title={isRTL ? "عرض الشارات" : "Show badges"}
+        >
+          <Plus className="w-6 h-6" />
+        </button>
+
+        {showBadges && (
+          <div className="mt-6 p-4 border border-gray-200 rounded-xl bg-white shadow-sm animate-fadeIn">
+            <div className="flex items-center justify-between mb-4">
+              <h4 className="text-lg font-semibold">
+                {isRTL ? "منح شارة" : "Assign Badge"}
+              </h4>
+              <button
+                onClick={() => setShowBadges(false)}
+                className="p-2 rounded-full hover:bg-gray-100 transition"
+                title={isRTL ? "إخفاء" : "Hide"}
+              >
+                <X className="w-5 h-5 text-gray-500" />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {availableBadges.map((badge) => (
+                <button
+                  key={badge.id}
+                  onClick={() => assignBadge(badge.id)}
+                  className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-center hover:bg-gray-100 transition"
+                >
+                  <Award className="w-12 h-12 mx-auto text-gray-400 mb-2" />
+                  <p className="font-semibold">{badge.name}</p>
+                  <p className="text-sm text-gray-600">{badge.description}</p>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Practice Section */}
+      <div className="space-y-6">
+        <h3 className="text-2xl font-bold text-gray-900">{isRTL ? 'التمرين' : 'Practice'}</h3>
+        <div className="bg-white border border-gray-200 rounded-lg p-6">
+          <h4 className="text-lg font-semibold mb-4">{isRTL ? 'تحليلات التمرين' : 'Practice Analytics'}</h4>
+          <div className="h-96 flex items-center justify-center text-gray-500">
+            {isRTL ? 'الرسم البياني التقويمي سيتم إضافته قريباً' : 'Calendar heatmap will be added soon'}
+          </div>
         </div>
       </div>
     </div>
@@ -620,100 +634,100 @@ function ClassesTab({ studentId, isRTL, fetchStudentData }: { studentId: string;
   );
 }
 
-// function ProgressTab({ studentId, isRTL }: { studentId: string; isRTL: boolean }) {
-//   const [courses, setCourses] = useState<any[]>([]);
-//   const [loading, setLoading] = useState(true);
+function StudentProgressTab({ studentId, isRTL }: { studentId: string; isRTL: boolean }) {
+  const [courses, setCourses] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-//   useEffect(() => {
-//     fetchProgress();
-//   }, [studentId]);
+  useEffect(() => {
+    fetchProgress();
+  }, [studentId]);
 
-//   const fetchProgress = async () => {
-//     try {
-//       const res = await fetch(`/api/instructor/students/${studentId}/progress`);
-//       if (res.ok) {
-//         const data = await res.json();
-//         setCourses(data.courses || []);
-//       }
-//     } catch (error) {
-//       console.error('Error fetching progress:', error);
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
+  const fetchProgress = async () => {
+    try {
+      const res = await fetch(`/api/instructor/students/${studentId}/progress`);
+      if (res.ok) {
+        const data = await res.json();
+        setCourses(data.courses || []);
+      }
+    } catch (error) {
+      console.error('Error fetching progress:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-//   const clearProgress = async (courseId: number) => {
-//     if (!confirm(isRTL ? 'هل أنت متأكد من مسح التقدم؟' : 'Are you sure you want to clear progress?')) return;
-//     try {
-//       const res = await fetch(`/api/instructor/students/${studentId}/progress/${courseId}`, {
-//         method: 'DELETE',
-//       });
-//       if (res.ok) {
-//         fetchProgress();
-//       }
-//     } catch (error) {
-//       console.error('Error clearing progress:', error);
-//     }
-//   };
+  const clearProgress = async (courseId: number) => {
+    if (!confirm(isRTL ? 'هل أنت متأكد من مسح التقدم؟' : 'Are you sure you want to clear progress?')) return;
+    try {
+      const res = await fetch(`/api/instructor/students/${studentId}/progress/${courseId}`, {
+        method: 'DELETE',
+      });
+      if (res.ok) {
+        fetchProgress();
+      }
+    } catch (error) {
+      console.error('Error clearing progress:', error);
+    }
+  };
 
-//   if (loading) return <div>Loading...</div>;
+  if (loading) return <div>Loading...</div>;
 
-//   return (
-//     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-//       {courses.length === 0 ? (
-//         <p className="text-gray-500 col-span-full">{isRTL ? 'لا توجد دورات' : 'No enrolled courses'}</p>
-//       ) : (
-//         courses.map((course) => (
-//           <div key={course.id} className="bg-white border border-gray-200 rounded-lg p-6">
-//             <h3 className="text-lg font-semibold mb-4">{course.name}</h3>
-            
-//             <div className="space-y-2 mb-4 text-sm">
-//               <div className="flex justify-between">
-//                 <span className="text-gray-600">{isRTL ? 'النقاط' : 'Score'}:</span>
-//                 <span className="font-semibold">{course.totalScore || 0}</span>
-//               </div>
-//               <div className="flex justify-between">
-//                 <span className="text-gray-600">{isRTL ? 'النجوم' : 'Stars'}:</span>
-//                 <span className="font-semibold">{course.totalStars || 0}</span>
-//               </div>
-//               <div className="flex justify-between">
-//                 <span className="text-gray-600">{isRTL ? 'الوقت' : 'Time'}:</span>
-//                 <span className="font-semibold">{formatTime(course.totalTime || 0)}</span>
-//               </div>
-//               <div className="flex justify-between">
-//                 <span className="text-gray-600">{isRTL ? 'المحاولات' : 'Attempts'}:</span>
-//                 <span className="font-semibold">{course.totalAttempts || 0}</span>
-//               </div>
-//             </div>
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {courses.length === 0 ? (
+        <p className="text-gray-500 col-span-full">{isRTL ? 'لا توجد دورات' : 'No enrolled courses'}</p>
+      ) : (
+        courses.map((course) => (
+          <div key={course.id} className="bg-white border border-gray-200 rounded-lg p-6">
+            <h3 className="text-lg font-semibold mb-4">{course.name}</h3>
 
-//             <div className="h-32 flex items-center justify-center bg-gray-50 rounded-lg mb-4">
-//               <div className="text-center">
-//                 <div className="text-3xl font-bold text-blue-600">{course.progress || 0}%</div>
-//                 <div className="text-sm text-gray-600">{isRTL ? 'التقدم' : 'Progress'}</div>
-//               </div>
-//             </div>
+            <div className="space-y-2 mb-4 text-sm">
+              <div className="flex justify-between">
+                <span className="text-gray-600">{isRTL ? 'النقاط' : 'Score'}:</span>
+                <span className="font-semibold">{course.totalScore || 0}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600">{isRTL ? 'النجوم' : 'Stars'}:</span>
+                <span className="font-semibold">{course.totalStars || 0}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600">{isRTL ? 'الوقت' : 'Time'}:</span>
+                <span className="font-semibold">{formatTime(course.totalTime || 0)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600">{isRTL ? 'المحاولات' : 'Attempts'}:</span>
+                <span className="font-semibold">{course.totalAttempts || 0}</span>
+              </div>
+            </div>
 
-            // <div className="space-y-2">
-            //   <button
-            //     onClick={() => clearProgress(course.id)}
-            //     className="w-full px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100"
-            //   >
-            //     {isRTL ? 'مسح التقدم' : 'Clear Progress'}
-            //   </button>
-            //   <button className="w-full px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100">
-            //     {isRTL ? 'عرض التفاصيل' : 'View Per Lesson'}
-            //   </button>
-            //   <button className="w-full px-4 py-2 bg-gray-50 text-gray-600 rounded-lg hover:bg-gray-100 flex items-center justify-center gap-2">
-            //     <Settings className="w-4 h-4" />
-            //     {isRTL ? 'ضبط الصعوبة' : 'Adjust Difficulty'}
-            //   </button>
-            // </div>
-//           </div>
-//         ))
-//       )}
-//     </div>
-//   );
-// }
+            <div className="h-32 flex items-center justify-center bg-gray-50 rounded-lg mb-4">
+              <div className="text-center">
+                <div className="text-3xl font-bold text-blue-600">{course.progress || 0}%</div>
+                <div className="text-sm text-gray-600">{isRTL ? 'التقدم' : 'Progress'}</div>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <button
+                onClick={() => clearProgress(course.id)}
+                className="w-full px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100"
+              >
+                {isRTL ? 'مسح التقدم' : 'Clear Progress'}
+              </button>
+              <button className="w-full px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100">
+                {isRTL ? 'عرض التفاصيل' : 'View Per Lesson'}
+              </button>
+              <button className="w-full px-4 py-2 bg-gray-50 text-gray-600 rounded-lg hover:bg-gray-100 flex items-center justify-center gap-2">
+                <Settings className="w-4 h-4" />
+                {isRTL ? 'ضبط الصعوبة' : 'Adjust Difficulty'}
+              </button>
+            </div>
+          </div>
+        ))
+      )}
+    </div>
+  );
+}
 
 function ActivityTab({ studentId, isRTL }: { studentId: string; isRTL: boolean }) {
   const [activities, setActivities] = useState<any[]>([]);

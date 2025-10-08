@@ -11,7 +11,13 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Not authorized' }, { status: 401 });
   }
 
-  const allSchools = await db.select().from(schools);
+  // const allSchools = await db.select().from(schools);
+  const { includeDeleted } = Object.fromEntries(req.nextUrl.searchParams);
+
+  const allSchools = await db
+    .select()
+    .from(schools)
+    .where(includeDeleted === 'true' ? undefined : eq(schools.isActive, true));
 
   const schoolsWithStats = await Promise.all(
     allSchools.map(async (school) => {
@@ -86,6 +92,8 @@ export async function POST(req: NextRequest) {
       country,
       address,
       phone: phone || null,
+      isActive:true,
+      deletedAt:null
     })
     .returning();
 

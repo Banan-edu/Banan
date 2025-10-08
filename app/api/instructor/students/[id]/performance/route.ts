@@ -60,7 +60,7 @@ export async function GET(
   // Get chart data (grouped by time)
   const chartData = await db
     .select({
-      period: sql`strftime('${sql.raw(groupByFormat)}', ${lessonProgress.lastAttemptAt})`,
+      period: sql`to_char(${lessonProgress.lastAttemptAt}, '${sql.raw(groupByFormat)}')`,
       accuracy: avg(lessonProgress.accuracy),
       speed: avg(lessonProgress.speed),
       practice: sum(lessonProgress.timeSpent),
@@ -69,8 +69,8 @@ export async function GET(
     .where(
       sql`${eq(lessonProgress.userId, studentId)} AND ${gte(lessonProgress.lastAttemptAt, startDate)}`
     )
-    .groupBy(sql`strftime('${sql.raw(groupByFormat)}', ${lessonProgress.lastAttemptAt})`)
-    .orderBy(sql`strftime('${sql.raw(groupByFormat)}', ${lessonProgress.lastAttemptAt})`);
+    .groupBy(sql`to_char(${lessonProgress.lastAttemptAt}, '${sql.raw(groupByFormat)}')`)
+    .orderBy(sql`to_char(${lessonProgress.lastAttemptAt}, '${sql.raw(groupByFormat)}')`);
 
   // Format chart data
   const formattedChartData = chartData.map((item: any) => ({

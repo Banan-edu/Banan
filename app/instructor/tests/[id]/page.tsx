@@ -5,7 +5,8 @@ import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useLanguage } from '@/app/contexts/LanguageContext';
 import { Sidebar, instructorLinks } from '@/components/Sidebar';
-import { ArrowLeft, FileText, Users, GraduationCap, BarChart3, Plus, X } from 'lucide-react';
+import { ArrowLeft, FileText, Users, GraduationCap, BarChart3, Plus, X, Settings } from 'lucide-react';
+import StudentTest from '@/components/tests/StudentTest';
 
 type Tab = 'overview' | 'students' | 'instructors' | 'results';
 
@@ -140,9 +141,18 @@ export default function TestDetailsPage() {
             <span className={isRTL ? 'font-arabic' : ''}>{isRTL ? 'العودة للاختبارات' : 'Back to Tests'}</span>
           </button>
 
-          <h1 className={`text-3xl font-bold text-gray-900 ${isRTL ? 'font-arabic' : ''}`}>
-            {test.name}
-          </h1>
+          <div className='flex  justify-between items-center'>
+            <h1 className={`text-3xl font-bold text-gray-900 ${isRTL ? 'font-arabic' : ''}`}>
+              {test.name}
+            </h1>
+            <button
+              onClick={() => router.push(`/instructor/tests/${test.id}/edit`)}
+              className="flex-1 md:flex-none px-6 py-3 border border-gray-500 text-gray rounded-lg hover:bg-gray-400 flex items-center gap-2 justify-center"
+            >
+              <Settings className="w-5 h-5" />
+              {isRTL ? 'تعديل المعلومات' : 'Edit Info'}
+            </button>
+          </div>
         </div>
 
         {/* Tabs */}
@@ -152,11 +162,10 @@ export default function TestDetailsPage() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 pb-4 border-b-2 transition-colors ${
-                  activeTab === tab.id
-                    ? 'border-blue-600 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700'
-                } `}
+                className={`flex items-center gap-2 pb-4 border-b-2 transition-colors ${activeTab === tab.id
+                  ? 'border-blue-600 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
+                  } `}
               >
                 {tab.icon}
                 <span className={isRTL ? 'font-arabic' : ''}>{isRTL ? tab.labelAr : tab.labelEn}</span>
@@ -234,47 +243,52 @@ export default function TestDetailsPage() {
           )}
 
           {activeTab === 'students' && (
-            <div>
-              <div className={`flex justify-between items-center mb-6 `}>
-                <h3 className={`text-xl font-bold text-gray-900 ${isRTL ? 'font-arabic' : ''}`}>
-                  {isRTL ? 'طلاب الاختبار' : 'Test Students'}
-                </h3>
-                <button
-                  onClick={() => setShowAddStudents(true)}
-                  className={`bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2 `}
-                >
-                  <Plus className="w-5 h-5" />
-                  {isRTL ? 'إضافة طلاب' : 'Add Students'}
-                </button>
-              </div>
+            // <div>
+            //   <div className={`flex justify-between items-center mb-6 `}>
+            //     <h3 className={`text-xl font-bold text-gray-900 ${isRTL ? 'font-arabic' : ''}`}>
+            //       {isRTL ? 'طلاب الاختبار' : 'Test Students'}
+            //     </h3>
+            //     <button
+            //       onClick={() => setShowAddStudents(true)}
+            //       className={`bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2 `}
+            //     >
+            //       <Plus className="w-5 h-5" />
+            //       {isRTL ? 'إضافة طلاب' : 'Add Students'}
+            //     </button>
+            //   </div>
 
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{isRTL ? 'الاسم' : 'Name'}</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{isRTL ? 'الصف' : 'Grade'}</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{isRTL ? 'تاريخ الإضافة' : 'Date Added'}</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{isRTL ? 'الحالة' : 'Status'}</th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {testStudents.map((student) => (
-                      <tr key={student.id}>
-                        <td className="px-6 py-4 whitespace-nowrap">{student.name}</td>
-                        <td className="px-6 py-4 whitespace-nowrap">{student.grade || 'N/A'}</td>
-                        <td className="px-6 py-4 whitespace-nowrap">{new Date(student.dateAdded).toLocaleDateString()}</td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`px-2 py-1 text-xs rounded ${student.completed ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
-                            {student.completed ? (isRTL ? 'مكتمل' : 'Completed') : (isRTL ? 'غير مكتمل' : 'Not Completed')}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
+            //   <div className="overflow-x-auto">
+            //     <table className="min-w-full divide-y divide-gray-200">
+            //       <thead className="bg-gray-50">
+            //         <tr>
+            //           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{isRTL ? 'الاسم' : 'Name'}</th>
+            //           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{isRTL ? 'الصف' : 'Grade'}</th>
+            //           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{isRTL ? 'تاريخ الإضافة' : 'Date Added'}</th>
+            //           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{isRTL ? 'الحالة' : 'Status'}</th>
+            //         </tr>
+            //       </thead>
+            //       <tbody className="bg-white divide-y divide-gray-200">
+            //         {testStudents.map((student) => (
+            //           <tr key={student.id}>
+            //             <td className="px-6 py-4 whitespace-nowrap">{student.name}</td>
+            //             <td className="px-6 py-4 whitespace-nowrap">{student.grade || 'N/A'}</td>
+            //             <td className="px-6 py-4 whitespace-nowrap">{new Date(student.dateAdded).toLocaleDateString()}</td>
+            //             <td className="px-6 py-4 whitespace-nowrap">
+            //               <span className={`px-2 py-1 text-xs rounded ${student.completed ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+            //                 {student.completed ? (isRTL ? 'مكتمل' : 'Completed') : (isRTL ? 'غير مكتمل' : 'Not Completed')}
+            //               </span>
+            //             </td>
+            //           </tr>
+            //         ))}
+            //       </tbody>
+            //     </table>
+            //   </div>
+            // </div>
+            <StudentTest
+              testId={parseInt(params.id as string)}
+              students={testStudents}
+              onRefresh={fetchTestDetails}
+            />
           )}
 
           {activeTab === 'instructors' && (
@@ -283,13 +297,13 @@ export default function TestDetailsPage() {
                 <h3 className={`text-xl font-bold text-gray-900 ${isRTL ? 'font-arabic' : ''}`}>
                   {isRTL ? 'معلمو الاختبار' : 'Test Instructors'}
                 </h3>
-                <button
+                {/* <button
                   onClick={() => setShowAddInstructors(true)}
                   className={`bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2 `}
                 >
                   <Plus className="w-5 h-5" />
                   {isRTL ? 'إضافة معلمين' : 'Add Instructors'}
-                </button>
+                </button> */}
               </div>
 
               <div className="overflow-x-auto">
@@ -299,7 +313,7 @@ export default function TestDetailsPage() {
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{isRTL ? 'الاسم' : 'Name'}</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{isRTL ? 'الدور' : 'Role'}</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{isRTL ? 'المدرسة' : 'School'}</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{isRTL ? 'الإجراء' : 'Action'}</th>
+                      {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{isRTL ? 'الإجراء' : 'Action'}</th> */}
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
@@ -308,11 +322,11 @@ export default function TestDetailsPage() {
                         <td className="px-6 py-4 whitespace-nowrap">{instructor.name}</td>
                         <td className="px-6 py-4 whitespace-nowrap">{instructor.role}</td>
                         <td className="px-6 py-4 whitespace-nowrap">{instructor.school || 'N/A'}</td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        {/* <td className="px-6 py-4 whitespace-nowrap">
                           <button className="text-red-600 hover:text-red-800">
                             <X className="w-5 h-5" />
                           </button>
-                        </td>
+                        </td> */}
                       </tr>
                     ))}
                   </tbody>

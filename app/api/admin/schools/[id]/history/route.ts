@@ -1,8 +1,9 @@
+
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth';
 import { db } from '@server/db';
-import { schools, classes, classInstructors, activityLog, users } from '@shared/schema';
-import { eq, and, inArray, desc } from 'drizzle-orm';
+import { activityLog, users, classes, classStudents, classInstructors } from '@shared/schema';
+import { eq, and, desc, inArray, or } from 'drizzle-orm';
 
 type RouteContext = {
   params: Promise<{ id: string }>;
@@ -14,7 +15,7 @@ export async function GET(
 ) {
   const session = await getSession();
 
-  if (!session || session.role !== 'instructor') {
+  if (!session || session.role !== 'admin') {
     return NextResponse.json({ error: 'Not authorized' }, { status: 401 });
   }
 
@@ -25,30 +26,55 @@ export async function GET(
     return NextResponse.json({ error: 'Invalid school ID' }, { status: 400 });
   }
 
-  // Verify instructor teaches at this school
-  const instructorClasses = await db
-    .select({ classId: classInstructors.classId })
-    .from(classInstructors)
-    .where(eq(classInstructors.userId, session.userId));
-
-  const classIds = instructorClasses.map(c => c.classId);
-
-  if (classIds.length === 0) {
-    return NextResponse.json({ error: 'Not authorized' }, { status: 403 });
-  }
-
-  const classesWithSchools = await db
-    .select({ id: classes.id, schoolId: classes.schoolId })
+  // Get all classes in this school
+  const schoolClasses = await db
+    .select({ id: classes.id })
     .from(classes)
-    .where(inArray(classes.id, classIds));
+    .where(eq(classes.schoolId, schoolId));
 
-  const hasAccessToSchool = classesWithSchools.some(c => c.schoolId === schoolId);
+  const classIds = schoolClasses.map(c => c.id);
 
-  if (!hasAccessToSchool) {
-    return NextResponse.json({ error: 'Not authorized' }, { status: 403 });
-  }
+  // Get all students in these classes
+  const students = await db
+    .select({ userId: classStudents.userId })
+    .from(classStudents)
+    .where(inArray(classStudents.classId, classIds));
 
-  // Get activity logs related to this school
+  const studentIds = [...new Set(students.map(s => s.userId))];
+
+  // Get all instructors in these classes
+  const instructors = await db
+    .select({ userId: classInstructors.userId })
+    .from(classInstructors)
+    .where(inArray(classInstructors.classId, classIds));
+
+  const instructorIds = [...new Set(instructors.map(i => i.userId))];
+
+  // Build conditions for all school-related activities
+  const conditions = [
+    // School activities
+    and(
+      eq(activityLog.entityType, 'school'),
+      eq(activityLog.entityId, schoolId)
+    ),
+    // Class activities
+    and(
+      eq(activityLog.entityType, 'class'),
+      inArray(activityLog.entityId, classIds.length > 0 ? classIds : [-1])
+    ),
+    // Student activities
+    and(
+      eq(activityLog.entityType, 'student'),
+      inArray(activityLog.entityId, studentIds.length > 0 ? studentIds : [-1])
+    ),
+    // Instructor activities
+    and(
+      eq(activityLog.entityType, 'instructor'),
+      inArray(activityLog.entityId, instructorIds.length > 0 ? instructorIds : [-1])
+    ),
+  ];
+
+  // Get activity logs related to this school and all its entities
   const logs = await db
     .select({
       id: activityLog.id,
@@ -62,12 +88,7 @@ export async function GET(
     })
     .from(activityLog)
     .innerJoin(users, eq(activityLog.userId, users.id))
-    .where(
-      and(
-        eq(activityLog.entityType, 'school'),
-        eq(activityLog.entityId, schoolId)
-      )
-    )
+    .where(or(...conditions))
     .orderBy(desc(activityLog.createdAt))
     .limit(100);
 

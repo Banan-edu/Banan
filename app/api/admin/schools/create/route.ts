@@ -25,6 +25,8 @@ export async function POST(req: NextRequest) {
         country,
         address,
         phone,
+        isActive: true,
+        deletedAt: null
       })
       .returning();
 

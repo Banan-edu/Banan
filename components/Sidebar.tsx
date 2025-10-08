@@ -178,16 +178,16 @@ export const adminLinks: SidebarLink[] = [
     icon: <Home className="w-5 h-5" />
   },
   {
-    href: '/admin/school',
-    labelAr: 'المدرسة',
-    labelEn: 'School',
-    icon: <Users className="w-5 h-5" />
-  },
-  {
-    href: '/admin/instructor',
+    href: '/admin/instructors',
     labelAr: 'المعلم',
     labelEn: 'Instructor',
     icon: <GraduationCap className="w-5 h-5" />
+  },
+  {
+    href: '/admin/schools',
+    labelAr: 'المدرسة',
+    labelEn: 'School',
+    icon: <Users className="w-5 h-5" />
   },
   {
     href: '/admin/students',

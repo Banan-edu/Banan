@@ -16,6 +16,7 @@ export const users = pgTable("users", {
   password: text("password").notNull(),
   role: userRoleEnum("role").notNull().default('student'),
   grade: text("grade"),
+  accessibility: text("accessibility"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   lastLogin: timestamp("last_login"),
   lastActivity: timestamp("last_activity"),
@@ -35,11 +36,20 @@ export const schools = pgTable("schools", {
   country: text("country").notNull(),
   address: text("address").notNull(),
   phone: text("phone"),
+  isActive: boolean("is_active").default(true).notNull(),
+  deletedAt: timestamp("deleted_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
 export const schoolAdmins = pgTable("school_admins", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
+  schoolId: integer("school_id").notNull().references(() => schools.id, { onDelete: 'cascade' }),
+  assignedAt: timestamp("assigned_at").defaultNow().notNull(),
+});
+
+export const schoolStudents = pgTable("school_students", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
   schoolId: integer("school_id").notNull().references(() => schools.id, { onDelete: 'cascade' }),
@@ -55,13 +65,13 @@ export const classes = pgTable("classes", {
   schoolId: integer("school_id").references(() => schools.id, { onDelete: 'cascade' }),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
-  
+
   startOfWeek: text("start_of_week").default('sunday'),
   minStarsToPass: integer("min_stars_to_pass").default(3),
   dailyGoal: integer("daily_goal").default(10),
   weeklyGoal: integer("weekly_goal").default(50),
   scoreboardVisibility: scoreboardVisibilityEnum("scoreboard_visibility").default('public'),
-  
+
   disableBackspace: boolean("disable_backspace").default(false),
   blockOnError: boolean("block_on_error").default(false),
   lockVirtualKeyboard: boolean("lock_virtual_keyboard").default(false),
@@ -69,7 +79,7 @@ export const classes = pgTable("classes", {
   lockHands: boolean("lock_hands").default(false),
   soundFx: boolean("sound_fx").default(true),
   voiceOver: boolean("voice_over").default(false),
-  
+
   theme: text("theme").default('default'),
   font: text("font").default('default'),
   showReplayButton: boolean("show_replay_button").default(true),
@@ -86,6 +96,12 @@ export const classInstructors = pgTable("class_instructors", {
 export const classStudents = pgTable("class_students", {
   id: serial("id").primaryKey(),
   classId: integer("class_id").notNull().references(() => classes.id, { onDelete: 'cascade' }),
+  userId: integer("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
+  enrolledAt: timestamp("enrolled_at").defaultNow().notNull(),
+});
+export const testStudents = pgTable("test_students", {
+  id: serial("id").primaryKey(),
+  testId: integer("class_id").notNull().references(() => classes.id, { onDelete: 'cascade' }),
   userId: integer("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
   enrolledAt: timestamp("enrolled_at").defaultNow().notNull(),
 });
@@ -113,7 +129,7 @@ export const classCourses = pgTable("class_courses", {
   classId: integer("class_id").notNull().references(() => classes.id, { onDelete: 'cascade' }),
   courseId: integer("course_id").notNull().references(() => courses.id, { onDelete: 'cascade' }),
   assignedAt: timestamp("assigned_at").defaultNow().notNull(),
-  
+
   hasPrerequisite: boolean("has_prerequisite").default(false),
   speedAdjustment: integer("speed_adjustment").default(0),
   accuracyRequirement: integer("accuracy_requirement").default(0),
@@ -134,26 +150,26 @@ export const lessons = pgTable("lessons", {
   name: text("name").notNull(),
   type: lessonTypeEnum("type").notNull().default('text'),
   order: integer("order").notNull(),
-  
+
   text: text("text").notNull(),
   altTexts: jsonb("alt_texts"),
   typingMode: typingModeEnum("typing_mode").default('sentences'),
-  
+
   codeLanguage: text("code_language"),
-  
+
   targetScore: integer("target_score"),
   timeLimit: integer("time_limit"),
   goalSpeed: integer("goal_speed"),
   minSpeed: integer("min_speed"),
   minAccuracy: integer("min_accuracy"),
-  
+
   disableBackspace: boolean("disable_backspace").default(false),
   blockOnError: boolean("block_on_error").default(false),
   useMeaningfulWords: boolean("use_meaningful_words").default(true),
   isPlacementTest: boolean("is_placement_test").default(false),
-  
+
   instructions: jsonb("instructions"),
-  
+
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
@@ -162,7 +178,7 @@ export const lessonProgress = pgTable("lesson_progress", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
   lessonId: integer("lesson_id").notNull().references(() => lessons.id, { onDelete: 'cascade' }),
-  
+
   completed: boolean("completed").default(false),
   score: integer("score").default(0),
   stars: integer("stars").default(0),
@@ -170,7 +186,7 @@ export const lessonProgress = pgTable("lesson_progress", {
   accuracy: integer("accuracy").default(0),
   timeSpent: integer("time_spent").default(0),
   attempts: integer("attempts").default(0),
-  
+
   lastAttemptAt: timestamp("last_attempt_at"),
   completedAt: timestamp("completed_at"),
 });
@@ -181,30 +197,30 @@ export const tests = pgTable("tests", {
   description: text("description"),
   text: text("text").notNull(),
   altTexts: jsonb("alt_texts"),
-  
+
   startDate: timestamp("start_date").notNull(),
   endDate: timestamp("end_date").notNull(),
-  
+
   targetAudience: text("target_audience").notNull(),
   targetSchools: jsonb("target_schools"),
   targetStudents: jsonb("target_students"),
-  
+
   attemptsAllowed: text("attempts_allowed").default('open'),
   attemptsCount: integer("attempts_count"),
   hasTimeLimit: boolean("has_time_limit").default(false),
   timeLimit: integer("time_limit"),
-  
+
   passingCriteria: text("passing_criteria").default('everyone'),
   minAccuracy: integer("min_accuracy"),
   minSpeed: integer("min_speed"),
-  
+
   showScore: boolean("show_score").default(true),
   speedGoal: integer("speed_goal"),
   maxScore: integer("max_score"),
-  
+
   disableBackspace: boolean("disable_backspace").default(false),
   issueCertificate: boolean("issue_certificate").default(false),
-  
+
   createdBy: integer("created_by").references(() => users.id),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
@@ -220,7 +236,7 @@ export const testResults = pgTable("test_results", {
   id: serial("id").primaryKey(),
   testId: integer("test_id").notNull().references(() => tests.id, { onDelete: 'cascade' }),
   userId: integer("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
-  
+
   score: integer("score").default(0),
   speed: integer("speed").default(0),
   accuracy: integer("accuracy").default(0),
@@ -228,7 +244,7 @@ export const testResults = pgTable("test_results", {
   completionTime: integer("completion_time"),
   passed: boolean("passed").default(false),
   certificateIssued: boolean("certificate_issued").default(false),
-  
+
   completedAt: timestamp("completed_at"),
 });
 
@@ -263,6 +279,7 @@ export const usersRelations = relations(users, ({ many, one }) => ({
   schoolAdmins: many(schoolAdmins),
   classInstructors: many(classInstructors),
   classStudents: many(classStudents),
+  testStudents: many(testStudents),
   createdCourses: many(courses),
   courseEditors: many(courseEditors),
   lessonProgress: many(lessonProgress),
@@ -319,6 +336,7 @@ export const testsRelations = relations(tests, ({ one, many }) => ({
     fields: [tests.createdBy],
     references: [users.id],
   }),
+  testStudents: many(testStudents),
   testInstructors: many(testInstructors),
   testResults: many(testResults),
 }));

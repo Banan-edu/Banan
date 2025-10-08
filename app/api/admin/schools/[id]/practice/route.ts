@@ -1,7 +1,8 @@
+
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth';
 import { db } from '@server/db';
-import { schools, classes, classInstructors, classStudents, lessonProgress } from '@shared/schema';
+import { classes, classStudents, lessonProgress } from '@shared/schema';
 import { eq, and, inArray, sql, gte } from 'drizzle-orm';
 
 type RouteContext = {
@@ -14,7 +15,7 @@ export async function GET(
 ) {
   const session = await getSession();
 
-  if (!session || session.role !== 'instructor') {
+  if (!session || session.role !== 'admin') {
     return NextResponse.json({ error: 'Not authorized' }, { status: 401 });
   }
 
@@ -25,30 +26,7 @@ export async function GET(
     return NextResponse.json({ error: 'Invalid school ID' }, { status: 400 });
   }
 
-  // Verify instructor teaches at this school
-  const instructorClasses = await db
-    .select({ classId: classInstructors.classId })
-    .from(classInstructors)
-    .where(eq(classInstructors.userId, session.userId));
-
-  const classIds = instructorClasses.map(c => c.classId);
-
-  if (classIds.length === 0) {
-    return NextResponse.json({ error: 'Not authorized' }, { status: 403 });
-  }
-
-  const classesWithSchools = await db
-    .select({ id: classes.id, schoolId: classes.schoolId })
-    .from(classes)
-    .where(inArray(classes.id, classIds));
-
-  const hasAccessToSchool = classesWithSchools.some(c => c.schoolId === schoolId);
-
-  if (!hasAccessToSchool) {
-    return NextResponse.json({ error: 'Not authorized' }, { status: 403 });
-  }
-
-  // Get all students in this school
+  // Get all classes in this school
   const schoolClasses = await db
     .select({ id: classes.id })
     .from(classes)
@@ -60,6 +38,7 @@ export async function GET(
     return NextResponse.json({ dailyActivity: [], hourlyActivity: [] });
   }
 
+  // Get all students in these classes
   const students = await db
     .select({ userId: classStudents.userId })
     .from(classStudents)

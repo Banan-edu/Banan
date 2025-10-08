@@ -11,7 +11,7 @@ type RouteContext = {
 
 export async function GET(
   req: NextRequest,
-  context:RouteContext
+  context: RouteContext
 ) {
   const session = await getSession();
 
@@ -22,16 +22,16 @@ export async function GET(
   const { id } = await context.params;
   const studentId = parseInt(id);
   // Check permissions
-//   const [permissions] = await db
-//   .select()
-//   .from(instructorPermissions)
-//   .where(eq(instructorPermissions.userId, session.userId))
-//   .limit(1);
-  
-//   console.log(permissions)
-//   if (!permissions?.canAccessAllStudents && !permissions?.canCrudStudents) {
-//     return NextResponse.json({ error: 'Not authorized' }, { status: 403 });
-//   }
+  //   const [permissions] = await db
+  //   .select()
+  //   .from(instructorPermissions)
+  //   .where(eq(instructorPermissions.userId, session.userId))
+  //   .limit(1);
+
+  //   console.log(permissions)
+  //   if (!permissions?.canAccessAllStudents && !permissions?.canCrudStudents) {
+  //     return NextResponse.json({ error: 'Not authorized' }, { status: 403 });
+  //   }
 
   // Get student data
   const [student] = await db
@@ -67,7 +67,7 @@ export async function GET(
         .from(schools)
         .where(eq(schools.id, firstClass.schoolId))
         .limit(1);
-      
+
       schoolName = school?.name || 'N/A';
     }
   }
@@ -78,6 +78,8 @@ export async function GET(
       name: student.name,
       email: student.email,
       studentId: student.studentId,
+      grade: student.grade,
+      accessibility: student.accessibility,
       lastLogin: student.lastLogin,
       lastActivity: student.lastActivity,
     },
@@ -86,9 +88,86 @@ export async function GET(
   });
 }
 
+export async function PUT(
+  req: NextRequest,
+  context: RouteContext
+) {
+  const session = await getSession();
+
+  if (!session || session.role !== 'instructor') {
+    return NextResponse.json({ error: 'Not authorized' }, { status: 401 });
+  }
+
+  const { id } = await context.params;
+  const studentId = parseInt(id);
+  const { name, email, studentId: newStudentId, password, grade, accessibility } = await req.json();
+
+  if (!name || !email) {
+    return NextResponse.json({
+      error: 'Name and email are required'
+    }, { status: 400 });
+  }
+
+  try {
+    // Check if student exists
+    const [student] = await db
+      .select()
+      .from(users)
+      .where(and(eq(users.id, studentId), eq(users.role, 'student')))
+      .limit(1);
+
+    if (!student) {
+      return NextResponse.json({ error: 'Student not found' }, { status: 404 });
+    }
+
+    // Check if email is already used by another user
+    if (email !== student.email) {
+      const [existingUser] = await db
+        .select()
+        .from(users)
+        .where(and(eq(users.email, email), eq(users.id, studentId)))
+        .limit(1);
+
+      if (existingUser && existingUser.id !== studentId) {
+        return NextResponse.json({
+          error: 'Email already in use'
+        }, { status: 400 });
+      }
+    }
+
+    // Prepare update data
+    const updateData: any = {
+      name,
+      email,
+      studentId: newStudentId,
+      grade,
+      accessibility,
+    };
+
+    // Only update password if a new one is provided
+    if (password && password.trim() !== '') {
+      const { hashPassword } = await import('@/lib/auth');
+      updateData.password = await hashPassword(password);
+    }
+
+    // Update student
+    await db
+      .update(users)
+      .set(updateData)
+      .where(eq(users.id, studentId));
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Error updating student:', error);
+    return NextResponse.json({
+      error: 'Failed to update student'
+    }, { status: 500 });
+  }
+}
+
 export async function DELETE(
   req: NextRequest,
-  context:RouteContext
+  context: RouteContext
 ) {
   const session = await getSession();
 
