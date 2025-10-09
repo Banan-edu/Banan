@@ -68,8 +68,8 @@ export const classes = pgTable("classes", {
 
   startOfWeek: text("start_of_week").default('sunday'),
   minStarsToPass: integer("min_stars_to_pass").default(3),
-  dailyGoal: integer("daily_goal").default(10),
-  weeklyGoal: integer("weekly_goal").default(50),
+  dailyGoal: integer("daily_goal").default(0),
+  weeklyGoal: integer("weekly_goal").default(0),
   scoreboardVisibility: scoreboardVisibilityEnum("scoreboard_visibility").default('public'),
 
   disableBackspace: boolean("disable_backspace").default(false),
@@ -80,10 +80,8 @@ export const classes = pgTable("classes", {
   soundFx: boolean("sound_fx").default(true),
   voiceOver: boolean("voice_over").default(false),
 
-  theme: text("theme").default('default'),
-  font: text("font").default('default'),
   showReplayButton: boolean("show_replay_button").default(true),
-  showLowercaseLetters: boolean("show_lowercase_letters").default(false),
+  allowJumpAhead: boolean("allow_jump_ahead").default(true),
 });
 
 export const classInstructors = pgTable("class_instructors", {

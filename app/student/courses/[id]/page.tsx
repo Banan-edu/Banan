@@ -1,8 +1,9 @@
+
 'use client';
 
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { CheckCircle, Circle, Lock, Star } from 'lucide-react';
+import { CheckCircle, Circle, Lock } from 'lucide-react';
 
 interface Lesson {
   id: number;
@@ -47,8 +48,6 @@ export default function CourseMapPage() {
     fetchCourse();
   }, [params.id]);
 
-  const allLessons = sections.flatMap((section) => section.lessons);
-
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -57,12 +56,25 @@ export default function CourseMapPage() {
     );
   }
 
+  const getSectionProgress = (section: Section) => {
+    if (!section.lessons || section.lessons.length === 0) return { completed: 0, total: 0 };
+    const completed = section.lessons.filter(l => l.progress?.completed).length;
+    return { completed, total: section.lessons.length };
+  };
+
+  const isSectionLocked = (index: number) => {
+    if (index === 0) return false;
+    const prevSection = sections[index - 1];
+    const progress = getSectionProgress(prevSection);
+    return progress.completed < progress.total;
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8 px-4">
       <div className="max-w-6xl mx-auto">
         <div className="mb-8">
           <button
-            onClick={() => router.push('/student')}
+            onClick={() => router.push('/student/courses')}
             className="text-blue-600 hover:text-blue-800 mb-4"
           >
             ← Back to Courses
@@ -72,18 +84,19 @@ export default function CourseMapPage() {
         </div>
 
         <div className="relative">
-          {allLessons.map((lesson, index) => {
+          {sections.map((section, index) => {
             const isLeft = index % 2 === 0;
-            const isCompleted = lesson.progress?.completed;
-            const isLocked = index > 0 && !allLessons[index - 1]?.progress?.completed;
+            const progress = getSectionProgress(section);
+            const isCompleted = progress.completed === progress.total && progress.total > 0;
+            const isLocked = isSectionLocked(index);
 
             return (
-              <div key={lesson.id} className="relative mb-8">
+              <div key={section.id} className="relative mb-8">
                 <div
                   className={`flex ${isLeft ? 'justify-start' : 'justify-end'} items-center`}
                 >
                   <div
-                    onClick={() => !isLocked && router.push(`/student/lesson/${lesson.id}`)}
+                    onClick={() => !isLocked && router.push(`/student/courses/${params.id}/section/${section.id}`)}
                     className={`
                       bg-white rounded-xl shadow-lg p-6 w-80
                       ${!isLocked ? 'cursor-pointer hover:shadow-xl transition-shadow' : 'opacity-60 cursor-not-allowed'}
@@ -100,47 +113,35 @@ export default function CourseMapPage() {
                           ) : (
                             <Circle className="w-5 h-5 text-gray-400" />
                           )}
-                          <h3 className="font-semibold text-gray-900">{lesson.name}</h3>
+                          <h3 className="font-semibold text-gray-900">{section.name}</h3>
                         </div>
-                        {lesson.type === 'coding' && (
-                          <span className="inline-block px-2 py-1 bg-purple-100 text-purple-800 rounded text-xs">
-                            Coding
-                          </span>
-                        )}
                       </div>
                     </div>
 
-                    {lesson.progress && (
-                      <div className="flex items-center gap-2 mt-3 pt-3 border-t">
-                        <div className="flex gap-1">
-                          {[...Array(3)].map((_, i) => (
-                            <Star
-                              key={i}
-                              className={`w-4 h-4 ${
-                                i < (lesson.progress?.stars || 0)
-                                  ? 'fill-yellow-400 text-yellow-400'
-                                  : 'text-gray-300'
-                              }`}
-                            />
-                          ))}
-                        </div>
-                        <span className="text-sm text-gray-600">
-                          Score: {lesson.progress.score}
-                        </span>
+                    <div className="mt-3 pt-3 border-t">
+                      <div className="flex items-center justify-between text-sm text-gray-600">
+                        <span>{progress.total} lessons</span>
+                        <span>{progress.completed}/{progress.total} completed</span>
                       </div>
-                    )}
+                      <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
+                        <div
+                          className="bg-blue-600 h-2 rounded-full transition-all"
+                          style={{ width: `${progress.total > 0 ? (progress.completed / progress.total) * 100 : 0}%` }}
+                        />
+                      </div>
+                    </div>
 
                     {!isLocked && !isCompleted && (
                       <div className="mt-4">
                         <button className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700">
-                          Start Lesson
+                          {progress.completed > 0 ? 'Continue Section' : 'Start Section'}
                         </button>
                       </div>
                     )}
                   </div>
                 </div>
 
-                {index < allLessons.length - 1 && (
+                {index < sections.length - 1 && (
                   <div className={`absolute ${isLeft ? 'left-1/2' : 'right-1/2'} w-1 h-8 bg-gray-300 -bottom-8 transform -translate-x-1/2`} />
                 )}
               </div>
