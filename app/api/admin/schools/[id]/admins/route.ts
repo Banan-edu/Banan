@@ -69,7 +69,7 @@ export async function POST(req: Request, context: RouteContext) {
     return NextResponse.json({ error: 'User must be an instructor' }, { status: 400 });
   }
 
-  const newAdmin = await assignSchoolAdmin(schoolId, userId);
+  const newAdmin = await assignSchoolAdmin(schoolId, userId, session.userId);
 
   return NextResponse.json({
     newAdmin,
@@ -100,7 +100,7 @@ export async function DELETE(req: Request, context: RouteContext) {
     return NextResponse.json({ error: 'Admin ID is required' }, { status: 400 });
   }
 
-  await unassignSchoolAdmin(adminId);
+  await unassignSchoolAdmin(adminId, schoolId, session.userId);
 
   return NextResponse.json({
     message: 'Admin unassigned successfully',

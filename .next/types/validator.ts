@@ -1181,19 +1181,19 @@ type RouteHandlerConfig<Route extends AppRouteHandlerRoutes = AppRouteHandlerRou
   type __Unused = __Check
 }
 
-// Validate ../../app/api/school-admin/schools/[id]/route.ts
+// Validate ../../app/api/school-admin/schools/[id]/history/route.ts
 {
-  type __IsExpected<Specific extends RouteHandlerConfig<"/api/school-admin/schools/[id]">> = Specific
-  const handler = {} as typeof import("../../app/api/school-admin/schools/[id]/route.js")
+  type __IsExpected<Specific extends RouteHandlerConfig<"/api/school-admin/schools/[id]/history">> = Specific
+  const handler = {} as typeof import("../../app/api/school-admin/schools/[id]/history/route.js")
   type __Check = __IsExpected<typeof handler>
   // @ts-ignore
   type __Unused = __Check
 }
 
-// Validate ../../app/api/school-admin/schools/history/route.ts
+// Validate ../../app/api/school-admin/schools/[id]/route.ts
 {
-  type __IsExpected<Specific extends RouteHandlerConfig<"/api/school-admin/schools/history">> = Specific
-  const handler = {} as typeof import("../../app/api/school-admin/schools/history/route.js")
+  type __IsExpected<Specific extends RouteHandlerConfig<"/api/school-admin/schools/[id]">> = Specific
+  const handler = {} as typeof import("../../app/api/school-admin/schools/[id]/route.js")
   type __Check = __IsExpected<typeof handler>
   // @ts-ignore
   type __Unused = __Check
