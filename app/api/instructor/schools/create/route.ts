@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth';
 import { db } from '@server/db';
-import { schools, schoolAdmins, activityLog } from '@shared/schema';
+import { schools, schoolAdmins } from '@shared/schema';
+import { ActivityLogger } from '@/lib/activityLogger';
 
 export async function POST(req: NextRequest) {
   const session = await getSession();
@@ -35,13 +36,15 @@ export async function POST(req: NextRequest) {
     });
 
     // Log the creation activity
-    await db.insert(activityLog).values({
-      userId: session.userId,
-      entityType: 'school',
-      entityId: newSchool.id,
-      action: 'created',
-      description: `Created school: ${name}`,
-    });
+    // await db.insert(activityLog).values({
+    //   userId: session.userId,
+    //   entityType: 'school',
+    //   entityId: newSchool.id,
+    //   action: 'created',
+    //   description: `Created school: ${name}`,
+    // });
+
+    await ActivityLogger.create(session.userId, 'school', newSchool.id, `Created school: ${name}`);
 
     return NextResponse.json({ school: newSchool }, { status: 201 });
   } catch (error) {

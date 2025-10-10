@@ -7,6 +7,7 @@ import { Plus, Search, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import AddSchoolModal from './AddSchoolModal';
 import ConfirmDeleteModal from '../modals/ConfirmDelete';
+import { stringify } from 'querystring';
 
 interface School {
   id: number;
@@ -39,7 +40,9 @@ export default function SchoolsTable({
   const [DeleteLoading, setDeleteLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [selectedInstructorId, setSelectedInstructorId] = useState<number | null>(null);
   const { isRTL } = useLanguage();
+
   const router = useRouter();
 
   const fetchSchools = async () => {
@@ -74,7 +77,8 @@ export default function SchoolsTable({
     setDeleteLoading(true)
     try {
       const res = await fetch(`/api/admin/schools/${schoolId}`, {
-        method: 'DELETE',
+        method: 'PATCH',
+        body: JSON.stringify({ action: 'soft_delete' })
       });
       if (res.ok) {
         fetchSchools();
@@ -191,7 +195,10 @@ export default function SchoolsTable({
                     {showDelete && (
                       <td className={`px-6 py-4 ${isRTL ? 'text-right' : 'text-left'}`}>
                         <button
-                          onClick={() => setShowDeleteModal(true)}
+                          onClick={() => {
+                            setSelectedInstructorId(school.id);
+                            setShowDeleteModal(true);
+                          }}
                           className="text-red-600 hover:text-red-900 flex items-center gap-1 transition-colors"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -201,7 +208,9 @@ export default function SchoolsTable({
                         <ConfirmDeleteModal
                           isOpen={showDeleteModal}
                           onClose={() => setShowDeleteModal(false)}
-                          onConfirm={() => handleDelete(school.id)}
+                          onConfirm={() => {
+                            if (selectedInstructorId !== null) handleDelete(selectedInstructorId);
+                          }}
                           itemName={isRTL ? "المدرسة" : "School"}
                           loading={DeleteLoading}
                         />

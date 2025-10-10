@@ -1,75 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth';
-import { db } from '@server/db';
-import { schools, classes, schoolAdmins, classInstructors, classStudents, users } from '@shared/schema';
-import { eq, sql, and, inArray } from 'drizzle-orm';
+import { getAllSchools, createSchool } from '@/lib/schoolService';
 
 export async function GET(req: NextRequest) {
   const session = await getSession();
 
-  if (!session || (session.role !== 'admin')) {
+  if (!session || session.role !== 'admin') {
     return NextResponse.json({ error: 'Not authorized' }, { status: 401 });
   }
 
-  // const allSchools = await db.select().from(schools);
-  const { includeDeleted } = Object.fromEntries(req.nextUrl.searchParams);
+  const { searchParams } = new URL(req.url);
+  const includeDeleted = searchParams.get('includeDeleted') === 'true';
 
-  const allSchools = await db
-    .select()
-    .from(schools)
-    .where(includeDeleted === 'true' ? undefined : eq(schools.isActive, true));
+  const schools = await getAllSchools(includeDeleted);
 
-  const schoolsWithStats = await Promise.all(
-    allSchools.map(async (school) => {
-      const classCount = await db
-        .select({ count: sql<number>`count(*)` })
-        .from(classes)
-        .where(eq(classes.schoolId, school.id));
-
-      const adminCount = await db
-        .select({ count: sql<number>`count(*)` })
-        .from(schoolAdmins)
-        .where(eq(schoolAdmins.schoolId, school.id));
-
-      const schoolClasses = await db
-        .select({ id: classes.id })
-        .from(classes)
-        .where(eq(classes.schoolId, school.id));
-
-      const classIds = schoolClasses.map(c => c.id);
-
-      let instructorCount = 0;
-      let studentCount = 0;
-
-      if (classIds.length > 0) {
-        const instructors = await db
-          .select({ userId: classInstructors.userId })
-          .from(classInstructors)
-          .where(inArray(classInstructors.classId, classIds));
-
-        const uniqueInstructors = new Set(instructors.map(i => i.userId));
-        instructorCount = uniqueInstructors.size;
-
-        const students = await db
-          .select({ userId: classStudents.userId })
-          .from(classStudents)
-          .where(inArray(classStudents.classId, classIds));
-
-        const uniqueStudents = new Set(students.map(s => s.userId));
-        studentCount = uniqueStudents.size;
-      }
-
-      return {
-        ...school,
-        classCount: Number(classCount[0]?.count || 0),
-        adminCount: Number(adminCount[0]?.count || 0),
-        instructorCount,
-        studentCount,
-      };
-    })
-  );
-
-  return NextResponse.json({ schools: schoolsWithStats });
+  return NextResponse.json({ schools });
 }
 
 export async function POST(req: NextRequest) {
@@ -85,17 +30,16 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Name, country and address are required' }, { status: 400 });
   }
 
-  const [newSchool] = await db
-    .insert(schools)
-    .values({
-      name,
-      country,
-      address,
-      phone: phone || null,
-      isActive:true,
-      deletedAt:null
-    })
-    .returning();
+  try {
+    const newSchool = await createSchool(
+      { name, country, address, phone },
+      session.userId,
+      false // Don't assign admin as school admin
+    );
 
-  return NextResponse.json({ school: newSchool });
+    return NextResponse.json({ school: newSchool }, { status: 201 });
+  } catch (error) {
+    console.error('Error creating school:', error);
+    return NextResponse.json({ error: 'Failed to create school' }, { status: 500 });
+  }
 }

@@ -1,13 +1,15 @@
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getSession } from '@/lib/auth';
-import { db } from '@server/db';
-import { users, classInstructors, classes, schoolAdmins } from '@shared/schema';
-import { eq, sql } from 'drizzle-orm';
+import { getSession, hashPassword } from '@/lib/auth';
+import { deleteInstructor, getInstructorById, getInstructorClassesCountById, getInstructorSchoolCountCountById, updateInstructor } from '@/lib/instructorService';
+
+type RouteContext = {
+  params: Promise<{ id: string }>;
+};
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  context: RouteContext
 ) {
   const session = await getSession();
 
@@ -15,35 +17,78 @@ export async function GET(
     return NextResponse.json({ error: 'Not authorized' }, { status: 401 });
   }
 
-  const { id } = await params;
+  const { id } = await context.params;
   const instructorId = parseInt(id);
 
-  const [instructor] = await db
-    .select()
-    .from(users)
-    .where(eq(users.id, instructorId))
-    .limit(1);
+  const instructor = await getInstructorById(instructorId);
 
   if (!instructor) {
     return NextResponse.json({ error: 'Instructor not found' }, { status: 404 });
   }
 
-  const instructorClasses = await db
-    .select({ classId: classInstructors.classId })
-    .from(classInstructors)
-    .where(eq(classInstructors.userId, instructorId));
+  const classCount = await getInstructorClassesCountById(instructorId)
 
-  const classCount = instructorClasses.length;
-
-  const schoolAdminRecords = await db
-    .select({ schoolId: schoolAdmins.schoolId })
-    .from(schoolAdmins)
-    .where(eq(schoolAdmins.userId, instructorId));
-  const schoolCount = new Set(schoolAdminRecords.map(s => s.schoolId)).size;
+  const schoolCount = await getInstructorSchoolCountCountById(instructorId);
 
   return NextResponse.json({
     ...instructor,
     classCount,
     schoolCount,
   });
+}
+
+export async function PUT(
+  req: NextRequest,
+  context: RouteContext
+) {
+  const session = await getSession();
+
+  if (!session || session.role !== 'admin') {
+    return NextResponse.json({ error: 'Not authorized' }, { status: 401 });
+  }
+
+  const { id } = await context.params;
+  const instructorId = parseInt(id);
+
+  if (isNaN(instructorId)) {
+    return NextResponse.json({ error: 'Invalid instructor ID' }, { status: 400 });
+  }
+
+  const data = await req.json();
+
+  try {
+    const updatedUser = await updateInstructor(instructorId, data, session.userId)
+
+    return NextResponse.json({ user: updatedUser });
+  } catch (error) {
+    console.error('Error updating instructor:', error);
+    return NextResponse.json({ error: 'Failed to update instructor' }, { status: 500 });
+  }
+}
+
+export async function DELETE(
+  req: NextRequest,
+  context: RouteContext
+) {
+  const session = await getSession();
+
+  if (!session || session.role !== 'admin') {
+    return NextResponse.json({ error: 'Not authorized' }, { status: 401 });
+  }
+
+  const { id } = await context.params;
+  const instructorId = parseInt(id);
+
+  if (isNaN(instructorId)) {
+    return NextResponse.json({ error: 'Invalid instructor ID' }, { status: 400 });
+  }
+
+  try {
+    await deleteInstructor(instructorId, session.userId)
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Error deleting instructor:', error);
+    return NextResponse.json({ error: 'Failed to delete instructor' }, { status: 500 });
+  }
 }

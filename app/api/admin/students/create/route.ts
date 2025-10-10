@@ -76,7 +76,7 @@ export async function POST(req: NextRequest) {
 
             await db.insert(activityLog).values({
                 userId: session.userId,
-                entityType: 'school students',
+                entityType: 'student',
                 entityId: newStudent.id,
                 action: 'added',
                 description: `Assigned student ${name} (${email}) to school ${schoolId}`,
@@ -86,7 +86,7 @@ export async function POST(req: NextRequest) {
         // Log the creation activity
         await db.insert(activityLog).values({
             userId: session.userId,
-            entityType: 'user',
+            entityType: 'student',
             entityId: newStudent.id,
             action: 'created',
             description: `Created student: ${name} (${email})`,

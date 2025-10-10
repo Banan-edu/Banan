@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
 
     await db.insert(activityLog).values({
       userId: session.userId,
-      entityType: 'user',
+      entityType: 'student',
       entityId: session.userId,
       action: 'imported',
       description: `Imported ${createdStudents.length} students`,

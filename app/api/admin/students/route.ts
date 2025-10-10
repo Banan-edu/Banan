@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth';
 import { db } from '@server/db';
 import { users, classes, classStudents, lessonProgress, schools, schoolStudents } from '@shared/schema';
-import { eq, inArray, sql } from 'drizzle-orm';
+import { and, eq, inArray, isNull, sql } from 'drizzle-orm';
 
 export async function GET(req: NextRequest) {
   const session = await getSession();
@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
       lastActivity: users.lastActivity,
     })
     .from(users)
-    .where(eq(users.role, 'student'));
+    .where(and(eq(users.role, 'student'), isNull(users.deletedAt)));
 
   if (studentsData.length === 0) {
     return NextResponse.json({ students: [] });

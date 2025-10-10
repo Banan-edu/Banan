@@ -20,6 +20,9 @@ export const users = pgTable("users", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   lastLogin: timestamp("last_login"),
   lastActivity: timestamp("last_activity"),
+   //added
+  deletedAt: timestamp("deleted_at"),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
 export const instructorPermissions = pgTable("instructor_permissions", {
@@ -99,7 +102,7 @@ export const classStudents = pgTable("class_students", {
 });
 export const testStudents = pgTable("test_students", {
   id: serial("id").primaryKey(),
-  testId: integer("class_id").notNull().references(() => classes.id, { onDelete: 'cascade' }),
+  testId: integer("test_id").notNull().references(() => classes.id, { onDelete: 'cascade' }),
   userId: integer("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
   enrolledAt: timestamp("enrolled_at").defaultNow().notNull(),
 });
@@ -115,6 +118,27 @@ export const courses = pgTable("courses", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
+
+//I will add it later and fix it
+// export const courseTemplates = pgTable("course_templates", {
+//   id: serial("id").primaryKey(),
+//   name: text("name").notNull(), // e.g., "Beginner Typing - English"
+//   description: text("description"),
+//   language: languageEnum("language").default("en").notNull(),
+//   type: courseTypeEnum("type").default("typing").notNull(),
+
+//   // JSON to define structure of template (sections, lessons)
+//   structure: jsonb("structure").notNull().default({
+//     sections: [],
+//   }),
+
+//   difficultyLevel: text("difficulty_level").default("beginner"), // beginner, intermediate, advanced
+//   estimatedDuration: integer("estimated_duration").default(0), // in minutes
+
+//   createdBy: integer("created_by").references(() => users.id),
+//   createdAt: timestamp("created_at").defaultNow().notNull(),
+//   updatedAt: timestamp("updated_at").defaultNow().notNull(),
+// });
 
 export const courseEditors = pgTable("course_editors", {
   id: serial("id").primaryKey(),
@@ -340,7 +364,7 @@ export const testsRelations = relations(tests, ({ one, many }) => ({
 }));
 
 export const genderEnum = pgEnum('gender', ['male', 'female']);
-
+//to delete
 export const registrations = pgTable("registrations", {
   id: serial("id").primaryKey(),
   fullName: text("full_name").notNull(),

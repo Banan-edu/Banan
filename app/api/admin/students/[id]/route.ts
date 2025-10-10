@@ -4,6 +4,7 @@ import { getSession } from '@/lib/auth';
 import { db } from '@server/db';
 import { users, schoolStudents, schools } from '@shared/schema';
 import { eq, and } from 'drizzle-orm';
+import { ActivityLogger } from '@/lib/activityLogger';
 
 type RouteContext = {
   params: Promise<{ id: string }>;
@@ -131,10 +132,13 @@ export async function PUT(
     }
 
     // Update student
-    await db
+    const [updatedStudent] = await db
       .update(users)
       .set(updateData)
-      .where(eq(users.id, studentId));
+      .where(eq(users.id, studentId))
+      .returning();
+
+    await ActivityLogger.update(session.userId, 'student', studentId, updatedStudent.name);
 
     // Update school assignment if provided
     if (schoolId) {
@@ -172,10 +176,19 @@ export async function DELETE(
   const { id } = await context.params;
   const studentId = parseInt(id);
 
-  // Delete the student user (cascade will handle schoolStudents)
-  await db
-    .delete(users)
-    .where(and(eq(users.id, studentId), eq(users.role, 'student')));
+  const [deletedUser] = await db
+    .update(users)
+    .set({ deletedAt: new Date() })
+    .where(eq(users.id, studentId))
+    .returning();
+
+  // Log the deletion
+  await ActivityLogger.delete(
+    session.userId,
+    'student',
+    studentId,
+    `Soft deleted student: ${deletedUser.name}`
+  );
 
   return NextResponse.json({ success: true });
 }

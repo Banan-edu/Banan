@@ -78,11 +78,10 @@ export default function SchoolDetailPage() {
   useEffect(() => {
     if (activeTab === 'overview' && admins?.length === 0) {
       fetchAdmins();
+      fetchPracticeData();
     } else if (activeTab === 'history' && logs?.length === 0) {
       fetchHistory();
-    } else if ((activeTab === 'calendar' || activeTab === 'punchcard') && dailyActivity.length === 0) {
-      fetchPracticeData();
-    }
+    } 
   }, [activeTab]);
 
   const fetchSchoolData = async () => {
@@ -180,7 +179,7 @@ export default function SchoolDetailPage() {
             </h1>
             <button
               onClick={() => router.push(`/admin/schools/${params.id}/edit`)}
-              className={`bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 ${isRTL ? 'flex-row-reverse font-arabic' : ''}`}
+              className={`flex-1 md:flex-none px-6 py-3 border border-gray-500 text-gray rounded-lg hover:bg-gray-400 flex items-center gap-2 justify-center ${isRTL ? 'flex-row-reverse font-arabic' : ''}`}
             >
               <Edit className="w-5 h-5" />
               {isRTL ? 'تعديل' : 'Edit'}

@@ -3,6 +3,11 @@ import { getSession } from '@/lib/auth';
 import { db } from '@server/db';
 import { schools, classes, schoolAdmins, classInstructors, classStudents } from '@shared/schema';
 import { eq, sql, and, inArray } from 'drizzle-orm';
+import { ActivityLogger } from '@/lib/activityLogger';
+
+type RouteContext = {
+  params: Promise<{ id: string }>;
+};
 
 export async function GET(
   req: NextRequest,
@@ -103,4 +108,64 @@ export async function GET(
       studentCount,
     },
   });
+}
+
+export async function PUT(
+  req: NextRequest,
+  context: RouteContext
+) {
+  const session = await getSession();
+
+  if (!session || session.role !== 'instructor') {
+    return NextResponse.json({ error: 'Not authorized' }, { status: 401 });
+  }
+
+  const { id } = await context.params;
+  const schoolId = parseInt(id);
+  const body = await req.json();
+
+  const [updatedSchool] = await db
+    .update(schools)
+    .set({
+      ...body,
+      updatedAt: new Date(),
+    })
+    .where(eq(schools.id, schoolId))
+    .returning();
+
+  // Log the activity
+  await ActivityLogger.update(session.userId, 'school', schoolId, updatedSchool.name);
+
+  return NextResponse.json({ school: updatedSchool });
+}
+
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const session = await getSession();
+
+  if (!session || session.role !== 'instructor') {
+    return NextResponse.json({ error: 'Not authorized' }, { status: 401 });
+  }
+
+  const { id } = await params;
+  const schoolId = parseInt(id);
+
+  const [school] = await db
+    .select()
+    .from(schools)
+    .where(eq(schools.id, schoolId))
+    .limit(1);
+
+  if (!school) {
+    return NextResponse.json({ error: 'School not found' }, { status: 404 });
+  }
+
+  // Log before deleting
+  await ActivityLogger.delete(session.userId, 'school', schoolId, school.name);
+
+  await db.delete(schools).where(eq(schools.id, schoolId));
+
+  return NextResponse.json({ success: true });
 }

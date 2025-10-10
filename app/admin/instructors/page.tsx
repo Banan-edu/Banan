@@ -2,18 +2,23 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Plus, UserCheck, X } from 'lucide-react';
+import { Plus, Trash2, UserCheck, X } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
 import { Sidebar, adminLinks } from '@/components/Sidebar';
 import { useLanguage } from '@/app/contexts/LanguageContext';
+import ConfirmDeleteModal from '@/components/modals/ConfirmDelete';
 
 export default function AdminInstructorsPage() {
   const [instructors, setInstructors] = useState<any[]>([]);
   const [schools, setSchools] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [DeleteLoading, setDeleteLoading] = useState(false);
+  const [selectedInstructorId, setSelectedInstructorId] = useState<number | null>(null);
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -104,6 +109,23 @@ export default function AdminInstructorsPage() {
     }));
   };
 
+
+  const handleDelete = async (id: number) => {
+    setDeleteLoading(true)
+    try {
+      const res = await fetch(`/api/admin/instructors/${id}`, {
+        method: 'DELETE'
+      });
+      if (res.ok) {
+        fetchData();
+        setDeleteLoading(false)
+        setShowDeleteModal(false)
+      }
+    } catch (error) {
+      console.error('Error deleting student:', error);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -146,6 +168,9 @@ export default function AdminInstructorsPage() {
                 <th className={`px-6 py-3 text-xs font-medium text-gray-500 uppercase`}>
                   {isRTL ? 'آخر تسجيل دخول' : 'Last Login'}
                 </th>
+                <th className={`px-6 py-3 text-xs font-medium text-gray-500 uppercase`}>
+                  {isRTL ? 'الاجراءات' : 'Actions'}
+                </th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -169,6 +194,28 @@ export default function AdminInstructorsPage() {
                   </td>
                   <td className={`px-6 py-4 whitespace-nowrap text-gray-600 ${isRTL ? 'font-arabic' : ''}`}>
                     {instructor.lastLogin ? new Date(instructor.lastLogin).toLocaleDateString(isRTL ? 'ar-SA' : 'en-US') : (isRTL ? 'أبداً' : 'Never')}
+                  </td>
+                  <td className={`px-6 py-4 ${isRTL ? 'text-right' : 'text-left'}`}>
+                    <button
+                      onClick={() => {
+                        setSelectedInstructorId(instructor.id);
+                        setShowDeleteModal(true);
+                      }}
+                      className="text-red-600 hover:text-red-900 flex items-center gap-1 transition-colors"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      {isRTL ? 'حذف' : 'Delete'}
+                    </button>
+
+                    <ConfirmDeleteModal
+                      isOpen={showDeleteModal}
+                      onClose={() => setShowDeleteModal(false)}
+                      onConfirm={() => {
+                        if (selectedInstructorId !== null) handleDelete(selectedInstructorId);
+                      }}
+                      itemName={isRTL ? "المعلم" : "Instructor"}
+                      loading={DeleteLoading}
+                    />
                   </td>
                 </tr>
               ))}

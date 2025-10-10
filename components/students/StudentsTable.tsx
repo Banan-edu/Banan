@@ -36,6 +36,8 @@ export default function StudentsTable({
     const [searchTerm, setSearchTerm] = useState('');
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [selectedInstructorId, setSelectedInstructorId] = useState<number | null>(null);
+
     const [DeleteLoading, setDeleteLoading] = useState(false);
     const { isRTL } = useLanguage();
     const router = useRouter();
@@ -230,7 +232,10 @@ export default function StudentsTable({
                                         {showDelete && (
                                             <td className={`px-6 py-4 ${isRTL ? 'text-right' : 'text-left'}`}>
                                                 <button
-                                                    onClick={() => setShowDeleteModal(true)}
+                                                    onClick={() => {
+                                                        setSelectedInstructorId(student.id);
+                                                        setShowDeleteModal(true);
+                                                    }}
                                                     className="text-red-600 hover:text-red-900 flex items-center gap-1 transition-colors"
                                                 >
                                                     <Trash2 className="w-4 h-4" />
@@ -240,7 +245,9 @@ export default function StudentsTable({
                                                 <ConfirmDeleteModal
                                                     isOpen={showDeleteModal}
                                                     onClose={() => setShowDeleteModal(false)}
-                                                    onConfirm={() => handleDelete(student.id)}
+                                                    onConfirm={() => {
+                                                        if (selectedInstructorId !== null) handleDelete(selectedInstructorId);
+                                                    }}
                                                     itemName={isRTL ? "الطالب" : "Student"}
                                                     loading={DeleteLoading}
                                                 />

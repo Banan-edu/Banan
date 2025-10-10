@@ -38,7 +38,7 @@ export default function AddSchoolPage() {
     setError('');
 
     try {
-      const res = await fetch('/api/instructor/schools/create', {
+      const res = await fetch('/api/instructor/schools', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

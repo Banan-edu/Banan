@@ -45,8 +45,8 @@ export default function AssignAdminModal({ isOpen, onClose, schoolId, onAdminsAs
   };
 
   const toggleAdmin = (adminId: number) => {
-    setSelectedAdmins(prev => 
-      prev.includes(adminId) 
+    setSelectedAdmins(prev =>
+      prev.includes(adminId)
         ? prev.filter(id => id !== adminId)
         : [...prev, adminId]
     );
@@ -62,20 +62,22 @@ export default function AssignAdminModal({ isOpen, onClose, schoolId, onAdminsAs
     setError('');
 
     try {
-      const res = await fetch(`/api/admin/schools/${schoolId}/assign-admins`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ adminIds: selectedAdmins }),
-      });
+      for (const adminId of selectedAdmins) {
+        const res = await fetch(`/api/admin/schools/${schoolId}/admins`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: adminId }),
+        });
 
-      if (res.ok) {
-        setSelectedAdmins([]);
-        onAdminsAssigned();
-        onClose();
-      } else {
-        const data = await res.json();
-        setError(data.error || (isRTL ? 'حدث خطأ' : 'An error occurred'));
+        if (!res.ok) {
+          console.error(`Failed to assign admin ${adminId}`);
+          const data = await res.json();
+          setError(data.error || (isRTL ? 'حدث خطأ' : 'An error occurred'));
+        }
       }
+      setSelectedAdmins([]);
+      onAdminsAssigned();
+      onClose();
     } catch (err) {
       setError(isRTL ? 'حدث خطأ في الاتصال' : 'Connection error');
     } finally {
