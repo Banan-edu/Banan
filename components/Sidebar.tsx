@@ -156,12 +156,12 @@ export const instructorLinks: SidebarLink[] = [
     labelEn: 'Tests',
     icon: <Calendar className="w-5 h-5" />
   },
-  {
-    href: '/instructor/schools',
-    labelAr: 'المدرسة',
-    labelEn: 'School',
-    icon: <Users className="w-5 h-5" />
-  },
+  // {
+  //   href: '/instructor/schools',
+  //   labelAr: 'المدرسة',
+  //   labelEn: 'School',
+  //   icon: <Users className="w-5 h-5" />
+  // },
   // {
   //   href: '/instructor/instructor',
   //   labelAr: 'المعلم',
@@ -195,22 +195,22 @@ export const adminLinks: SidebarLink[] = [
     labelEn: 'Students',
     icon: <GraduationCap className="w-5 h-5" />
   },
-  {
-    href: '/admin/courses',
-    labelAr: 'الدورات',
-    labelEn: 'Courses',
-    icon: <BookOpen className="w-5 h-5" />
-  },
-  {
-    href: '/instructor/classes',
-    labelAr: 'الصفوف',
-    labelEn: 'Classes',
-    icon: <Target className="w-5 h-5" />
-  },
-  {
-    href: '/admin/tests',
-    labelAr: 'الاختبارات',
-    labelEn: 'Tests',
-    icon: <Calendar className="w-5 h-5" />
-  },
+  // {
+  //   href: '/admin/courses',
+  //   labelAr: 'الدورات',
+  //   labelEn: 'Courses',
+  //   icon: <BookOpen className="w-5 h-5" />
+  // },
+  // {
+  //   href: '/instructor/classes',
+  //   labelAr: 'الصفوف',
+  //   labelEn: 'Classes',
+  //   icon: <Target className="w-5 h-5" />
+  // },
+  // {
+  //   href: '/admin/tests',
+  //   labelAr: 'الاختبارات',
+  //   labelEn: 'Tests',
+  //   icon: <Calendar className="w-5 h-5" />
+  // },
 ];

@@ -290,6 +290,14 @@
       "namedRegex": "^/api/instructor/classes/(?<nxtPid>[^/]+?)/edit(?:/)?$"
     },
     {
+      "page": "/api/instructor/classes/[id]/live-activity",
+      "regex": "^/api/instructor/classes/([^/]+?)/live\\-activity(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/instructor/classes/(?<nxtPid>[^/]+?)/live\\-activity(?:/)?$"
+    },
+    {
       "page": "/api/instructor/classes/[id]/students",
       "regex": "^/api/instructor/classes/([^/]+?)/students(?:/)?$",
       "routeKeys": {
@@ -455,6 +463,14 @@
       "namedRegex": "^/api/instructor/students/(?<nxtPid>[^/]+?)/history(?:/)?$"
     },
     {
+      "page": "/api/instructor/students/[id]/letters",
+      "regex": "^/api/instructor/students/([^/]+?)/letters(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/instructor/students/(?<nxtPid>[^/]+?)/letters(?:/)?$"
+    },
+    {
       "page": "/api/instructor/students/[id]/login-as",
       "regex": "^/api/instructor/students/([^/]+?)/login\\-as(?:/)?$",
       "routeKeys": {
@@ -469,6 +485,14 @@
         "nxtPid": "nxtPid"
       },
       "namedRegex": "^/api/instructor/students/(?<nxtPid>[^/]+?)/performance(?:/)?$"
+    },
+    {
+      "page": "/api/instructor/students/[id]/performance-chart",
+      "regex": "^/api/instructor/students/([^/]+?)/performance\\-chart(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/instructor/students/(?<nxtPid>[^/]+?)/performance\\-chart(?:/)?$"
     },
     {
       "page": "/api/instructor/students/[id]/practice",

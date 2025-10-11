@@ -19,6 +19,7 @@ import {
   ArrowLeft,
   X,
 } from 'lucide-react';
+import PerformanceChart from '@/components/students/PerformanceChart';
 
 type TabType = 'overview' | 'classes' | 'progress' | 'activity';
 
@@ -338,31 +339,7 @@ function OverviewTab({ student, studentId, isRTL }: { student: any; studentId: s
       {/* Performance Section */}
       <div className="space-y-6">
         <h3 className="text-2xl font-bold text-gray-900">{isRTL ? 'الأداء' : 'Performance'}</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-lg">
-            <div className="text-sm text-blue-600 font-medium mb-2">{isRTL ? 'السرعة' : 'Speed'}</div>
-            <div className="text-3xl font-bold text-blue-900">{performance?.avgSpeed || 0} WPM</div>
-          </div>
-
-          <div className="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-lg">
-            <div className="text-sm text-green-600 font-medium mb-2">{isRTL ? 'الدقة' : 'Accuracy'}</div>
-            <div className="text-3xl font-bold text-green-900">{performance?.avgAccuracy || 0}%</div>
-          </div>
-
-          <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-lg">
-            <div className="text-sm text-purple-600 font-medium mb-2">{isRTL ? 'الوقت الإجمالي' : 'Total Time'}</div>
-            <div className="text-3xl font-bold text-purple-900">
-              {formatTime(performance?.totalTime || 0)}
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white border border-gray-200 rounded-lg p-6">
-          <h3 className="text-lg font-semibold mb-4">{isRTL ? 'تفاصيل الأداء' : 'Performance Details'}</h3>
-          <div className="h-64 flex items-center justify-center text-gray-500">
-            {isRTL ? 'الرسم البياني سيتم إضافته قريباً' : 'Chart will be added soon'}
-          </div>
-        </div>
+        <PerformanceChart studentId={studentId} isRTL={isRTL} />
       </div>
 
       {/* History Section */}

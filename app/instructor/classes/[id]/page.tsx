@@ -25,8 +25,9 @@ import {
 } from 'lucide-react';
 import ClassStudentsManager from '@/components/classes/ClassesStudentManager';
 import ClassCourses from '@/components/classes/ClassCourses';
+import LiveActivityTab from '@/components/classes/ClassLiveActivity';
 
-type Tab = 'overview' | 'students' | 'instructors' | 'courses' | 'scoreboard' | 'live';
+type Tab = 'overview' | 'students' | 'instructors' | 'courses' | 'live';// | 'scoreboard'
 
 export default function ClassDetailsPage() {
   const [classData, setClassData] = useState<any>(null);
@@ -80,7 +81,7 @@ export default function ClassDetailsPage() {
     { id: 'students' as Tab, label: isRTL ? 'الطلاب' : 'Students', icon: GraduationCap },
     { id: 'instructors' as Tab, label: isRTL ? 'المعلمون' : 'Instructors', icon: Users },
     { id: 'courses' as Tab, label: isRTL ? 'الدورات' : 'Courses', icon: BookOpen },
-    { id: 'scoreboard' as Tab, label: isRTL ? 'لوحة النتائج' : 'Scoreboard', icon: Trophy },
+    // { id: 'scoreboard' as Tab, label: isRTL ? 'لوحة النتائج' : 'Scoreboard', icon: Trophy },
     { id: 'live' as Tab, label: isRTL ? 'نشاط مباشر' : 'Live Activity', icon: Video },
   ];
 
@@ -441,35 +442,8 @@ export default function ClassDetailsPage() {
               isRTL
             />
           )}
-          {/* {activeTab === 'courses' && (
-            <div className="space-y-4">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-semibold">{isRTL ? 'الدورات' : 'Courses'}</h2>
-                <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                  {isRTL ? 'تعيين دورات' : 'Assign Courses'}
-                </button>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {classData.courses.length === 0 ? (
-                  <p className="text-gray-500 col-span-2">No courses assigned</p>
-                ) : (
-                  classData.courses.map((course: any) => (
-                    <div key={course.id} className="border rounded-lg p-4">
-                      <h3 className="font-semibold text-lg mb-2">{course.name}</h3>
-                      {course.description && <p className="text-sm text-gray-600 mb-3">{course.description}</p>}
-                      <div className="flex gap-2 mt-3">
-                        <button className="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700">View Stats</button>
-                        <button className="px-3 py-1 bg-gray-200 text-gray-700 text-sm rounded hover:bg-gray-300">Options</button>
-                        <button className="px-3 py-1 bg-red-100 text-red-700 text-sm rounded hover:bg-red-200">Clear Progress</button>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-            </div>
-          )} */}
 
-          {activeTab === 'scoreboard' && (
+          {/* {activeTab === 'scoreboard' && (
             <div className="bg-white rounded-lg shadow-md p-6">
               <h2 className="text-xl font-semibold mb-4">{isRTL ? 'لوحة النتائج' : 'Scoreboard'}</h2>
               <div className="overflow-x-auto">
@@ -492,9 +466,9 @@ export default function ClassDetailsPage() {
                 </table>
               </div>
             </div>
-          )}
+          )} */}
 
-          {activeTab === 'live' && (
+          {/* {activeTab === 'live' && (
             <div className="bg-white rounded-lg shadow-md p-6">
               <h2 className="text-xl font-semibold mb-4">{isRTL ? 'النشاط المباشر' : 'Live Activity Feed'}</h2>
               <div className="space-y-3">
@@ -503,6 +477,9 @@ export default function ClassDetailsPage() {
                 </div>
               </div>
             </div>
+          )} */}
+          {activeTab === 'live' && (
+            <LiveActivityTab classId={classId} isRTL />
           )}
         </div>
       </main>
