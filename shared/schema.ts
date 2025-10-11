@@ -209,9 +209,82 @@ export const lessonProgress = pgTable("lesson_progress", {
   timeSpent: integer("time_spent").default(0),
   attempts: integer("attempts").default(0),
 
+   // Session replay and error tracking
+  sessionData: jsonb("session_data"), // Keystroke timeline for replay
+  errorPatterns: jsonb("error_patterns"), // Common mistakes in this session
+
   lastAttemptAt: timestamp("last_attempt_at"),
   completedAt: timestamp("completed_at"),
 });
+
+// Screen recording metadata (actual video stored in cloud)
+export const lessonScreenRecords = pgTable("lesson_screen_records", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
+  lessonId: integer("lesson_id").notNull().references(() => lessons.id, { onDelete: 'cascade' }),
+  progressId: integer("progress_id").references(() => lessonProgress.id, { onDelete: 'cascade' }),
+
+  cloudUrl: text("cloud_url"), // URL to cloud-stored recording
+  cloudProvider: text("cloud_provider"), // e.g., 'aws-s3', 'cloudinary', etc.
+  duration: integer("duration"), // in seconds
+  fileSize: integer("file_size"), // in bytes
+
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Aggregated letter statistics per user
+export const letterStatistics = pgTable("letter_statistics", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
+  letter: text("letter").notNull(), // The character being tracked
+
+  correctCount: integer("correct_count").default(0).notNull(),
+  incorrectCount: integer("incorrect_count").default(0).notNull(),
+  totalTimeMs: integer("total_time_ms").default(0).notNull(), // Total time spent typing this letter
+
+  // Common mistakes - what they type instead
+  commonErrors: jsonb("common_errors").default({}), // { "a": 15, "s": 10 }
+
+  lastPracticedAt: timestamp("last_practiced_at"),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+// Per-lesson letter progress for detailed analysis
+export const letterProgress = pgTable("letter_progress", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
+  lessonId: integer("lesson_id").notNull().references(() => lessons.id, { onDelete: 'cascade' }),
+  progressId: integer("progress_id").references(() => lessonProgress.id, { onDelete: 'cascade' }),
+  letter: text("letter").notNull(),
+
+  correctCount: integer("correct_count").default(0).notNull(),
+  incorrectCount: integer("incorrect_count").default(0).notNull(),
+  avgTimeMs: integer("avg_time_ms").default(0), // Average time per keystroke
+
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Typing patterns and common mistakes
+export const typingPatterns = pgTable("typing_patterns", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
+
+  // Pattern identification
+  patternType: text("pattern_type").notNull(), // 'adjacent_key', 'speed_error', 'repeated_mistake'
+  fromChar: text("from_char").notNull(), // Expected character
+  toChar: text("to_char").notNull(), // What was typed instead
+
+  occurrences: integer("occurrences").default(1).notNull(),
+  lastOccurrence: timestamp("last_occurrence").defaultNow().notNull(),
+
+  // Context
+  avgSpeed: integer("avg_speed"), // WPM when this error occurs
+  avgAccuracy: integer("avg_accuracy"), // Overall accuracy when this happens
+
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
 
 export const tests = pgTable("tests", {
   id: serial("id").primaryKey(),
@@ -409,3 +482,13 @@ export type Registration = typeof registrations.$inferSelect;
 export type InsertRegistration = typeof registrations.$inferInsert;
 export type ContactMessage = typeof contactMessages.$inferSelect;
 export type InsertContactMessage = typeof contactMessages.$inferInsert;
+
+
+export type LessonScreenRecord = typeof lessonScreenRecords.$inferSelect;
+export type InsertLessonScreenRecord = typeof lessonScreenRecords.$inferInsert;
+export type LetterStatistic = typeof letterStatistics.$inferSelect;
+export type InsertLetterStatistic = typeof letterStatistics.$inferInsert;
+export type LetterProgress = typeof letterProgress.$inferSelect;
+export type InsertLetterProgress = typeof letterProgress.$inferInsert;
+export type TypingPattern = typeof typingPatterns.$inferSelect;
+export type InsertTypingPattern = typeof typingPatterns.$inferInsert;

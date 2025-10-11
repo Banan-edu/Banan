@@ -1,9 +1,11 @@
+
 'use client';
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Sidebar, studentLinks } from '@/components/Sidebar';
 import { useLanguage } from '@/app/contexts/LanguageContext';
+import { CheckCircle2 } from 'lucide-react';
 
 interface Course {
     id: number;
@@ -11,6 +13,9 @@ interface Course {
     description: string;
     language: string;
     lessonsCount: number;
+    completedLessons: number;
+    progress: number;
+    isCompleted: boolean;
 }
 
 export default function StudentDashboard() {
@@ -54,6 +59,59 @@ export default function StudentDashboard() {
         );
     }
 
+    const inProgressCourses = courses.filter(c => !c.isCompleted);
+    const completedCourses = courses.filter(c => c.isCompleted);
+
+    const CourseCard = ({ course }: { course: Course }) => (
+        <div
+            onClick={() => router.push(`/student/courses/${course.id}`)}
+            className="bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow cursor-pointer p-6"
+        >
+            <div className="flex items-center justify-between mb-4">
+                <h3 className="text-xl font-semibold text-gray-900">{course.name}</h3>
+                <div className="flex items-center gap-2">
+                    {course.isCompleted && (
+                        <CheckCircle2 className="w-6 h-6 text-green-600" />
+                    )}
+                    <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
+                        {course.language === 'ar' ? 'Arabic' : 'English'}
+                    </span>
+                </div>
+            </div>
+            
+            <p className="text-gray-600 mb-4">{course.description || 'No description'}</p>
+            
+            {/* Progress Bar */}
+            <div className="mb-4">
+                <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm text-gray-600">
+                        {course.completedLessons} / {course.lessonsCount} {isRTL ? 'دروس' : 'lessons'}
+                    </span>
+                    <span className="text-sm font-semibold text-blue-600">
+                        {course.progress}%
+                    </span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2.5">
+                    <div 
+                        className={`h-2.5 rounded-full transition-all duration-300 ${
+                            course.isCompleted ? 'bg-green-600' : 'bg-blue-600'
+                        }`}
+                        style={{ width: `${course.progress}%` }}
+                    ></div>
+                </div>
+            </div>
+
+            <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-500">
+                    {course.lessonsCount || 0} {isRTL ? 'دروس' : 'lessons'}
+                </span>
+                <span className={`font-medium ${course.isCompleted ? 'text-green-600' : 'text-blue-600'}`}>
+                    {course.isCompleted ? (isRTL ? 'مكتمل' : 'Completed') : (isRTL ? 'ابدأ' : 'Continue')} →
+                </span>
+            </div>
+        </div>
+    );
+
     return (
         <div className={`flex min-h-screen bg-gray-50`}>
             <Sidebar links={studentLinks} userRole="student" />
@@ -78,27 +136,35 @@ export default function StudentDashboard() {
                         </p>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {courses.map((course) => (
-                            <div
-                                key={course.id}
-                                onClick={() => router.push(`/student/courses/${course.id}`)}
-                                className="bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow cursor-pointer p-6"
-                            >
-                                <div className="flex items-center justify-between mb-4">
-                                    <h3 className="text-xl font-semibold text-gray-900">{course.name}</h3>
-                                    <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
-                                        {course.language === 'ar' ? 'Arabic' : 'English'}
-                                    </span>
-                                </div>
-                                <p className="text-gray-600 mb-4">{course.description || 'No description'}</p>
-                                <div className="flex items-center justify-between text-sm text-gray-500">
-                                    <span>{course.lessonsCount || 0} lessons</span>
-                                    <span className="text-blue-600 font-medium">Start →</span>
+                    <>
+                        {/* In Progress Courses */}
+                        {inProgressCourses.length > 0 && (
+                            <div className="mb-8">
+                                <h3 className={`text-xl font-semibold text-gray-900 mb-4 ${isRTL ? 'font-arabic text-right' : ''}`}>
+                                    {isRTL ? 'الدورات الجارية' : 'Courses'}
+                                </h3>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    {inProgressCourses.map((course) => (
+                                        <CourseCard key={course.id} course={course} />
+                                    ))}
                                 </div>
                             </div>
-                        ))}
-                    </div>
+                        )}
+
+                        {/* Completed Courses */}
+                        {completedCourses.length > 0 && (
+                            <div>
+                                <h3 className={`text-xl font-semibold text-gray-900 mb-4 ${isRTL ? 'font-arabic text-right' : ''}`}>
+                                    {isRTL ? 'الدورات المكتملة' : 'Completed'}
+                                </h3>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    {completedCourses.map((course) => (
+                                        <CourseCard key={course.id} course={course} />
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </>
                 )}
             </main>
         </div>

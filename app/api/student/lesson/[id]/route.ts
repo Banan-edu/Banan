@@ -1,8 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth';
 import { db } from '@server/db';
-import { lessons, lessonProgress, sections, courses, classCourses, classStudents } from '@shared/schema';
+import { lessons, lessonProgress, sections, courses, classCourses, classStudents, letterProgress, letterStatistics, typingPatterns } from '@shared/schema';
 import { eq, and, inArray } from 'drizzle-orm';
+
+type ErrorPatternData = {
+  count?: number;
+  type?: string;
+};
 
 type RouteContext = {
   params: Promise<{ id: string }>;
@@ -87,6 +92,11 @@ export async function POST(req: NextRequest, context: RouteContext) {
   const timeSpent = Math.max(0, Math.min(3600, parseInt(body.timeSpent) || 0));
   const score = Math.max(0, Math.min(1000, parseInt(body.score) || 0));
 
+  // Extract detailed tracking data
+  const sessionData = body.sessionData || null; // Keystroke timeline
+  const letterData = body.letterData || []; // Per-letter statistics
+  const errorPatterns = body.errorPatterns || {}; // Common error patterns
+
   const [lesson] = await db
     .select()
     .from(lessons)
@@ -142,24 +152,28 @@ export async function POST(req: NextRequest, context: RouteContext) {
     ))
     .limit(1);
 
+  let progressRecord;
+
   if (existing) {
     const [updated] = await db
       .update(lessonProgress)
       .set({
-        score: Math.max((existing.score || 0), score),
-        speed: Math.max((existing.speed || 0), speed),
-        accuracy: Math.max((existing.accuracy || 0), accuracy),
-        stars: Math.max((existing.stars || 0), stars),
-        timeSpent: (existing.timeSpent || 0) + timeSpent,
-        attempts: (existing.attempts || 0) + 1,
+        score: Math.max(existing?.score || 0, score),
+        speed: Math.max(existing?.speed || 0, speed),
+        accuracy: Math.max(existing?.accuracy || 0, accuracy),
+        stars: Math.max(existing?.stars || 0, stars),
+        timeSpent: (existing?.timeSpent || 0) + timeSpent,
+        attempts: (existing?.attempts || 0) + 1,
         completed: completed || existing.completed,
+        sessionData,
+        errorPatterns,
         lastAttemptAt: new Date(),
         completedAt: completed && !existing.completed ? new Date() : existing.completedAt,
       })
       .where(eq(lessonProgress.id, existing.id))
       .returning();
 
-    return NextResponse.json({ progress: updated });
+    progressRecord = updated;
   } else {
     const [created] = await db
       .insert(lessonProgress)
@@ -173,11 +187,122 @@ export async function POST(req: NextRequest, context: RouteContext) {
         timeSpent,
         attempts: 1,
         completed,
+        sessionData,
+        errorPatterns,
         lastAttemptAt: new Date(),
         completedAt: completed ? new Date() : null,
       })
       .returning();
 
-    return NextResponse.json({ progress: created });
+    progressRecord = created;
   }
+
+  // Save per-lesson letter progress
+  if (letterData && letterData.length > 0) {
+    for (const letterStat of letterData) {
+      await db.insert(letterProgress).values({
+        userId: session.userId,
+        lessonId,
+        progressId: progressRecord.id,
+        letter: letterStat.letter,
+        correctCount: letterStat.correctCount || 0,
+        incorrectCount: letterStat.incorrectCount || 0,
+        avgTimeMs: letterStat.avgTimeMs || 0,
+      });
+
+      // Update aggregated letter statistics
+      const [existing] = await db
+        .select()
+        .from(letterStatistics)
+        .where(
+          and(
+            eq(letterStatistics.userId, session.userId),
+            eq(letterStatistics.letter, letterStat.letter)
+          )
+        )
+        .limit(1);
+
+      if (existing) {
+        const newCorrect = existing.correctCount + (letterStat.correctCount || 0);
+        const newIncorrect = existing.incorrectCount + (letterStat.incorrectCount || 0);
+        const newTotalTime = existing.totalTimeMs + (letterStat.totalTimeMs || 0);
+
+        // Merge common errors
+        const mergedErrors = { ...(existing.commonErrors as any) };
+        if (letterStat.errors) {
+          for (const [wrongChar, count] of Object.entries(letterStat.errors)) {
+            mergedErrors[wrongChar] = (mergedErrors[wrongChar] || 0) + (count as number);
+          }
+        }
+
+        await db
+          .update(letterStatistics)
+          .set({
+            correctCount: newCorrect,
+            incorrectCount: newIncorrect,
+            totalTimeMs: newTotalTime,
+            commonErrors: mergedErrors,
+            lastPracticedAt: new Date(),
+            updatedAt: new Date(),
+          })
+          .where(eq(letterStatistics.id, existing.id));
+      } else {
+        await db.insert(letterStatistics).values({
+          userId: session.userId,
+          letter: letterStat.letter,
+          correctCount: letterStat.correctCount || 0,
+          incorrectCount: letterStat.incorrectCount || 0,
+          totalTimeMs: letterStat.totalTimeMs || 0,
+          commonErrors: letterStat.errors || {},
+          lastPracticedAt: new Date(),
+        });
+      }
+    }
+  }
+
+  // Save typing patterns
+  if (errorPatterns && typeof errorPatterns === 'object') {
+    for (const [pattern, data] of Object.entries(errorPatterns as Record<string, ErrorPatternData>)) {
+      const [from, to] = pattern.split('->');
+      if (from && to) {
+        const [existingPattern] = await db
+          .select()
+          .from(typingPatterns)
+          .where(
+            and(
+              eq(typingPatterns.userId, session.userId),
+              eq(typingPatterns.fromChar, from),
+              eq(typingPatterns.toChar, to)
+            )
+          )
+          .limit(1);
+
+        if (existingPattern) {
+          await db
+            .update(typingPatterns)
+            .set({
+              occurrences: existingPattern.occurrences + (data?.count || 1),
+              lastOccurrence: new Date(),
+              avgSpeed: speed,
+              avgAccuracy: accuracy,
+              updatedAt: new Date(),
+            })
+            .where(eq(typingPatterns.id, existingPattern.id));
+        } else {
+          await db.insert(typingPatterns).values({
+            userId: session.userId,
+            patternType: data?.type || 'unknown',
+            fromChar: from,
+            toChar: to,
+            occurrences: data?.count || 1,
+            avgSpeed: speed,
+            avgAccuracy: accuracy,
+            lastOccurrence: new Date(),
+          });
+        }
+      }
+    }
+  }
+
+  return NextResponse.json({ progress: progressRecord });
 }

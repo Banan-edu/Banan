@@ -1,16 +1,16 @@
-
 'use client';
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Sidebar, studentLinks } from '@/components/Sidebar';
 import { useLanguage } from '@/app/contexts/LanguageContext';
-import { 
-  BookOpen, 
-  Trophy, 
-  Clock, 
-  Target, 
+import {
+  BookOpen,
+  Trophy,
+  Clock,
+  Target,
   TrendingUp,
+  TrendingDown,
   Calendar,
   Award,
   BarChart3
@@ -39,10 +39,28 @@ interface RecentActivity {
   completedAt: string;
 }
 
+interface LetterStat {
+  letter: string;
+  totalCount: number;
+  correctCount: number;
+  accuracy: number;
+  avgTimeMs: number;
+  commonErrors: Record<string, number>;
+}
+
+interface TypingPattern {
+  from: string;
+  to: string;
+  count: number;
+  type: string;
+}
+
 export default function StudentDashboard() {
   const [user, setUser] = useState<any>(null);
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]);
+  const [letterStats, setLetterStats] = useState<LetterStat[]>([]);
+  const [patterns, setPatterns] = useState<TypingPattern[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const { isRTL } = useLanguage();
@@ -57,13 +75,21 @@ export default function StudentDashboard() {
         }
         const data = await res.json();
         setUser(data.user);
-        
+
         // Fetch dashboard stats
         const statsRes = await fetch('/api/student/dashboard/stats');
         if (statsRes.ok) {
           const statsData = await statsRes.json();
           setStats(statsData.stats);
           setRecentActivity(statsData.recentActivity || []);
+        }
+
+        // Fetch letter statistics
+        const letterRes = await fetch('/api/student/letter-stats');
+        if (letterRes.ok) {
+          const letterData = await letterRes.json();
+          setLetterStats(letterData.letterStats || []);
+          setPatterns(letterData.patterns || []);
         }
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -86,12 +112,26 @@ export default function StudentDashboard() {
   const formatTime = (seconds: number) => {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
-    return hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
+    const secs = Math.floor(seconds % 60);
+
+    if (hours > 0) return `${hours}h ${minutes}m ${secs}s`;
+    if (minutes > 0) return `${minutes}m ${secs}s`;
+    return `${secs}s`;
   };
 
   const progressPercentage = stats && stats.totalLessons > 0
     ? Math.round((stats.completedLessons / stats.totalLessons) * 100)
     : 0;
+
+  const weakestLetters = [...letterStats]
+    .filter(l => l.totalCount >= 5)
+    .sort((a, b) => a.accuracy - b.accuracy)
+    .slice(0, 5);
+
+  const strongestLetters = [...letterStats]
+    .filter(l => l.totalCount >= 5)
+    .sort((a, b) => b.accuracy - a.accuracy)
+    .slice(0, 5);
 
   return (
     <div className={`flex min-h-screen bg-gray-50`}>
@@ -187,7 +227,7 @@ export default function StudentDashboard() {
                   <span className="font-semibold text-gray-900">{progressPercentage}%</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-3">
-                  <div 
+                  <div
                     className="bg-blue-600 h-3 rounded-full transition-all duration-300"
                     style={{ width: `${progressPercentage}%` }}
                   ></div>
@@ -232,7 +272,7 @@ export default function StudentDashboard() {
               </button>
 
               <button
-                onClick={() => router.push('/student/analysis')}
+                // onClick={() => router.push('/student/analysis')}
                 className={`w-full flex items-center gap-3 p-4 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors ${isRTL ? 'flex-row-reverse' : ''}`}
               >
                 <BarChart3 className="w-5 h-5 text-purple-600" />
@@ -242,7 +282,7 @@ export default function StudentDashboard() {
               </button>
 
               <button
-                onClick={() => router.push('/student/badge')}
+                // onClick={() => router.push('/student/badge')}
                 className={`w-full flex items-center gap-3 p-4 bg-yellow-50 hover:bg-yellow-100 rounded-lg transition-colors ${isRTL ? 'flex-row-reverse' : ''}`}
               >
                 <Award className="w-5 h-5 text-yellow-600" />
@@ -252,7 +292,7 @@ export default function StudentDashboard() {
               </button>
 
               <button
-                onClick={() => router.push('/student/scoreboard')}
+                // onClick={() => router.push('/student/scoreboard')}
                 className={`w-full flex items-center gap-3 p-4 bg-green-50 hover:bg-green-100 rounded-lg transition-colors ${isRTL ? 'flex-row-reverse' : ''}`}
               >
                 <Trophy className="w-5 h-5 text-green-600" />
@@ -264,12 +304,127 @@ export default function StudentDashboard() {
           </div>
         </div>
 
+        {/* Letter Statistics */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          {/* Weakest Letters */}
+          <div className="bg-white rounded-xl shadow-md p-6">
+            <div className={`flex items-center gap-2 mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
+              <TrendingDown className="w-5 h-5 text-red-600" />
+              <h3 className={`text-xl font-semibold text-gray-900 ${isRTL ? 'font-arabic' : ''}`}>
+                {isRTL ? 'حروف للتدريب' : 'Letters to Practice'}
+              </h3>
+            </div>
+            <div className="space-y-3">
+              {weakestLetters.length === 0 ? (
+                <p className={`text-gray-500 ${isRTL ? 'font-arabic text-right' : ''}`}>
+                  {isRTL ? 'لا توجد بيانات بعد. استمر في التدريب!' : 'No data yet. Keep practicing!'}
+                </p>
+              ) : (
+                weakestLetters.map((stat) => (
+                  <div key={stat.letter} className={`flex items-center justify-between p-3 bg-gray-50 rounded-lg ${isRTL ? 'flex-row-reverse' : ''}`}>
+                    <div className={`flex items-center gap-3 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                      <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center font-mono font-bold text-red-600">
+                        {stat.letter}
+                      </div>
+                      <div className={isRTL ? 'text-right' : ''}>
+                        <div className={`text-sm font-medium ${isRTL ? 'font-arabic' : ''}`}>
+                          {stat.accuracy}% {isRTL ? 'دقة' : 'accuracy'}
+                        </div>
+                        <div className={`text-xs text-gray-500 ${isRTL ? 'font-arabic' : ''}`}>
+                          {stat.totalCount} {isRTL ? 'محاولة' : 'attempts'}
+                        </div>
+                      </div>
+                    </div>
+                    <div className={isRTL ? 'text-left' : 'text-right'}>
+                      {stat.commonErrors && Object.keys(stat.commonErrors).length > 0 && (
+                        <div className={`text-xs text-gray-500 ${isRTL ? 'font-arabic' : ''}`}>
+                          {isRTL ? 'غالباً ما يُكتب' : 'Often typed'}: {Object.keys(stat.commonErrors)[0]}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+
+          {/* Strongest Letters */}
+          <div className="bg-white rounded-xl shadow-md p-6">
+            <div className={`flex items-center gap-2 mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
+              <TrendingUp className="w-5 h-5 text-green-600" />
+              <h3 className={`text-xl font-semibold text-gray-900 ${isRTL ? 'font-arabic' : ''}`}>
+                {isRTL ? 'نقاط قوتك' : 'Your Strengths'}
+              </h3>
+            </div>
+            <div className="space-y-3">
+              {strongestLetters.length === 0 ? (
+                <p className={`text-gray-500 ${isRTL ? 'font-arabic text-right' : ''}`}>
+                  {isRTL ? 'لا توجد بيانات بعد. استمر في التدريب!' : 'No data yet. Keep practicing!'}
+                </p>
+              ) : (
+                strongestLetters.map((stat) => (
+                  <div key={stat.letter} className={`flex items-center justify-between p-3 bg-gray-50 rounded-lg ${isRTL ? 'flex-row-reverse' : ''}`}>
+                    <div className={`flex items-center gap-3 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                      <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center font-mono font-bold text-green-600">
+                        {stat.letter}
+                      </div>
+                      <div className={isRTL ? 'text-right' : ''}>
+                        <div className={`text-sm font-medium ${isRTL ? 'font-arabic' : ''}`}>
+                          {stat.accuracy}% {isRTL ? 'دقة' : 'accuracy'}
+                        </div>
+                        <div className={`text-xs text-gray-500 ${isRTL ? 'font-arabic' : ''}`}>
+                          {stat.totalCount} {isRTL ? 'محاولة' : 'attempts'}
+                        </div>
+                      </div>
+                    </div>
+                    <div className={isRTL ? 'text-left' : 'text-right'}>
+                      <div className={`flex items-center gap-1 text-xs text-gray-500 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                        <Clock className="w-3 h-3" />
+                        {stat.avgTimeMs}ms {isRTL ? 'معدل' : 'avg'}
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Common Error Patterns */}
+        {patterns.length > 0 && (
+          <div className="bg-white rounded-xl shadow-md p-6 mb-8">
+            <div className={`flex items-center gap-2 mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
+              <Target className="w-5 h-5 text-orange-600" />
+              <h3 className={`text-xl font-semibold text-gray-900 ${isRTL ? 'font-arabic' : ''}`}>
+                {isRTL ? 'أنماط الكتابة الشائعة' : 'Common Typing Patterns'}
+              </h3>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {patterns.slice(0, 6).map((pattern, index) => (
+                <div key={index} className="p-4 bg-orange-50 rounded-lg">
+                  <div className={`flex items-center gap-2 mb-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                    <span className="font-mono font-bold text-lg">{pattern.from}</span>
+                    <span className="text-gray-400">→</span>
+                    <span className="font-mono font-bold text-lg text-orange-600">{pattern.to}</span>
+                  </div>
+                  <div className={`text-sm text-gray-600 ${isRTL ? 'font-arabic text-right' : ''}`}>
+                    {isRTL ? `حدث ${pattern.count} مرات` : `Occurred ${pattern.count} times`}
+                  </div>
+                  <div className={`text-xs text-gray-500 mt-1 ${isRTL ? 'font-arabic text-right' : ''}`}>
+                    {isRTL ? 'النوع' : 'Type'}: {pattern.type}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Recent Activity */}
         <div className="bg-white rounded-xl shadow-md p-6">
           <h3 className={`text-xl font-semibold text-gray-900 mb-4 ${isRTL ? 'font-arabic text-right' : ''}`}>
             {isRTL ? 'النشاط الأخير' : 'Recent Activity'}
           </h3>
-          
+
           {recentActivity.length === 0 ? (
             <div className={`text-center py-8 text-gray-500 ${isRTL ? 'font-arabic' : ''}`}>
               {isRTL ? 'لا يوجد نشاط حديث' : 'No recent activity'}
@@ -277,7 +432,7 @@ export default function StudentDashboard() {
           ) : (
             <div className="space-y-3">
               {recentActivity.map((activity) => (
-                <div 
+                <div
                   key={activity.id}
                   className={`flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors ${isRTL ? 'flex-row-reverse' : ''}`}
                 >
@@ -288,7 +443,7 @@ export default function StudentDashboard() {
                   <div className={`flex items-center gap-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
                     <div className="text-center">
                       <div className="text-yellow-600 font-semibold">★ {activity.stars}</div>
-                      <div className="text-xs text-gray-500">
+                      <div className={`text-xs text-gray-500 ${isRTL ? 'font-arabic' : ''}`}>
                         {isRTL ? 'نجوم' : 'Stars'}
                       </div>
                     </div>
@@ -298,7 +453,7 @@ export default function StudentDashboard() {
                     </div>
                     <div className="text-center">
                       <div className="text-green-600 font-semibold">{activity.accuracy}%</div>
-                      <div className="text-xs text-gray-500">
+                      <div className={`text-xs text-gray-500 ${isRTL ? 'font-arabic' : ''}`}>
                         {isRTL ? 'دقة' : 'Accuracy'}
                       </div>
                     </div>

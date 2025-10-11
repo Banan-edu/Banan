@@ -8,6 +8,12 @@ import 'prismjs/components/prism-javascript';
 import 'prismjs/components/prism-python';
 import 'prismjs/components/prism-java';
 import 'prismjs/components/prism-clike';
+type ErrorPattern = {
+  count: number;
+  type: string;
+};
+
+type ErrorPatterns = Record<string, ErrorPattern>;
 
 export default function LessonPage() {
   const params = useParams();
@@ -19,6 +25,11 @@ export default function LessonPage() {
   const [accuracy, setAccuracy] = useState(100);
   const [isComplete, setIsComplete] = useState(false);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  
+  // Detailed tracking
+  const [keystrokes, setKeystrokes] = useState<any[]>([]);
+  const [letterStats, setLetterStats] = useState<Map<string, any>>(new Map());
+  const [errorPatterns, setErrorPatterns] = useState<ErrorPatterns>({});
 
   useEffect(() => {
     const fetchLesson = async () => {
@@ -71,6 +82,28 @@ export default function LessonPage() {
     const timeSpent = Math.round((Date.now() - startTime) / 1000);
     const score = Math.round((accuracy * wpm) / 10);
 
+    // Prepare letter data
+    const letterData = Array.from(letterStats.values()).map(stat => ({
+      letter: stat.letter,
+      correctCount: stat.correctCount,
+      incorrectCount: stat.incorrectCount,
+      totalTimeMs: stat.totalTimeMs,
+      avgTimeMs: stat.times.length > 0 
+        ? Math.round(stat.times.reduce((a: number, b: number) => a + b, 0) / stat.times.length)
+        : 0,
+      errors: stat.errors,
+    }));
+
+    // Prepare session data for replay
+    const sessionData = {
+      keystrokes,
+      totalKeystrokes: keystrokes.length,
+      backspaceCount: keystrokes.filter((k: any) => k.char === 'Backspace').length,
+      peakSpeed: wpm,
+      startTime: startTime,
+      endTime: Date.now(),
+    };
+
     await fetch(`/api/student/lesson/${params.id}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -79,6 +112,9 @@ export default function LessonPage() {
         speed: wpm,
         accuracy,
         timeSpent,
+        sessionData,
+        letterData,
+        errorPatterns,
       }),
     });
 
@@ -87,11 +123,113 @@ export default function LessonPage() {
     }, 2000);
   };
 
+  // Auto-save on page unload (if user closes mid-lesson)
+  useEffect(() => {
+    const handleBeforeUnload = async () => {
+      if (startTime && !isComplete && keystrokes.length > 0) {
+        const timeSpent = Math.round((Date.now() - startTime) / 1000);
+        const score = Math.round((accuracy * wpm) / 10);
+
+        const letterData = Array.from(letterStats.values()).map(stat => ({
+          letter: stat.letter,
+          correctCount: stat.correctCount,
+          incorrectCount: stat.incorrectCount,
+          totalTimeMs: stat.totalTimeMs,
+          avgTimeMs: stat.times.length > 0 
+            ? Math.round(stat.times.reduce((a: number, b: number) => a + b, 0) / stat.times.length)
+            : 0,
+          errors: stat.errors,
+        }));
+
+        const sessionData = {
+          keystrokes,
+          incomplete: true,
+          startTime: startTime,
+          endTime: Date.now(),
+        };
+
+        // Use sendBeacon for reliable delivery on page unload
+        const data = JSON.stringify({
+          score,
+          speed: wpm,
+          accuracy,
+          timeSpent,
+          sessionData,
+          letterData,
+          errorPatterns,
+        });
+
+        navigator.sendBeacon(`/api/student/lesson/${params.id}`, data);
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [startTime, isComplete, keystrokes, wpm, accuracy, letterStats, errorPatterns, params.id]);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value;
     
     if (!startTime) {
       setStartTime(Date.now());
+    }
+
+    // Track keystroke
+    const timestamp = Date.now() - (startTime || Date.now());
+    const currentIndex = value.length - 1;
+    const targetText = lesson?.text || '';
+    const typedChar = value[currentIndex];
+    const expectedChar = targetText[currentIndex];
+    const isCorrect = typedChar === expectedChar;
+
+    // Record keystroke for session replay
+    const keystrokeEvent = {
+      char: typedChar,
+      timestamp,
+      correct: isCorrect,
+      expected: expectedChar,
+      index: currentIndex,
+    };
+    setKeystrokes(prev => [...prev, keystrokeEvent]);
+
+    // Update letter statistics
+    if (typedChar) {
+      const stats = letterStats.get(expectedChar) || {
+        letter: expectedChar,
+        correctCount: 0,
+        incorrectCount: 0,
+        totalTimeMs: 0,
+        errors: {},
+        times: [],
+      };
+
+      if (isCorrect) {
+        stats.correctCount++;
+      } else {
+        stats.incorrectCount++;
+        stats.errors[typedChar] = (stats.errors[typedChar] || 0) + 1;
+        
+        // Track error pattern
+        const patternKey = `${expectedChar}->${typedChar}`;
+        setErrorPatterns(prev => ({
+          ...prev,
+          [patternKey]: {
+            count: (prev[patternKey]?.count || 0) + 1,
+            type: 'substitution',
+          },
+        }));
+      }
+
+      // Track timing
+      const lastKeystroke = keystrokes[keystrokes.length - 1];
+      if (lastKeystroke) {
+        const timeDiff = timestamp - lastKeystroke.timestamp;
+        stats.times.push(timeDiff);
+        stats.totalTimeMs += timeDiff;
+      }
+
+      letterStats.set(expectedChar, stats);
+      setLetterStats(new Map(letterStats));
     }
 
     setUserInput(value);
