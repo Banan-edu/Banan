@@ -2,12 +2,14 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useLanguage } from '../contexts/LanguageContext';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const { isRTL } = useLanguage();
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -32,7 +34,7 @@ export default function LoginPage() {
 
       const dashboardRoutes: Record<string, string> = {
         admin: '/admin',
-        school_admin: '/admin',
+        school_admin: '/school-admin',
         billing_admin: '/admin',
         instructor: '/instructor',
         student: '/student',
@@ -48,9 +50,8 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
       <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">بَنان</h1>
-          <p className="text-gray-600">Multilingual Touch Typing Platform</p>
+        <div className="text-center mb-8 flex center justify-center">
+          <img src="/assets/logo.png" alt="بنان" className="h-12 w-auto" />
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -62,7 +63,7 @@ export default function LoginPage() {
 
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-              Email
+              {isRTL ? "البريد الالكتروني" : "Email"}
             </label>
             <input
               id="email"
@@ -76,7 +77,8 @@ export default function LoginPage() {
 
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-              Password
+
+              {isRTL ? "كلمة المرور" : "Password"}
             </label>
             <input
               id="password"
@@ -93,7 +95,7 @@ export default function LoginPage() {
             disabled={loading}
             className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400"
           >
-            {loading ? 'Logging in...' : 'Login'}
+            {loading ? (isRTL ? "جاري تسجيل الدخول..." : "Logging in...") : (isRTL ? "تسجيل الدخول" : "Login")}
           </button>
         </form>
       </div>

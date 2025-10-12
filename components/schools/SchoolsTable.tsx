@@ -26,13 +26,15 @@ interface SchoolsTableProps {
   hideAddButton?: boolean;
   showDelete?: boolean;
   onRowClick?: (schoolId: number) => void;
+  role?: string;
 }
 
 export default function SchoolsTable({
   apiEndpoint = '/api/admin/schools',
   hideAddButton = false,
   showDelete = false,
-  onRowClick
+  onRowClick,
+  role = 'admin'
 }: SchoolsTableProps) {
   const [schools, setSchools] = useState<School[]>([]);
   const [loading, setLoading] = useState(true);
@@ -76,7 +78,7 @@ export default function SchoolsTable({
   const handleDelete = async (schoolId: number) => {
     setDeleteLoading(true)
     try {
-      const res = await fetch(`/api/admin/schools/${schoolId}`, {
+      const res = await fetch(`${apiEndpoint}/${schoolId}`, {
         method: 'PATCH',
         body: JSON.stringify({ action: 'soft_delete' })
       });
@@ -168,7 +170,7 @@ export default function SchoolsTable({
                     className="hover:bg-gray-50 cursor-pointer transition-colors"
                   >
                     <td
-                      onClick={() => onRowClick ? onRowClick(school.id) : router.push(`/admin/schools/${school.id}`)}
+                      onClick={() => onRowClick ? onRowClick(school.id) : router.push(`/${role}/schools/${school.id}`)}
                       className={`px-6 py-4 ${isRTL ? 'text-right font-arabic' : 'text-left'}`}>
                       <div className="font-medium text-blue-600 hover:text-blue-800">
                         {school.name}

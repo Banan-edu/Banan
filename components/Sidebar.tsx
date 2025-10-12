@@ -24,7 +24,7 @@ export type SidebarLink = {
 
 type SidebarProps = {
   links: SidebarLink[];
-  userRole: 'student' | 'instructor' | 'admin';
+  userRole: 'student' | 'instructor' | 'admin'| 'school-admin';
 };
 
 export function Sidebar({ links, userRole }: SidebarProps) {
@@ -209,6 +209,50 @@ export const adminLinks: SidebarLink[] = [
   // },
   // {
   //   href: '/admin/tests',
+  //   labelAr: 'الاختبارات',
+  //   labelEn: 'Tests',
+  //   icon: <Calendar className="w-5 h-5" />
+  // },
+];
+export const schoolAdminLinks: SidebarLink[] = [
+  {
+    href: '/school-admin',
+    labelAr: 'الرئيسية',
+    labelEn: 'Home',
+    icon: <Home className="w-5 h-5" />
+  },
+  {
+    href: '/school-admin/instructors',
+    labelAr: 'المعلم',
+    labelEn: 'Instructor',
+    icon: <GraduationCap className="w-5 h-5" />
+  },
+  {
+    href: '/school-admin/schools',
+    labelAr: 'المدرسة',
+    labelEn: 'School',
+    icon: <Users className="w-5 h-5" />
+  },
+  {
+    href: '/school-admin/students',
+    labelAr: 'الطلاب',
+    labelEn: 'Students',
+    icon: <GraduationCap className="w-5 h-5" />
+  },
+  // {
+  //   href: '/school-admin/courses',
+  //   labelAr: 'الدورات',
+  //   labelEn: 'Courses',
+  //   icon: <BookOpen className="w-5 h-5" />
+  // },
+  // {
+  //   href: '/school-admin/classes',
+  //   labelAr: 'الصفوف',
+  //   labelEn: 'Classes',
+  //   icon: <Target className="w-5 h-5" />
+  // },
+  // {
+  //   href: '/school-admin/tests',
   //   labelAr: 'الاختبارات',
   //   labelEn: 'Tests',
   //   icon: <Calendar className="w-5 h-5" />

@@ -9,7 +9,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Not authorized' }, { status: 401 });
   }
 
-  const instructors = await getInstructors();
+  const instructors = await getInstructors(session.userId);
 
   return NextResponse.json({ instructors });
 }

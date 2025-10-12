@@ -1,7 +1,7 @@
 
 import { db } from '@/server/db';
-import { users, schoolAdmins, classInstructors, classStudents, classes, instructorPermissions } from '@/shared/schema';
-import { and, eq, inArray, sql } from 'drizzle-orm';
+import { users, schoolAdmins, classInstructors, classStudents, classes, instructorPermissions, activityLog } from '@/shared/schema';
+import { and, desc, eq, inArray, not, sql } from 'drizzle-orm';
 import { hashPassword } from '@/lib/auth';
 import { ActivityLogger } from '@/lib/activityLogger';
 
@@ -85,7 +85,29 @@ export async function createInstructor({
     return newUser;
 }
 
-export async function getInstructors() {
+export async function getInstructors(schoolAdminId?: number) {
+    let classIds: number[] | undefined;
+
+    // If schoolAdminId is provided, get classes for that school admin
+    if (schoolAdminId) {
+        const assignedSchools = await db
+            .select({ schoolId: schoolAdmins.schoolId })
+            .from(schoolAdmins)
+            .where(eq(schoolAdmins.userId, schoolAdminId));
+
+        const schoolIds = assignedSchools.map(s => s.schoolId);
+        if (schoolIds.length === 0) return [];
+
+        const schoolClasses = await db
+            .select({ classId: classes.id })
+            .from(classes)
+            .where(inArray(classes.schoolId, schoolIds));
+
+        classIds = schoolClasses.map(c => c.classId);
+        if (classIds.length === 0) return [];
+    }
+
+    // Build the main query
     const instructorsData = await db
         .select({
             id: users.id,
@@ -97,7 +119,10 @@ export async function getInstructors() {
         })
         .from(users)
         .leftJoin(classInstructors, eq(users.id, classInstructors.userId))
-        .where(inArray(users.role, ['instructor', 'admin', 'school_admin', 'billing_admin']))
+        .where(
+            and(inArray(users.role, ['instructor', 'admin', 'school_admin', 'billing_admin']),
+                classIds ? inArray(classInstructors.classId, classIds) : undefined)
+        )
         .groupBy(users.id);
 
     return instructorsData;
@@ -276,10 +301,41 @@ export async function deleteInstructor(id: number, deletedBy: number) {
     return deletedUser;
 }
 
-export async function getInstructorLogs(id: number) {
-    const { activityLog } = await import('@/shared/schema');
-    const { desc } = await import('drizzle-orm');
+export async function getInstructorLogs(instructorId: number, schoolAdminId?: number) {
+    let whereCondition;
+    let classIds: number[] | undefined;
 
+    if (schoolAdminId) {
+        // 🔹 Get assigned schools
+        const assignedSchools = await db
+            .select({ schoolId: schoolAdmins.schoolId })
+            .from(schoolAdmins)
+            .where(eq(schoolAdmins.userId, schoolAdminId));
+
+        const schoolIds = assignedSchools.map(s => s.schoolId);
+        if (schoolIds.length === 0) return [];
+
+        // 🔹 Get classes for those schools
+        const schoolClasses = await db
+            .select({ id: classes.id })
+            .from(classes)
+            .where(inArray(classes.schoolId, schoolIds));
+
+        classIds = schoolClasses.map(c => c.id);
+        if (classIds.length === 0) return [];
+
+        // 🔹 Filter only logs from those classes and exclude admin users
+        whereCondition = and(
+            eq(activityLog.entityId, instructorId),
+            not(eq(users.role, 'admin')),
+            inArray(classInstructors.classId, classIds)
+        );
+    } else {
+        // 🔹 Admin or other roles: see all logs for the instructor
+        whereCondition = eq(activityLog.entityId, instructorId);
+    }
+
+    // 🔹 Query logs with dynamic where condition
     const logs = await db
         .select({
             id: activityLog.id,
@@ -287,14 +343,23 @@ export async function getInstructorLogs(id: number) {
             description: activityLog.description,
             createdAt: activityLog.createdAt,
             userName: users.name,
+            userRole: users.role,
         })
         .from(activityLog)
         .innerJoin(users, eq(activityLog.userId, users.id))
-        .where(eq(activityLog.entityId, id))
+        .leftJoin(classInstructors, eq(classInstructors.userId, users.id))
+        .where(whereCondition)
         .orderBy(desc(activityLog.createdAt))
         .limit(100);
 
-    return logs;
+    // 🔹 Remove userRole from final output
+    return logs.map(log => ({
+        id: log.id,
+        action: log.action,
+        description: log.description,
+        createdAt: log.createdAt,
+        userName: log.userName,
+    }));
 }
 
 export async function assignInstructorToClasses(
