@@ -32,37 +32,37 @@ export function PricingSection({ onRegisterClick }: PricingSectionProps) {
               {t('pricing-offers-title')}
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-white">
-              <div className={`flex items-center ${isRTL ? 'flex-row-reverse' : ''}`}>
+              <div className={`flex items-center`}>
                 <Check className="h-5 w-5 text-green-300 mx-2 flex-shrink-0" />
                 <span className={`${isRTL ? 'arabic-body' : ''}`}>
                   {t('pricing-unlimited')}
                 </span>
               </div>
-              <div className={`flex items-center ${isRTL ? 'flex-row-reverse' : ''}`}>
+              <div className={`flex items-center`}>
                 <Check className="h-5 w-5 text-green-300 mx-2 flex-shrink-0" />
                 <span className={`${isRTL ? 'arabic-body' : ''}`}>
                   {t('pricing-admin')}
                 </span>
               </div>
-              <div className={`flex items-center ${isRTL ? 'flex-row-reverse' : ''}`}>
+              <div className={`flex items-center`}>
                 <Check className="h-5 w-5 text-green-300 mx-2 flex-shrink-0" />
                 <span className={`${isRTL ? 'arabic-body' : ''}`}>
                   {t('pricing-training')}
                 </span>
               </div>
-              <div className={`flex items-center ${isRTL ? 'flex-row-reverse' : ''}`}>
+              <div className={`flex items-center`}>
                 <Check className="h-5 w-5 text-green-300 mx-2 flex-shrink-0" />
                 <span className={`${isRTL ? 'arabic-body' : ''}`}>
                   {t('pricing-custom')}
                 </span>
               </div>
-              <div className={`flex items-center ${isRTL ? 'flex-row-reverse' : ''}`}>
+              <div className={`flex items-center`}>
                 <Check className="h-5 w-5 text-green-300 mx-2 flex-shrink-0" />
                 <span className={`${isRTL ? 'arabic-body' : ''}`}>
                   {t('pricing-manager')}
                 </span>
               </div>
-              <div className={`flex items-center ${isRTL ? 'flex-row-reverse' : ''}`}>
+              <div className={`flex items-center`}>
                 <Check className="h-5 w-5 text-green-300 mx-2 flex-shrink-0" />
                 <span className={`${isRTL ? 'arabic-body' : ''}`}>
                   {t('pricing-reports')}
@@ -73,6 +73,7 @@ export function PricingSection({ onRegisterClick }: PricingSectionProps) {
           
           <Button
             onClick={() => window.location.href = '#contact'}
+            variant='outline'
             className={`bg-white text-blue-600 px-12 py-4 rounded-xl font-bold text-lg btn-hover-scale shadow-xl hover:bg-blue-50 transition-colors ${isRTL ? 'arabic-button arabic-text' : ''}`}
           >
             {t('pricing-contact-btn')}

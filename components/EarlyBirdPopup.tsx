@@ -67,15 +67,15 @@ export function EarlyBirdPopup({ onRegisterClick }: EarlyBirdPopupProps) {
           </div>
           
           <div className="space-y-4 mb-6">
-            <div className={`flex items-center text-gray-700 ${isRTL ? 'text-right flex-row-reverse' : 'text-left'}`}>
+            <div className={`flex items-center text-gray-700 `}>
               <Check className={`text-green-500 ${isRTL ? 'ml-3' : 'mr-3'}`} size={20} />
               <span className={isRTL ? 'arabic-body' : ''}>{t('feature-1')}</span>
             </div>
-            <div className={`flex items-center text-gray-700 ${isRTL ? 'text-right flex-row-reverse' : 'text-left'}`}>
+            <div className={`flex items-center text-gray-700 `}>
               <Check className={`text-green-500 ${isRTL ? 'ml-3' : 'mr-3'}`} size={20} />
               <span className={isRTL ? 'arabic-body' : ''}>{t('feature-2')}</span>
             </div>
-            <div className={`flex items-center text-gray-700 ${isRTL ? 'text-right flex-row-reverse' : 'text-left'}`}>
+            <div className={`flex items-center text-gray-700 `}>
               <Check className={`text-green-500 ${isRTL ? 'ml-3' : 'mr-3'}`} size={20} />
               <span className={isRTL ? 'arabic-body' : ''}>{t('feature-3')}</span>
             </div>

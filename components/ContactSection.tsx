@@ -85,7 +85,7 @@ export function ContactSection() {
               {contactInfo.map((info, index) => {
                 const Icon = info.icon;
                 return (
-                  <div key={index} className={`flex items-start ${isRTL ? 'text-right flex-row-reverse' : 'text-left'}`}>
+                  <div key={index} className={`flex items-start`}>
                     <div className={`w-12 h-12 bg-blue-600 text-white rounded-lg flex items-center justify-center ${isRTL ? 'ml-4' : 'mr-4'}`}>
                       <Icon size={24} />
                     </div>
