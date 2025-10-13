@@ -496,7 +496,6 @@ async function seed() {
       text: 'The quick brown fox jumps over the lazy dog.',
       startDate: new Date(),
       endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-      targetAudience: 'students',
       minAccuracy: 80,
       minSpeed: 30,
       createdBy: instructor.id,

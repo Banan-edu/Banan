@@ -245,6 +245,7 @@ export default function TestDetailsPage() {
               testId={parseInt(params.id as string)}
               students={testStudents}
               api={'school-admin'}
+              results={testResults}
               onRefresh={fetchTestDetails}
             />
           )}

@@ -60,6 +60,7 @@ type TestResult = {
   accuracy: number;
   attempts: number;
   completionTime: string | null;
+  passed: boolean;
   certificateIssued: boolean;
 };
 
@@ -247,6 +248,7 @@ export default function TestDetailsPage() {
               testId={parseInt(params.id as string)}
               api='instructor'
               students={testStudents}
+              results={testResults}
               onRefresh={fetchTestDetails}
             />
           )}
@@ -311,12 +313,13 @@ export default function TestDetailsPage() {
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{isRTL ? 'الدقة' : 'Accuracy'}</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{isRTL ? 'المحاولات' : 'Attempts'}</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{isRTL ? 'وقت الإنجاز' : 'Completion Time'}</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{isRTL ? 'الحالة' : 'Status'}</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{isRTL ? 'الشهادة' : 'Certificate'}</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {testResults.map((result) => (
-                      <tr key={result.studentId}>
+                    {testResults.map((result, i) => (
+                      <tr key={i}>
                         <td className="px-6 py-4 whitespace-nowrap">{result.studentName}</td>
                         <td className="px-6 py-4 whitespace-nowrap">{result.score}</td>
                         <td className="px-6 py-4 whitespace-nowrap">{result.speed} WPM</td>
@@ -324,6 +327,11 @@ export default function TestDetailsPage() {
                         <td className="px-6 py-4 whitespace-nowrap">{result.attempts}</td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           {result.completionTime ? new Date(result.completionTime).toLocaleString() : 'N/A'}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className={`px-2 py-1 text-xs rounded ${result.passed ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+                            {result.passed ? (isRTL ? 'ناجح' : 'Success') : (isRTL ? 'غير مكتمل' : 'Not Completed')}
+                          </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span className={`px-2 py-1 text-xs rounded ${result.certificateIssued ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>

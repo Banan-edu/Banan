@@ -99,6 +99,12 @@ export const studentLinks: SidebarLink[] = [
     labelEn: 'Courses',
     icon: <BookOpen className="w-5 h-5" />
   },
+  {
+    href: '/student/tests',
+    labelAr: 'الاختبارات',
+    labelEn: 'Tests',
+    icon: <Calendar className="w-5 h-5" />
+  },
   // {
   //   href: '/student/analysis',
   //   labelAr: 'التحليلات',

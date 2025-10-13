@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth';
 import { db } from '@server/db';
-import { tests, testInstructors, users, testStudents } from '@shared/schema';
+import { tests, testInstructors, users, testStudents, testResults } from '@shared/schema';
 import { and, eq } from 'drizzle-orm';
 
 type RouteContext = {
@@ -25,9 +25,6 @@ export async function POST(req: NextRequest) {
             altTexts: body.altTexts,
             startDate: new Date(body.startDate),
             endDate: new Date(body.endDate),
-            targetAudience: body.targetAudience,
-            targetSchools: body.targetSchools,
-            targetStudents: body.targetStudents,
             attemptsAllowed: body.attemptsAllowed,
             attemptsCount: body.attemptsCount,
             hasTimeLimit: body.hasTimeLimit,
@@ -96,10 +93,12 @@ export async function GET(
                 id: users.id,
                 name: users.name,
                 role: users.grade,
-                dateAdded:testStudents.enrolledAt
+                dateAdded: testStudents.enrolledAt,
+                completed: testResults.passed
             })
             .from(testStudents)
             .innerJoin(users, eq(testStudents.userId, users.id))
+            .innerJoin(testResults, and(eq(testResults.userId, users.id), eq(testResults.testId, testId)))
             .where(eq(testStudents.testId, testId));
 
         // Get test instructors
@@ -115,7 +114,23 @@ export async function GET(
             .where(eq(testInstructors.testId, testId));
 
         // Get test results (mock data for now)
-        const results: any[] = [];
+        const results = await db
+            .select({
+                id: testResults.id,
+                score: testResults.score,
+                speed: testResults.speed,
+                accuracy: testResults.accuracy,
+                attempts: testResults.attempts,
+                completionTime: testResults.completionTime,
+                passed: testResults.passed,
+                certificateIssued: testResults.certificateIssued,
+                completedAt: testResults.completedAt,
+
+                studentName: users.name,
+            })
+            .from(testResults)
+            .innerJoin(users, eq(testResults.userId, users.id))
+            .where(eq(testResults.testId, testId));
 
         return NextResponse.json({
             test,
@@ -154,9 +169,6 @@ export async function PUT(
                 altTexts: body.altTexts,
                 startDate: new Date(body.startDate),
                 endDate: new Date(body.endDate),
-                targetAudience: body.targetAudience,
-                targetSchools: body.targetSchools,
-                targetStudents: body.targetStudents,
                 attemptsAllowed: body.attemptsAllowed,
                 attemptsCount: body.attemptsCount,
                 hasTimeLimit: body.hasTimeLimit,

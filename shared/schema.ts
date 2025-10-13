@@ -102,7 +102,7 @@ export const classStudents = pgTable("class_students", {
 });
 export const testStudents = pgTable("test_students", {
   id: serial("id").primaryKey(),
-  testId: integer("test_id").notNull().references(() => classes.id, { onDelete: 'cascade' }),
+  testId: integer("test_id").notNull().references(() => tests.id, { onDelete: 'cascade' }),
   userId: integer("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
   enrolledAt: timestamp("enrolled_at").defaultNow().notNull(),
 });
@@ -300,9 +300,9 @@ export const tests = pgTable("tests", {
   startDate: timestamp("start_date").notNull(),
   endDate: timestamp("end_date").notNull(),
 
-  targetAudience: text("target_audience").notNull(),
-  targetSchools: jsonb("target_schools"),
-  targetStudents: jsonb("target_students"),
+  // targetAudience: text("target_audience").notNull(),
+  // targetSchools: jsonb("target_schools"),
+  // targetStudents: jsonb("target_students"),
 
   attemptsAllowed: text("attempts_allowed").default('open'),
   attemptsCount: integer("attempts_count"),

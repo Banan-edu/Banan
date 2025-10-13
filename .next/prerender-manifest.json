@@ -1,30 +1,6 @@
 {
   "version": 4,
   "routes": {
-    "/admin/classes": {
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "next-action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/admin/classes",
-      "dataRoute": "/admin/classes.rsc",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
     "/_not-found": {
       "initialStatus": 404,
       "experimentalBypassFor": [
@@ -41,30 +17,6 @@
       "initialRevalidateSeconds": false,
       "srcRoute": "/_not-found",
       "dataRoute": "/_not-found.rsc",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
-    "/admin/courses": {
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "next-action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/admin/courses",
-      "dataRoute": "/admin/courses.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -122,7 +74,7 @@
         "x-next-revalidate-tag-token"
       ]
     },
-    "/admin": {
+    "/admin/classes": {
       "experimentalBypassFor": [
         {
           "type": "header",
@@ -135,8 +87,32 @@
         }
       ],
       "initialRevalidateSeconds": false,
-      "srcRoute": "/admin",
-      "dataRoute": "/admin.rsc",
+      "srcRoute": "/admin/classes",
+      "dataRoute": "/admin/classes.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
+    "/admin/instructors": {
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "next-action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/admin/instructors",
+      "dataRoute": "/admin/instructors.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -170,6 +146,78 @@
         "x-next-revalidate-tag-token"
       ]
     },
+    "/admin/classes/add": {
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "next-action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/admin/classes/add",
+      "dataRoute": "/admin/classes/add.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
+    "/admin/schools": {
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "next-action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/admin/schools",
+      "dataRoute": "/admin/schools.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
+    "/admin/courses": {
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "next-action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/admin/courses",
+      "dataRoute": "/admin/courses.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
     "/admin/students": {
       "experimentalBypassFor": [
         {
@@ -185,30 +233,6 @@
       "initialRevalidateSeconds": false,
       "srcRoute": "/admin/students",
       "dataRoute": "/admin/students.rsc",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
-    "/admin/instructors": {
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "next-action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/admin/instructors",
-      "dataRoute": "/admin/instructors.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -290,30 +314,6 @@
         "x-next-revalidate-tag-token"
       ]
     },
-    "/instructor": {
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "next-action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/instructor",
-      "dataRoute": "/instructor.rsc",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
     "/instructor/classes": {
       "experimentalBypassFor": [
         {
@@ -329,6 +329,30 @@
       "initialRevalidateSeconds": false,
       "srcRoute": "/instructor/classes",
       "dataRoute": "/instructor/classes.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
+    "/instructor": {
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "next-action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/instructor",
+      "dataRoute": "/instructor.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -386,6 +410,30 @@
         "x-next-revalidate-tag-token"
       ]
     },
+    "/instructor/students": {
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "next-action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/instructor/students",
+      "dataRoute": "/instructor/students.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
     "/instructor/students/import": {
       "experimentalBypassFor": [
         {
@@ -401,30 +449,6 @@
       "initialRevalidateSeconds": false,
       "srcRoute": "/instructor/students/import",
       "dataRoute": "/instructor/students/import.rsc",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
-    "/instructor/tests/add": {
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "next-action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/instructor/tests/add",
-      "dataRoute": "/instructor/tests/add.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -458,7 +482,7 @@
         "x-next-revalidate-tag-token"
       ]
     },
-    "/instructor/students": {
+    "/login": {
       "experimentalBypassFor": [
         {
           "type": "header",
@@ -471,8 +495,8 @@
         }
       ],
       "initialRevalidateSeconds": false,
-      "srcRoute": "/instructor/students",
-      "dataRoute": "/instructor/students.rsc",
+      "srcRoute": "/login",
+      "dataRoute": "/login.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -482,7 +506,7 @@
         "x-next-revalidate-tag-token"
       ]
     },
-    "/": {
+    "/instructor/tests/add": {
       "experimentalBypassFor": [
         {
           "type": "header",
@@ -495,104 +519,8 @@
         }
       ],
       "initialRevalidateSeconds": false,
-      "srcRoute": "/",
-      "dataRoute": "/index.rsc",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
-    "/school-admin": {
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "next-action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/school-admin",
-      "dataRoute": "/school-admin.rsc",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
-    "/admin/schools": {
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "next-action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/admin/schools",
-      "dataRoute": "/admin/schools.rsc",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
-    "/admin/classes/add": {
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "next-action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/admin/classes/add",
-      "dataRoute": "/admin/classes/add.rsc",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
-    "/school-admin/courses": {
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "next-action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/school-admin/courses",
-      "dataRoute": "/school-admin/courses.rsc",
+      "srcRoute": "/instructor/tests/add",
+      "dataRoute": "/instructor/tests/add.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -626,7 +554,7 @@
         "x-next-revalidate-tag-token"
       ]
     },
-    "/school-admin/students/add": {
+    "/": {
       "experimentalBypassFor": [
         {
           "type": "header",
@@ -639,8 +567,8 @@
         }
       ],
       "initialRevalidateSeconds": false,
-      "srcRoute": "/school-admin/students/add",
-      "dataRoute": "/school-admin/students/add.rsc",
+      "srcRoute": "/",
+      "dataRoute": "/index.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -674,7 +602,7 @@
         "x-next-revalidate-tag-token"
       ]
     },
-    "/school-admin/students/import": {
+    "/school-admin/instructors": {
       "experimentalBypassFor": [
         {
           "type": "header",
@@ -687,8 +615,8 @@
         }
       ],
       "initialRevalidateSeconds": false,
-      "srcRoute": "/school-admin/students/import",
-      "dataRoute": "/school-admin/students/import.rsc",
+      "srcRoute": "/school-admin/instructors",
+      "dataRoute": "/school-admin/instructors.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -698,7 +626,7 @@
         "x-next-revalidate-tag-token"
       ]
     },
-    "/login": {
+    "/school-admin/courses": {
       "experimentalBypassFor": [
         {
           "type": "header",
@@ -711,8 +639,56 @@
         }
       ],
       "initialRevalidateSeconds": false,
-      "srcRoute": "/login",
-      "dataRoute": "/login.rsc",
+      "srcRoute": "/school-admin/courses",
+      "dataRoute": "/school-admin/courses.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
+    "/school-admin": {
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "next-action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/school-admin",
+      "dataRoute": "/school-admin.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
+    "/admin": {
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "next-action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/admin",
+      "dataRoute": "/admin.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -746,7 +722,7 @@
         "x-next-revalidate-tag-token"
       ]
     },
-    "/school-admin/instructors": {
+    "/school-admin/students/add": {
       "experimentalBypassFor": [
         {
           "type": "header",
@@ -759,8 +735,8 @@
         }
       ],
       "initialRevalidateSeconds": false,
-      "srcRoute": "/school-admin/instructors",
-      "dataRoute": "/school-admin/instructors.rsc",
+      "srcRoute": "/school-admin/students/add",
+      "dataRoute": "/school-admin/students/add.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -794,6 +770,30 @@
         "x-next-revalidate-tag-token"
       ]
     },
+    "/school-admin/students/import": {
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "next-action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/school-admin/students/import",
+      "dataRoute": "/school-admin/students/import.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
     "/school-admin/tests": {
       "experimentalBypassFor": [
         {
@@ -809,30 +809,6 @@
       "initialRevalidateSeconds": false,
       "srcRoute": "/school-admin/tests",
       "dataRoute": "/school-admin/tests.rsc",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
-    "/student/courses": {
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "next-action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/student/courses",
-      "dataRoute": "/student/courses.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -866,6 +842,30 @@
         "x-next-revalidate-tag-token"
       ]
     },
+    "/student/courses": {
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "next-action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/student/courses",
+      "dataRoute": "/student/courses.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
     "/student": {
       "experimentalBypassFor": [
         {
@@ -881,6 +881,30 @@
       "initialRevalidateSeconds": false,
       "srcRoute": "/student",
       "dataRoute": "/student.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
+    "/student/tests": {
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "next-action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/student/tests",
+      "dataRoute": "/student/tests.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",

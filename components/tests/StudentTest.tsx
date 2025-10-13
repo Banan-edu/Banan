@@ -13,6 +13,16 @@ type Student = {
     dateAdded: string;
     completed: boolean;
 };
+type TestResult = {
+    studentId: number;
+    studentName: string;
+    score: number;
+    speed: number;
+    accuracy: number;
+    attempts: number;
+    completionTime: string | null;
+    certificateIssued: boolean;
+};
 
 type Class = {
     id: number;
@@ -23,11 +33,12 @@ type Class = {
 type StudentTestProps = {
     testId: number;
     students: Student[];
+    results: TestResult[];
     api: string;
     onRefresh: () => void;
 };
 
-export default function StudentTest({ testId, students, api = 'instructor', onRefresh }: StudentTestProps) {
+export default function StudentTest({ testId, students, results, api = 'instructor', onRefresh }: StudentTestProps) {
     const { isRTL } = useLanguage();
     const [showAddModal, setShowAddModal] = useState(false);
     const [addMode, setAddMode] = useState<'individual' | 'class'>('individual');
@@ -206,6 +217,7 @@ export default function StudentTest({ testId, students, api = 'instructor', onRe
                                     <td className="px-6 py-4 whitespace-nowrap">{student.grade || 'N/A'}</td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         {new Date(student.dateAdded).toLocaleDateString()}
+                                        {student.completed}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <span

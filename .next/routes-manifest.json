@@ -1132,6 +1132,22 @@
       "namedRegex": "^/api/student/section/(?<nxtPid>[^/]+?)(?:/)?$"
     },
     {
+      "page": "/api/student/tests/[id]",
+      "regex": "^/api/student/tests/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/student/tests/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/student/tests/[id]/submit",
+      "regex": "^/api/student/tests/([^/]+?)/submit(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/student/tests/(?<nxtPid>[^/]+?)/submit(?:/)?$"
+    },
+    {
       "page": "/instructor/classes/[id]",
       "regex": "^/instructor/classes/([^/]+?)(?:/)?$",
       "routeKeys": {
@@ -1283,6 +1299,14 @@
         "nxtPid": "nxtPid"
       },
       "namedRegex": "^/student/lesson/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/student/tests/[id]",
+      "regex": "^/student/tests/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/student/tests/(?<nxtPid>[^/]+?)(?:/)?$"
     }
   ],
   "staticRoutes": [
@@ -1507,6 +1531,12 @@
       "regex": "^/student/courses(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/student/courses(?:/)?$"
+    },
+    {
+      "page": "/student/tests",
+      "regex": "^/student/tests(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/student/tests(?:/)?$"
     }
   ],
   "dataRoutes": [],
