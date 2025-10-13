@@ -15,7 +15,7 @@ import { eq, inArray, and, sql, desc } from 'drizzle-orm';
 export async function GET() {
     const session = await getSession();
 
-    if (!session || session.role !== 'student') {
+    if (!session || session.role !== 'instructor') {
         return NextResponse.json({ error: 'Not authorized' }, { status: 401 });
     }
 

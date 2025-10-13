@@ -28,9 +28,10 @@ interface Course {
 
 interface ClassCoursesProps {
     isRTL: boolean;
+    api: string;
 }
 
-export default function ClassCourses({ isRTL }: ClassCoursesProps) {
+export default function ClassCourses({ isRTL, api }: ClassCoursesProps) {
     const router = useRouter();
     const [courses, setCourses] = useState<Course[]>([]);
     const [availableCourses, setAvailableCourses] = useState<Course[]>([]);
@@ -54,7 +55,7 @@ export default function ClassCourses({ isRTL }: ClassCoursesProps) {
 
     const fetchCourses = async () => {
         try {
-            const res = await fetch(`/api/instructor/classes/${classId}/courses`);
+            const res = await fetch(`/api/${api}/classes/${classId}/courses`);
             if (res.ok) {
                 const data = await res.json();
                 setCourses(data.courses || []);
@@ -68,7 +69,7 @@ export default function ClassCourses({ isRTL }: ClassCoursesProps) {
 
     const fetchAvailableCourses = async () => {
         try {
-            const res = await fetch('/api/instructor/courses');
+            const res = await fetch(`/api/${api}/courses`);
             if (res.ok) {
                 const data = await res.json();
                 setAvailableCourses(data.courses || []);
@@ -80,7 +81,7 @@ export default function ClassCourses({ isRTL }: ClassCoursesProps) {
 
     const handleAddCourses = async () => {
         try {
-            const res = await fetch(`/api/instructor/classes/${classId}/courses`, {
+            const res = await fetch(`/api/${api}/classes/${classId}/courses`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ courseIds: selectedCourseIds }),
@@ -100,7 +101,7 @@ export default function ClassCourses({ isRTL }: ClassCoursesProps) {
         if (!confirm(isRTL ? 'هل أنت متأكد من مسح التقدم؟' : 'Are you sure you want to clear progress?')) return;
 
         try {
-            const res = await fetch(`/api/instructor/classes/${classId}/courses/${courseId}/progress`, {
+            const res = await fetch(`/api/${api}/classes/${classId}/courses/${courseId}/progress`, {
                 method: 'DELETE',
             });
             if (res.ok) {
@@ -115,7 +116,7 @@ export default function ClassCourses({ isRTL }: ClassCoursesProps) {
         if (!selectedCourse) return;
 
         try {
-            const res = await fetch(`/api/instructor/classes/${classId}/courses/${selectedCourse.id}/settings`, {
+            const res = await fetch(`/api/${api}/classes/${classId}/courses/${selectedCourse.id}/settings`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -239,7 +240,7 @@ export default function ClassCourses({ isRTL }: ClassCoursesProps) {
                                 <div className="flex-1">
                                     <h3
                                         className="text-lg font-semibold text-blue-600 hover:underline cursor-pointer"
-                                        onClick={() => router.push(`/instructor/courses/${course.id}`)}
+                                        onClick={() => router.push(`/${api}/courses/${course.id}`)}
                                     >
                                         {course.name}
                                     </h3>
@@ -284,7 +285,7 @@ export default function ClassCourses({ isRTL }: ClassCoursesProps) {
                                     {isRTL ? 'مسح التقدم' : 'Clear Progress'}
                                 </button>
                                 <button
-                                    // onClick={() => router.push(`/instructor/courses/${course.id}/stats?classId=${classId}`)}
+                                    // onClick={() => router.push(`/${api}/courses/${course.id}/stats?classId=${classId}`)}
                                     className="flex items-center gap-1 px-3 py-1.5 text-sm bg-green-50 text-green-600 rounded hover:bg-green-100"
                                 >
                                     <BarChart3 className="w-3.5 h-3.5" />

@@ -85,9 +85,8 @@ export async function createInstructor({
     return newUser;
 }
 
-export async function getInstructors(schoolAdminId?: number) {
+export async function getInstructors(schoolAdminId?: number, role?: string) {
     let classIds: number[] | undefined;
-
     // If schoolAdminId is provided, get classes for that school admin
     if (schoolAdminId) {
         const assignedSchools = await db
@@ -120,7 +119,8 @@ export async function getInstructors(schoolAdminId?: number) {
         .from(users)
         .leftJoin(classInstructors, eq(users.id, classInstructors.userId))
         .where(
-            and(inArray(users.role, ['instructor', 'admin', 'school_admin', 'billing_admin']),
+            and(
+                role==='instructor' ? eq(users.role, role) : inArray(users.role, ['instructor', 'admin', 'school_admin', 'billing_admin']),
                 classIds ? inArray(classInstructors.classId, classIds) : undefined)
         )
         .groupBy(users.id);

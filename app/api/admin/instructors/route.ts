@@ -8,8 +8,10 @@ export async function GET(req: NextRequest) {
   if (!session || session.role !== 'admin') {
     return NextResponse.json({ error: 'Not authorized' }, { status: 401 });
   }
+  const url = new URL(req.url);
+  const role = url.searchParams.get('role');
 
-  const instructors = await getInstructors();
+  const instructors = await getInstructors(undefined, role || '');
 
   return NextResponse.json({ instructors });
 }

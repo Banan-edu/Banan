@@ -6,7 +6,7 @@ import { useLanguage } from '@/app/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import {
-    Plus, UserPlus, Upload, List,X, Trash2, ArrowRight 
+    Plus, UserPlus, Upload, List, X, Trash2, ArrowRight
 } from 'lucide-react';
 
 interface Student {
@@ -19,10 +19,11 @@ interface Student {
 
 interface ClassStudentsManagerProps {
     classId: any;
+    api: string;
     onStudentUpdate?: () => void;
 }
 
-export default function ClassStudentsManager({ classId, onStudentUpdate }: ClassStudentsManagerProps) {
+export default function ClassStudentsManager({ classId, api, onStudentUpdate }: ClassStudentsManagerProps) {
     const { isRTL } = useLanguage();
     const [students, setStudents] = useState<Student[]>([]);
     const [availableClasses, setAvailableClasses] = useState<any[]>([]);
@@ -43,8 +44,8 @@ export default function ClassStudentsManager({ classId, onStudentUpdate }: Class
     const fetchData = async () => {
         try {
             const [studentsRes, classesRes] = await Promise.all([
-                fetch(`/api/instructor/classes/${classId}/students`),
-                fetch('/api/instructor/classes'),
+                fetch(`/api/${api}/classes/${classId}/students`),
+                fetch(`/api/${api}/classes`),
             ]);
 
             if (studentsRes.ok) {
@@ -83,7 +84,7 @@ export default function ClassStudentsManager({ classId, onStudentUpdate }: Class
 
         try {
             if (modalAction === 'disassign') {
-                const res = await fetch(`/api/instructor/classes/${classId}/students/${selectedStudent.id}`, {
+                const res = await fetch(`/api/${api}/classes/${classId}/students/${selectedStudent.id}`, {
                     method: 'DELETE',
                 });
 
@@ -92,7 +93,7 @@ export default function ClassStudentsManager({ classId, onStudentUpdate }: Class
                     onStudentUpdate?.();
                 }
             } else if (modalAction === 'move' && targetClassId) {
-                const res = await fetch(`/api/instructor/classes/${classId}/students/${selectedStudent.id}/move`, {
+                const res = await fetch(`/api/${api}/classes/${classId}/students/${selectedStudent.id}/move`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ targetClassId }),
@@ -113,7 +114,7 @@ export default function ClassStudentsManager({ classId, onStudentUpdate }: Class
     };
     const fetchAvailableStudents = async () => {
         try {
-            const res = await fetch('/api/instructor/students');
+            const res = await fetch(`/api/${api}/students`);
             if (res.ok) {
                 const data = await res.json();
                 // Filter students not already in this class
@@ -139,7 +140,7 @@ export default function ClassStudentsManager({ classId, onStudentUpdate }: Class
 
     const handleAssignStudent = async (studentId: number) => {
         try {
-            const res = await fetch(`/api/instructor/students/${studentId}/classes`, {
+            const res = await fetch(`/api/${api}/students/${studentId}/classes`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ classId: parseInt(classId as string) }),
@@ -325,7 +326,7 @@ export default function ClassStudentsManager({ classId, onStudentUpdate }: Class
                         <div className="space-y-3">
                             <button
                                 // onClick={() => { setShowAddStudentForm(true); }}
-                                onClick={() => router.push(`/instructor/students/add?classId=${classId}`)}
+                                onClick={() => router.push(`/${api}/students/add?classId=${classId}`)}
                                 className="w-full flex items-center gap-3 p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors"
                             >
                                 <UserPlus className="w-6 h-6 text-blue-600" />
@@ -337,7 +338,7 @@ export default function ClassStudentsManager({ classId, onStudentUpdate }: Class
 
                             <button
                                 // onClick={() => { setShowImportForm(true); }}
-                                onClick={() => router.push(`/instructor/students/import?classId=${classId}`)}
+                                onClick={() => router.push(`/${api}/students/import?classId=${classId}`)}
                                 className="w-full flex items-center gap-3 p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors"
                             >
                                 <Upload className="w-6 h-6 text-blue-600" />

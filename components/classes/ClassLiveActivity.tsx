@@ -5,9 +5,10 @@ import { useState, useEffect } from 'react';
 interface LiveActivityTabProps {
     classId: any;
     isRTL: boolean;
+    api: string;
 }
 
-export default function LiveActivityTab({ classId, isRTL }: LiveActivityTabProps) {
+export default function LiveActivityTab({ classId, isRTL, api }: LiveActivityTabProps) {
     const [activities, setActivities] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -19,7 +20,7 @@ export default function LiveActivityTab({ classId, isRTL }: LiveActivityTabProps
 
     const fetchActivities = async () => {
         try {
-            const res = await fetch(`/api/instructor/classes/${classId}/live-activity`);
+            const res = await fetch(`/api/${api}/classes/${classId}/live-activity`);
             if (res.ok) {
                 const data = await res.json();
                 setActivities(data.activities || []);

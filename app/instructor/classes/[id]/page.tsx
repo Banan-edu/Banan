@@ -409,6 +409,7 @@ export default function ClassDetailsPage() {
           {activeTab === 'students' && (
             <ClassStudentsManager
               classId={classId}
+              api={'instructor'}
               onStudentUpdate={fetchClassData}
             />
           )}
@@ -440,46 +441,13 @@ export default function ClassDetailsPage() {
           {activeTab === 'courses' && (
             <ClassCourses
               isRTL
+              api={'instructor'}
             />
           )}
 
-          {/* {activeTab === 'scoreboard' && (
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-xl font-semibold mb-4">{isRTL ? 'لوحة النتائج' : 'Scoreboard'}</h2>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-4 py-3 text-left">{isRTL ? 'الاسم' : 'Name'}</th>
-                      <th className="px-4 py-3 text-left">{isRTL ? 'النجوم' : 'Stars'}</th>
-                      <th className="px-4 py-3 text-left">{isRTL ? 'النتيجة' : 'Score'}</th>
-                      <th className="px-4 py-3 text-left">{isRTL ? 'المدة' : 'Duration'}</th>
-                      <th className="px-4 py-3 text-left">{isRTL ? 'السرعة' : 'Avg Speed'}</th>
-                      <th className="px-4 py-3 text-left">{isRTL ? 'الدقة' : 'Avg Accuracy'}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr className="border-t">
-                      <td className="px-4 py-3 text-gray-500" colSpan={6}>No data available</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )} */}
-
-          {/* {activeTab === 'live' && (
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-xl font-semibold mb-4">{isRTL ? 'النشاط المباشر' : 'Live Activity Feed'}</h2>
-              <div className="space-y-3">
-                <div className="border rounded-lg p-4 text-gray-500 text-center">
-                  No live activity at the moment
-                </div>
-              </div>
-            </div>
-          )} */}
           {activeTab === 'live' && (
-            <LiveActivityTab classId={classId} isRTL />
+            <LiveActivityTab
+              api={'instructor'} classId={classId} isRTL />
           )}
         </div>
       </main>

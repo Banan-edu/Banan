@@ -3,6 +3,7 @@ import { getSession } from '@/lib/auth';
 import { db } from '@server/db';
 import { lessons, lessonProgress, sections, courses, classCourses, classStudents, letterProgress, letterStatistics, typingPatterns } from '@shared/schema';
 import { eq, and, inArray } from 'drizzle-orm';
+import { languages } from 'prismjs';
 
 type ErrorPatternData = {
   count?: number;
@@ -41,6 +42,15 @@ export async function GET(req: NextRequest, context: RouteContext) {
   if (!section) {
     return NextResponse.json({ error: 'Section not found' }, { status: 404 });
   }
+  const [course] = await db
+    .select({ language: courses.language })
+    .from(courses)
+    .where(eq(courses.id, section.courseId))
+    .limit(1);
+
+  if (!section) {
+    return NextResponse.json({ error: 'Section not found' }, { status: 404 });
+  }
 
   const studentClasses = await db
     .select({ classId: classStudents.classId })
@@ -74,7 +84,7 @@ export async function GET(req: NextRequest, context: RouteContext) {
     ))
     .limit(1);
 
-  return NextResponse.json({ lesson, progress });
+  return NextResponse.json({ lesson: { ...lesson, ...course }, progress });
 }
 
 export async function POST(req: NextRequest, context: RouteContext) {

@@ -23,10 +23,11 @@ type Class = {
 type StudentTestProps = {
     testId: number;
     students: Student[];
+    api: string;
     onRefresh: () => void;
 };
 
-export default function StudentTest({ testId, students, onRefresh }: StudentTestProps) {
+export default function StudentTest({ testId, students, api = 'instructor', onRefresh }: StudentTestProps) {
     const { isRTL } = useLanguage();
     const [showAddModal, setShowAddModal] = useState(false);
     const [addMode, setAddMode] = useState<'individual' | 'class'>('individual');
@@ -46,13 +47,13 @@ export default function StudentTest({ testId, students, onRefresh }: StudentTest
         setLoading(true);
         try {
             if (addMode === 'individual') {
-                const res = await fetch('/api/instructor/students');
+                const res = await fetch(`/api/${api}/students`);
                 if (res.ok) {
                     const data = await res.json();
                     setAvailableStudents(data.students || []);
                 }
             } else {
-                const res = await fetch('/api/instructor/classes');
+                const res = await fetch(`/api/${api}/classes`);
                 if (res.ok) {
                     const data = await res.json();
                     setAvailableClasses(data.classes || []);
@@ -101,7 +102,7 @@ export default function StudentTest({ testId, students, onRefresh }: StudentTest
         if (selectedStudentIds.length === 0) return;
 
         try {
-            const res = await fetch(`/api/instructor/tests/${testId}/students/bulk`, {
+            const res = await fetch(`/api/${api}/tests/${testId}/students/bulk`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ studentIds: selectedStudentIds }),
@@ -121,7 +122,7 @@ export default function StudentTest({ testId, students, onRefresh }: StudentTest
         if (selectedClassIds.length === 0) return;
 
         try {
-            const res = await fetch(`/api/instructor/tests/${testId}/students/bulk`, {
+            const res = await fetch(`/api/${api}/tests/${testId}/students/bulk`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ classIds: selectedClassIds }),
@@ -143,7 +144,7 @@ export default function StudentTest({ testId, students, onRefresh }: StudentTest
         }
 
         try {
-            const res = await fetch(`/api/instructor/tests/${testId}/students/${studentId}`, {
+            const res = await fetch(`/api/${api}/tests/${testId}/students/${studentId}`, {
                 method: 'DELETE',
             });
 
@@ -209,8 +210,8 @@ export default function StudentTest({ testId, students, onRefresh }: StudentTest
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <span
                                             className={`px-2 py-1 text-xs rounded ${student.completed
-                                                    ? 'bg-green-100 text-green-800'
-                                                    : 'bg-yellow-100 text-yellow-800'
+                                                ? 'bg-green-100 text-green-800'
+                                                : 'bg-yellow-100 text-yellow-800'
                                                 }`}
                                         >
                                             {student.completed
@@ -261,8 +262,8 @@ export default function StudentTest({ testId, students, onRefresh }: StudentTest
                                     setSelectedClassIds([]);
                                 }}
                                 className={`px-4 py-2 rounded-lg ${addMode === 'individual'
-                                        ? 'bg-blue-600 text-white'
-                                        : 'bg-gray-200 text-gray-700'
+                                    ? 'bg-blue-600 text-white'
+                                    : 'bg-gray-200 text-gray-700'
                                     }`}
                             >
                                 {isRTL ? 'طلاب فرديين' : 'Individual Students'}

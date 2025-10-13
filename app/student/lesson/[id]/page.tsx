@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 
 type ErrorPattern = { count: number; type: string };
@@ -20,6 +20,148 @@ export default function LessonPage() {
   const [keystrokes, setKeystrokes] = useState<any[]>([]);
   const [letterStats, setLetterStats] = useState<Map<string, any>>(new Map());
   const [errorPatterns, setErrorPatterns] = useState<ErrorPatterns>({});
+
+  const [recordingAllowed, setRecordingAllowed] = useState<boolean | null>(null);
+
+
+  // ============= SCREEN & CAMERA RECORDING STATES =============
+  const [isRecording, setIsRecording] = useState(false);
+  const screenRecorderRef = useRef<MediaRecorder | null>(null);
+  const cameraRecorderRef = useRef<MediaRecorder | null>(null);
+  const screenChunksRef = useRef<Blob[]>([]);
+  const cameraChunksRef = useRef<Blob[]>([]);
+  const screenStreamRef = useRef<MediaStream | null>(null);
+  const cameraStreamRef = useRef<MediaStream | null>(null);
+
+  useEffect(() => {
+    return () => {
+      // Cleanup on unmount
+      screenStreamRef.current?.getTracks().forEach(track => track.stop());
+      cameraStreamRef.current?.getTracks().forEach(track => track.stop());
+      if (screenRecorderRef.current?.state === 'recording') screenRecorderRef.current.stop();
+      if (cameraRecorderRef.current?.state === 'recording') cameraRecorderRef.current.stop();
+    };
+  }, []);
+
+  // ============= RECORDING FUNCTIONS =============
+  const startRecording = async () => {
+    try {
+      const screenStream = await navigator.mediaDevices.getDisplayMedia({
+        video: { displaySurface: 'monitor', },
+        audio: false,
+      });
+      screenStreamRef.current = screenStream;
+
+      const cameraStream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: false,
+      });
+      cameraStreamRef.current = cameraStream;
+
+      const screenRecorder = new MediaRecorder(screenStream, {
+        mimeType: 'video/webm;codecs=vp8',
+      });
+      screenRecorderRef.current = screenRecorder;
+      screenChunksRef.current = [];
+
+      screenRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) screenChunksRef.current.push(e.data);
+      };
+
+      const cameraRecorder = new MediaRecorder(cameraStream, {
+        mimeType: 'video/webm;codecs=vp8',
+      });
+      cameraRecorderRef.current = cameraRecorder;
+      cameraChunksRef.current = [];
+
+      cameraRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) cameraChunksRef.current.push(e.data);
+      };
+
+      // Start recording
+      screenRecorder.start(1000);
+      cameraRecorder.start(1000);
+      setIsRecording(true);
+      setRecordingAllowed(true); // ✅ Mark as allowed
+      console.log('✅ Recording started (screen + camera)');
+    } catch (err) {
+      console.error('❌ Error starting recording:', err);
+      alert('You must allow screen and camera permissions to start the lesson.');
+      setRecordingAllowed(false); // ❌ Permissions denied
+    }
+  };
+
+
+  const stopRecording = async (): Promise<{ screenBlob: Blob | null; cameraBlob: Blob | null }> => {
+    return new Promise((resolve) => {
+      let screenBlob: Blob | null = null;
+      let cameraBlob: Blob | null = null;
+      let stoppedCount = 0;
+
+      const checkComplete = () => {
+        stoppedCount++;
+        if (stoppedCount === 2) {
+          resolve({ screenBlob, cameraBlob });
+        }
+      };
+
+      // Stop screen recording
+      if (screenRecorderRef.current && screenRecorderRef.current.state !== 'inactive') {
+        screenRecorderRef.current.onstop = () => {
+          screenBlob = new Blob(screenChunksRef.current, { type: 'video/webm' });
+          console.log('📹 Screen recording stopped, size:', screenBlob.size);
+          screenStreamRef.current?.getTracks().forEach(track => track.stop());
+          checkComplete();
+        };
+        screenRecorderRef.current.stop();
+      } else {
+        checkComplete();
+      }
+
+      // Stop camera recording
+      if (cameraRecorderRef.current && cameraRecorderRef.current.state !== 'inactive') {
+        cameraRecorderRef.current.onstop = () => {
+          cameraBlob = new Blob(cameraChunksRef.current, { type: 'video/webm' });
+          console.log('📷 Camera recording stopped, size:', cameraBlob.size);
+          cameraStreamRef.current?.getTracks().forEach(track => track.stop());
+          checkComplete();
+        };
+        cameraRecorderRef.current.stop();
+      } else {
+        checkComplete();
+      }
+
+      setIsRecording(false);
+    });
+  };
+
+  // Upload recordings to cloud (this will be handled by the API)
+  const uploadRecordings = async (screenBlob: Blob | null, cameraBlob: Blob | null, progressId: number) => {
+    const formData = new FormData();
+
+    if (screenBlob) {
+      formData.append('screenRecording', screenBlob, 'screen.webm');
+    }
+    if (cameraBlob) {
+      formData.append('cameraRecording', cameraBlob, 'camera.webm');
+    }
+    formData.append('progressId', progressId.toString());
+
+    try {
+      const res = await fetch(`/api/student/lesson/${params.id}/upload-recordings`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (res.ok) {
+        console.log('✅ Recordings uploaded successfully');
+      } else {
+        console.error('❌ Failed to upload recordings');
+      }
+    } catch (err) {
+      console.error('❌ Error uploading recordings:', err);
+    }
+  };
 
   // --- Fetch Lesson ---
   useEffect(() => {
@@ -93,6 +235,10 @@ export default function LessonPage() {
   const handleComplete = async () => {
     if (isComplete || !lesson || !startTime) return;
     setIsComplete(true);
+
+    // Stop recordings first
+    const { screenBlob, cameraBlob } = await stopRecording();
+
     const timeSpent = Math.round((Date.now() - startTime) / 1000);
     const score = Math.round((accuracy * wpm) / 10);
 
@@ -116,7 +262,7 @@ export default function LessonPage() {
       endTime: Date.now(),
     };
 
-    await fetch(`/api/student/lesson/${params.id}`, {
+    const res = await fetch(`/api/student/lesson/${params.id}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -130,7 +276,17 @@ export default function LessonPage() {
       }),
     });
 
-    setTimeout(() => router.back(), 2000);
+    if (res.ok) {
+      const data = await res.json();
+      const progressId = data.progress?.id;
+
+      // Upload recordings with progressId
+      if (progressId && (screenBlob || cameraBlob)) {
+        await uploadRecordings(screenBlob, cameraBlob, progressId);
+        router.back()
+      }
+    }
+
   };
 
   // --- Keyboard Input Handler ---
@@ -143,7 +299,14 @@ export default function LessonPage() {
       const targetText = lesson.text;
       const currentIndex = userInput.length;
 
+
+      if (recordingAllowed === false) {
+        alert('Recording permissions are required before typing.');
+        return;
+      }
+
       if (!startTime) setStartTime(Date.now());
+
 
       let newInput = userInput;
       let typedChar = '';
@@ -207,6 +370,10 @@ export default function LessonPage() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [userInput, lesson, isComplete, startTime, keystrokes]);
 
+  if (!window.MediaRecorder) {
+    console.warn('MediaRecorder not supported on this browser.');
+    return;
+  }
   // --- Text Rendering (no textbox, underlining next char) ---
   const renderText = () => {
     if (!lesson) return null;
@@ -226,6 +393,31 @@ export default function LessonPage() {
       );
     });
   };
+
+  const handleStartLesson = async () => {
+    if (isRecording || recordingAllowed) return;
+
+    try {
+      await startRecording();
+      setRecordingAllowed(true);
+    } catch (err) {
+      setRecordingAllowed(false);
+    }
+  };
+
+  if (recordingAllowed === null) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center text-lg">
+        <p className="mb-4">Please allow screen and camera access to start the lesson.</p>
+        <button
+          onClick={handleStartLesson}
+          className="px-4 py-2 bg-blue-600 text-white rounded-lg"
+        >
+          Start Lesson
+        </button>
+      </div>
+    );
+  }
 
   if (!lesson)
     return (
@@ -265,7 +457,10 @@ export default function LessonPage() {
           </div>
         )}
 
-        <div className="bg-white rounded-lg shadow-lg p-6 font-mono text-lg leading-relaxed whitespace-pre-wrap">
+        <div
+          dir={lesson.language === 'ar' ? 'rtl' : 'ltr'}
+          className="bg-white rounded-lg shadow-lg p-6 font-mono text-lg leading-relaxed whitespace-pre-wrap"
+        >
           {renderText()}
         </div>
       </div>

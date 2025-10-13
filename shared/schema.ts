@@ -20,7 +20,7 @@ export const users = pgTable("users", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   lastLogin: timestamp("last_login"),
   lastActivity: timestamp("last_activity"),
-   //added
+  //added
   deletedAt: timestamp("deleted_at"),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
@@ -209,7 +209,7 @@ export const lessonProgress = pgTable("lesson_progress", {
   timeSpent: integer("time_spent").default(0),
   attempts: integer("attempts").default(0),
 
-   // Session replay and error tracking
+  // Session replay and error tracking
   sessionData: jsonb("session_data"), // Keystroke timeline for replay
   errorPatterns: jsonb("error_patterns"), // Common mistakes in this session
 
@@ -224,11 +224,15 @@ export const lessonScreenRecords = pgTable("lesson_screen_records", {
   lessonId: integer("lesson_id").notNull().references(() => lessons.id, { onDelete: 'cascade' }),
   progressId: integer("progress_id").references(() => lessonProgress.id, { onDelete: 'cascade' }),
 
-  cloudUrl: text("cloud_url"), // URL to cloud-stored recording
-  cloudProvider: text("cloud_provider"), // e.g., 'aws-s3', 'cloudinary', etc.
-  duration: integer("duration"), // in seconds
-  fileSize: integer("file_size"), // in bytes
+  screenCloudUrl: text("screen_cloud_url"),
+  screenDuration: integer("screen_duration"),
+  screenFileSize: integer("screen_file_size"),
 
+  cameraCloudUrl: text("camera_cloud_url"),
+  cameraDuration: integer("camera_duration"),
+  cameraFileSize: integer("camera_file_size"),
+
+  cloudProvider: text("cloud_provider"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

@@ -157,16 +157,10 @@ export const instructorLinks: SidebarLink[] = [
     icon: <Calendar className="w-5 h-5" />
   },
   // {
-  //   href: '/instructor/schools',
-  //   labelAr: 'المدرسة',
-  //   labelEn: 'School',
-  //   icon: <Users className="w-5 h-5" />
-  // },
-  // {
-  //   href: '/instructor/instructor',
-  //   labelAr: 'المعلم',
-  //   labelEn: 'Instructor',
-  //   icon: <GraduationCap className="w-5 h-5" />
+  //   href: '/instructor/setting',
+  //   labelAr: 'الإعدادات',
+  //   labelEn: 'Setting',
+  //   icon: <Settings className="w-5 h-5" />
   // }
 ];
 
@@ -195,24 +189,24 @@ export const adminLinks: SidebarLink[] = [
     labelEn: 'Students',
     icon: <GraduationCap className="w-5 h-5" />
   },
-  // {
-  //   href: '/admin/courses',
-  //   labelAr: 'الدورات',
-  //   labelEn: 'Courses',
-  //   icon: <BookOpen className="w-5 h-5" />
-  // },
-  // {
-  //   href: '/instructor/classes',
-  //   labelAr: 'الصفوف',
-  //   labelEn: 'Classes',
-  //   icon: <Target className="w-5 h-5" />
-  // },
-  // {
-  //   href: '/admin/tests',
-  //   labelAr: 'الاختبارات',
-  //   labelEn: 'Tests',
-  //   icon: <Calendar className="w-5 h-5" />
-  // },
+  {
+    href: '/admin/classes',
+    labelAr: 'الصفوف',
+    labelEn: 'Classes',
+    icon: <Target className="w-5 h-5" />
+  },
+  {
+    href: '/admin/courses',
+    labelAr: 'الدورات',
+    labelEn: 'Courses',
+    icon: <BookOpen className="w-5 h-5" />
+  },
+  {
+    href: '/admin/tests',
+    labelAr: 'الاختبارات',
+    labelEn: 'Tests',
+    icon: <Calendar className="w-5 h-5" />
+  },
 ];
 export const schoolAdminLinks: SidebarLink[] = [
   {
@@ -239,22 +233,22 @@ export const schoolAdminLinks: SidebarLink[] = [
     labelEn: 'Students',
     icon: <GraduationCap className="w-5 h-5" />
   },
-  // {
-  //   href: '/school-admin/courses',
-  //   labelAr: 'الدورات',
-  //   labelEn: 'Courses',
-  //   icon: <BookOpen className="w-5 h-5" />
-  // },
-  // {
-  //   href: '/school-admin/classes',
-  //   labelAr: 'الصفوف',
-  //   labelEn: 'Classes',
-  //   icon: <Target className="w-5 h-5" />
-  // },
-  // {
-  //   href: '/school-admin/tests',
-  //   labelAr: 'الاختبارات',
-  //   labelEn: 'Tests',
-  //   icon: <Calendar className="w-5 h-5" />
-  // },
+  {
+    href: '/school-admin/courses',
+    labelAr: 'الدورات',
+    labelEn: 'Courses',
+    icon: <BookOpen className="w-5 h-5" />
+  },
+  {
+    href: '/school-admin/classes',
+    labelAr: 'الصفوف',
+    labelEn: 'Classes',
+    icon: <Target className="w-5 h-5" />
+  },
+  {
+    href: '/school-admin/tests',
+    labelAr: 'الاختبارات',
+    labelEn: 'Tests',
+    icon: <Calendar className="w-5 h-5" />
+  },
 ];
