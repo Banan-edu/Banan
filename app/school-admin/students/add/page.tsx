@@ -7,22 +7,6 @@ import { useLanguage } from '@/app/contexts/LanguageContext';
 import { ArrowLeft } from 'lucide-react';
 import { adminLinks, Sidebar } from '@/components/Sidebar';
 
-const GRADES = [
-    'unassigned',
-    'Grade 1',
-    'Grade 2',
-    'Grade 3',
-    'Grade 4',
-    'Grade 5',
-    'Grade 6',
-    'Grade 7',
-    'Grade 8',
-    'Grade 9',
-    'Grade 10',
-    'Grade 11',
-    'Grade 12',
-];
-
 export default function AddStudentPage() {
     const router = useRouter();
     const { isRTL } = useLanguage();
@@ -34,7 +18,7 @@ export default function AddStudentPage() {
         email: '',
         studentId: '',
         password: '',
-        grade: GRADES[0],
+        grade: '',
         schoolId: '',
         accessibility: [] as string[],
     });
@@ -245,23 +229,19 @@ export default function AddStudentPage() {
                                 className={`block text-sm font-medium text-gray-700 mb-2 ${isRTL ? 'text-right font-arabic' : ''
                                     }`}
                             >
-                                {isRTL ? 'الصف الدراسي' : 'Grade'}{' '}
+                            {isRTL ? 'الصف الدراسي' : 'Grade'}{' '}
                                 <span className="text-red-500">*</span>
                             </label>
-                            <select
+                            <input
+                                type="text"
                                 name="grade"
                                 value={formData.grade}
                                 onChange={handleChange}
                                 required
                                 className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${isRTL ? 'text-right font-arabic' : ''
                                     }`}
-                            >
-                                {GRADES.map((grade) => (
-                                    <option key={grade} value={grade}>
-                                        {grade}
-                                    </option>
-                                ))}
-                            </select>
+                                placeholder={isRTL ? 'أدخل الصف' : 'Enter Grade'}
+                            />
                         </div>
 
                         {/* School Selection */}

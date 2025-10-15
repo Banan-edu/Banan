@@ -7,22 +7,6 @@ import { useLanguage } from '@/app/contexts/LanguageContext';
 import { Sidebar, adminLinks } from '@/components/Sidebar';
 import { ArrowLeft } from 'lucide-react';
 
-const GRADES = [
-  'unassigned',
-  'Grade 1',
-  'Grade 2',
-  'Grade 3',
-  'Grade 4',
-  'Grade 5',
-  'Grade 6',
-  'Grade 7',
-  'Grade 8',
-  'Grade 9',
-  'Grade 10',
-  'Grade 11',
-  'Grade 12',
-];
-
 export default function EditStudentPage() {
   const params = useParams();
   const router = useRouter();
@@ -38,7 +22,7 @@ export default function EditStudentPage() {
     email: '',
     studentId: '',
     password: '',
-    grade: GRADES[0],
+    grade: '',
     classId: 'none',
     accessibility: [] as string[],
   });
@@ -66,7 +50,7 @@ export default function EditStudentPage() {
           email: studentData.user.email || '',
           studentId: studentData.user.studentId || '',
           password: '',
-          grade: studentData.user.grade || GRADES[0],
+          grade: studentData.user.grade || '',
           classId: 'none',
           accessibility: studentData.user.accessibility || [],
         });
@@ -265,27 +249,16 @@ export default function EditStudentPage() {
 
             {/* Grade */}
             <div>
-              <label className={`block text-sm font-medium text-gray-700 mb-2 ${
-                isRTL ? 'text-right font-arabic' : ''
-              }`}>
-                {isRTL ? 'الصف الدراسي' : 'Grade'}{' '}
-                <span className="text-red-500">*</span>
+              <label className={`block text-sm font-medium text-gray-700 mb-2 ${isRTL ? 'text-right font-arabic' : ''}`}>
+              {isRTL ? 'الصف *' : 'Grade *'}
               </label>
-              <select
+              <input
+                type="text"
                 name="grade"
                 value={formData.grade}
                 onChange={handleChange}
-                required
-                className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                  isRTL ? 'text-right font-arabic' : ''
-                }`}
-              >
-                {GRADES.map((grade) => (
-                  <option key={grade} value={grade}>
-                    {grade}
-                  </option>
-                ))}
-              </select>
+                className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${isRTL ? 'text-right' : ''}`}
+              />
             </div>
 
             {/* Class Selection */}

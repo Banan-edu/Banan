@@ -7,22 +7,6 @@ import { ArrowLeft } from 'lucide-react';
 import { useLanguage } from '@/app/contexts/LanguageContext';
 import { Sidebar, schoolAdminLinks } from '@/components/Sidebar';
 
-const GRADES = [
-  'Unassigned',
-  '1st Grade',
-  '2nd Grade',
-  '3rd Grade',
-  '4th Grade',
-  '5th Grade',
-  '6th Grade',
-  '7th Grade',
-  '8th Grade',
-  '9th Grade',
-  '10th Grade',
-  '11th Grade',
-  '12th Grade',
-];
-
 export default function AddClassPage() {
   const router = useRouter();
   const { isRTL } = useLanguage();
@@ -33,7 +17,7 @@ export default function AddClassPage() {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    grade: GRADES[0],
+    grade: '',
     instructorIds: [] as number[],
     courseIds: [] as number[],
   });
@@ -163,24 +147,19 @@ export default function AddClassPage() {
                 className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${isRTL ? 'text-right' : ''}`}
               />
             </div>
-
+            
             <div>
-              <label className={`block text-sm font-medium text-gray-700 mb-2 ${isRTL ? 'text-right font-arabic' : ''}`}>
+              <label className={`block text-sm font-medium text-gray-700 mb-2 `}>
                 {isRTL ? 'الصف *' : 'Grade *'}
               </label>
-              <select
+              <input
+                type="text"
                 name="grade"
                 value={formData.grade}
                 onChange={handleChange}
                 className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${isRTL ? 'text-right' : ''}`}
                 required
-              >
-                {GRADES.map((grade) => (
-                  <option key={grade} value={grade}>
-                    {grade}
-                  </option>
-                ))}
-              </select>
+              />
             </div>
 
             <div>

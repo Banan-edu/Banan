@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth';
 import { db } from '@server/db';
-import { lessons, lessonProgress, sections, courses, classCourses, classStudents, letterProgress, letterStatistics, typingPatterns } from '@shared/schema';
+import { lessons, lessonProgress, sections, courses, classCourses, classStudents, letterProgress, letterStatistics, typingPatterns, users, classes } from '@shared/schema';
 import { eq, and, inArray } from 'drizzle-orm';
-import { languages } from 'prismjs';
+import { computeLessonConfig } from '@/lib/lessonConfig';
 
 type ErrorPatternData = {
   count?: number;
@@ -64,7 +64,12 @@ export async function GET(req: NextRequest, context: RouteContext) {
   }
 
   const enrolledCourses = await db
-    .select({ courseId: classCourses.courseId })
+    .select({
+      courseId: classCourses.courseId,
+      classId: classCourses.classId,
+      speedAdjustment: classCourses.speedAdjustment,
+      accuracyRequirement: classCourses.accuracyRequirement,
+    })
     .from(classCourses)
     .where(and(
       eq(classCourses.courseId, section.courseId),
@@ -75,6 +80,31 @@ export async function GET(req: NextRequest, context: RouteContext) {
     return NextResponse.json({ error: 'Not authorized to access this lesson' }, { status: 403 });
   }
 
+  // Get student accessibility mode
+  const [student] = await db
+    .select({ accessibility: users.accessibility })
+    .from(users)
+    .where(eq(users.id, session.userId))
+    .limit(1);
+
+
+  const studentAccessibility = (student?.accessibility as string[]) || [];
+
+  // Get class settings
+  const [classSettings] = await db
+    .select()
+    .from(classes)
+    .where(eq(classes.id, enrolledCourses[0].classId))
+    .limit(1);
+
+  // Compute effective configuration
+  const effectiveConfig = computeLessonConfig(
+    lesson,
+    classSettings,
+    enrolledCourses[0],
+    studentAccessibility
+  );
+
   const [progress] = await db
     .select()
     .from(lessonProgress)
@@ -84,7 +114,7 @@ export async function GET(req: NextRequest, context: RouteContext) {
     ))
     .limit(1);
 
-  return NextResponse.json({ lesson: { ...lesson, ...course }, progress });
+  return NextResponse.json({ lesson: { ...lesson, ...course }, progress, config: effectiveConfig });
 }
 
 export async function POST(req: NextRequest, context: RouteContext) {

@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
     //     }, { status: 403 });
     //   }
 
-    const { name, email, password, studentId, grade, classId } = await req.json();
+    const { name, email, password, studentId, grade, classId, accessibility } = await req.json();
 
     if (!name || !email || !password) {
         return NextResponse.json({
@@ -76,6 +76,7 @@ export async function POST(req: NextRequest) {
                 studentId: studentId || null,
                 grade: grade || null,
                 role: 'student',
+                accessibility: accessibility || [],
             })
             .returning();
 

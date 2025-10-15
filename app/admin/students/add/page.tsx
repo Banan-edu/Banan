@@ -7,22 +7,6 @@ import { useLanguage } from '@/app/contexts/LanguageContext';
 import { ArrowLeft } from 'lucide-react';
 import { adminLinks, Sidebar } from '@/components/Sidebar';
 
-const GRADES = [
-    'unassigned',
-    'Grade 1',
-    'Grade 2',
-    'Grade 3',
-    'Grade 4',
-    'Grade 5',
-    'Grade 6',
-    'Grade 7',
-    'Grade 8',
-    'Grade 9',
-    'Grade 10',
-    'Grade 11',
-    'Grade 12',
-];
-
 export default function AddStudentPage() {
     const router = useRouter();
     const { isRTL } = useLanguage();
@@ -34,7 +18,7 @@ export default function AddStudentPage() {
         email: '',
         studentId: '',
         password: '',
-        grade: GRADES[0],
+        grade: '',
         schoolId: '',
         accessibility: [] as string[],
     });
@@ -241,27 +225,16 @@ export default function AddStudentPage() {
 
                         {/* Grade */}
                         <div>
-                            <label
-                                className={`block text-sm font-medium text-gray-700 mb-2 ${isRTL ? 'text-right font-arabic' : ''
-                                    }`}
-                            >
-                                {isRTL ? 'الصف الدراسي' : 'Grade'}{' '}
-                                <span className="text-red-500">*</span>
+                            <label className={`block text-sm font-medium text-gray-700 mb-2 ${isRTL ? 'text-right font-arabic' : ''}`}>
+                                {isRTL ? 'الصف *' : 'Grade *'}
                             </label>
-                            <select
+                            <input
+                                type="text"
                                 name="grade"
                                 value={formData.grade}
                                 onChange={handleChange}
-                                required
-                                className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${isRTL ? 'text-right font-arabic' : ''
-                                    }`}
-                            >
-                                {GRADES.map((grade) => (
-                                    <option key={grade} value={grade}>
-                                        {grade}
-                                    </option>
-                                ))}
-                            </select>
+                                className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${isRTL ? 'text-right' : ''}`}
+                            />
                         </div>
 
                         {/* School Selection */}
@@ -329,7 +302,7 @@ export default function AddStudentPage() {
                                     <input
                                         type="checkbox"
                                         name="accessibility"
-                                        value="lowVision"
+                                        value="low_vision"
                                         onChange={handleChange}
                                         className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
                                     />
@@ -376,7 +349,7 @@ export default function AddStudentPage() {
                                     <input
                                         type="checkbox"
                                         name="accessibility"
-                                        value="rightHandOnly"
+                                        value="right_hand_only"
                                         onChange={handleChange}
                                         className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
                                     />
@@ -401,7 +374,7 @@ export default function AddStudentPage() {
                                     <input
                                         type="checkbox"
                                         name="accessibility"
-                                        value="leftHandOnly"
+                                        value="left_hand_only"
                                         onChange={handleChange}
                                         className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
                                     />
@@ -426,7 +399,7 @@ export default function AddStudentPage() {
                                     <input
                                         type="checkbox"
                                         name="accessibility"
-                                        value="hardOfHearing"
+                                        value="hard_of_hearing"
                                         onChange={handleChange}
                                         className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
                                     />

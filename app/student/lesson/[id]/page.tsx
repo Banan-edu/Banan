@@ -2,20 +2,54 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
+import { VirtualKeyboardGuide } from '@/components/students/VirtualKeyboard';
+import { useLanguage } from '@/app/contexts/LanguageContext';
 
 type ErrorPattern = { count: number; type: string };
 type ErrorPatterns = Record<string, ErrorPattern>;
+/**
+ * lockLanguage
+ * soundFx
+ * theme
+ * showReplayButton
+ * showLowercaseLetters
+ * games
+ * anchoringLessons
+ */
+interface LessonConfig {
+  disableBackspace: boolean;
+  blockOnError: boolean;
+  lockVirtualKeyboard: boolean;
+  lockLanguage: boolean;
+  lockHands: boolean;
+  soundFx: boolean;
+  voiceOver: 'full' | 'partial' | 'none';
+  theme: string;
+  font: string;
+  showReplayButton: boolean;
+  showLowercaseLetters: boolean;
+  speedAdjustment: number;
+  accuracyRequirement: number;
+  highContrast?: boolean;
+  fontSize?: 'extra-large' | 'large' | 'default';
+  virtualKeyboardGuide?: 'right' | 'left' | 'both' | 'none';
+  closedCaptioning?: boolean;
+  games?: boolean;
+  anchoringLessons?: boolean;
+}
 
 export default function LessonPage() {
   const params = useParams();
   const router = useRouter();
 
   const [lesson, setLesson] = useState<any>(null);
+  const [config, setConfig] = useState<any>(null);
   const [userInput, setUserInput] = useState('');
   const [startTime, setStartTime] = useState<number | null>(null);
   const [wpm, setWpm] = useState(0);
   const [accuracy, setAccuracy] = useState(100);
   const [isComplete, setIsComplete] = useState(false);
+  const { isRTL } = useLanguage();
 
   const [keystrokes, setKeystrokes] = useState<any[]>([]);
   const [letterStats, setLetterStats] = useState<Map<string, any>>(new Map());
@@ -170,6 +204,7 @@ export default function LessonPage() {
       if (res.ok) {
         const data = await res.json();
         setLesson(data.lesson);
+        setConfig(data.config);
       }
     };
     fetchLesson();
@@ -312,6 +347,9 @@ export default function LessonPage() {
       let typedChar = '';
 
       if (e.key === 'Backspace') {
+        if (config.disableBackspace) {
+          return;
+        }
         newInput = userInput.slice(0, -1);
         typedChar = 'Backspace';
       } else if (e.key === 'Enter') {
@@ -326,6 +364,10 @@ export default function LessonPage() {
       const expectedChar = targetText[currentIndex];
       const isCorrect = typedChar === expectedChar;
 
+      if (config.blockOnError && !isCorrect && typedChar !== 'Backspace') {
+        // Don't allow incorrect character to be typed
+        return;
+      }
       setKeystrokes(prev => [...prev, { char: typedChar, timestamp, correct: isCorrect, expected: expectedChar, index: currentIndex }]);
 
       if (typedChar && typedChar !== 'Backspace') {
@@ -419,34 +461,95 @@ export default function LessonPage() {
     );
   }
 
-  if (!lesson)
+  if (!lesson || !config)
     return (
       <div className="min-h-screen flex items-center justify-center text-xl">Loading...</div>
     );
 
+  // ✅ CONFIG: Determine font size class based on config.fontSize
+  const getFontSizeClass = () => {
+    if (config.fontSize === 'extra-large') return 'text-3xl';
+    if (config.fontSize === 'large') return 'text-2xl';
+    return 'text-lg'; // normal
+  };
+
+  // ✅ CONFIG: Determine font family based on config.fontType
+  const getFontFamilyClass = () => {
+    if (config.font === 'dyslexic') return 'font-dyslexic'; // You'll need to load this font
+    return 'font-mono'; // default
+  };
+
+  // ✅ CONFIG: Determine background color based on config.highContrast
+  const getBackgroundClass = () => {
+    if (config.highContrast) return 'bg-[#121212] text-[#F5F5F5]'; // High contrast mode
+    return 'bg-gray-50'; // Normal mode
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4 select-none">
+    <div className={`min-h-screen py-8 px-4 select-none ${getBackgroundClass()}`}>
       <div className="max-w-5xl mx-auto">
-        <button onClick={() => router.back()} className="text-blue-600 hover:text-blue-800 mb-4">
+        <button onClick={() => { if (recordingAllowed) { stopRecording(); } router.back() }} className="text-blue-600 hover:text-blue-800 mb-4">
           ← Back to Course
         </button>
 
         <h1 className="text-3xl font-bold mb-6">{lesson.name}</h1>
 
+        {config.showReplayButton && (
+          <div className="mb-4">
+            {/* Add a button to restart the lesson */}
+            <button
+              onClick={() => {
+                setUserInput('');
+                setStartTime(null);
+                setWpm(0);
+                setAccuracy(100);
+                setIsComplete(false);
+                setKeystrokes([]);
+                setLetterStats(new Map());
+                setErrorPatterns({});
+              }}
+              className="px-4 py-2 bg-gray-300 hover:text-white rounded-lg hover:bg-gray-400 transition"
+            >
+              {isRTL ? 'اعادة' : 'Replay'}
+            </button>
+          </div>
+        )}
+        {config.closedCaptioning && (
+          <div className="bg-yellow-100 border border-yellow-400 text-yellow-800 rounded-lg p-2 mb-4 text-sm">
+            📝 Closed Captions: Enabled
+          </div>
+        )}
+        {/* there should be voice guiding */}
+        {config.voiceOver && (
+          <div className="bg-blue-100 border border-blue-400 text-blue-800 rounded-lg p-2 mb-4 text-sm">
+            🔊 Voice-Over: {config.voiceOver === 'full' ? 'Fully Guided' : 'Guided'}
+          </div>
+        )}
+
         <div className="grid grid-cols-3 gap-4 mb-6">
           <div className="bg-white rounded-lg shadow p-4 text-center">
             <div className="text-sm text-gray-500">Speed</div>
             <div className="text-2xl font-bold text-blue-600">{wpm} WPM</div>
+            {/* ✅ CONFIG: Show goal speed from config */}
+            {config.speedAdjustment && (
+              <div className="text-xs text-gray-400">Goal: {config.speedAdjustment} WPM</div>
+            )}
           </div>
           <div className="bg-white rounded-lg shadow p-4 text-center">
             <div className="text-sm text-gray-500">Accuracy</div>
             <div className="text-2xl font-bold text-green-600">{accuracy}%</div>
+            {config.accuracyRequirement && (
+              <div className="text-xs text-gray-400">Min: {config.accuracyRequirement}%</div>
+            )}
           </div>
           <div className="bg-white rounded-lg shadow p-4 text-center">
             <div className="text-sm text-gray-500">Time</div>
             <div className="text-2xl font-bold text-purple-600">
               {startTime ? Math.round((Date.now() - startTime) / 1000) : 0}s
             </div>
+            {config.timeLimit && (
+              <div className="text-xs text-gray-400">Limit: {config.timeLimit}s</div>
+            )}
           </div>
         </div>
 
@@ -459,10 +562,34 @@ export default function LessonPage() {
 
         <div
           dir={lesson.language === 'ar' ? 'rtl' : 'ltr'}
-          className="bg-white rounded-lg shadow-lg p-6 font-mono text-lg leading-relaxed whitespace-pre-wrap"
+          className={`bg-white rounded-lg shadow-lg p-6 ${getFontSizeClass()} ${getFontFamilyClass()} leading-relaxed whitespace-pre-wrap ${config.highContrast ? 'bg-black text-white' : ''}`}
         >
           {renderText()}
         </div>
+
+        {config.virtualKeyboardGuide !== 'none' && (
+          <div className="bg-purple-100 border border-purple-400 text-purple-800 rounded-lg p-2 mb-4 text-sm">
+            ⌨️ Virtual Keyboard Guide: {config.virtualKeyboardGuide === 'right' ? 'Right Hand' : 'Left Hand'}
+            <VirtualKeyboardGuide
+              currentChar={lesson.text[userInput.length] || ''}
+              nextChar={lesson.text[userInput.length + 1] || ''}
+              lockHands={true}
+              handType={config.virtualKeyboardGuide}
+              isRTL={isRTL}
+            />
+          </div>
+        )}
+
+        {config.disableBackspace && (
+          <div className="mt-4 bg-orange-100 border border-orange-400 text-orange-800 rounded-lg p-2 text-sm">
+            ⚠️ Backspace is disabled for this lesson
+          </div>
+        )}
+        {config.blockOnError && (
+          <div className="mt-4 bg-red-100 border border-red-400 text-red-800 rounded-lg p-2 text-sm">
+            🚫 Error blocking is active - incorrect keys will be ignored
+          </div>
+        )}
       </div>
     </div>
   );

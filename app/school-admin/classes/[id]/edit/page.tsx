@@ -6,22 +6,6 @@ import { useRouter, useParams } from 'next/navigation';
 import { useLanguage } from '@/app/contexts/LanguageContext';
 import { Sidebar, schoolAdminLinks } from '@/components/Sidebar';
 
-const GRADES = [
-  'unassigned',
-  '1st Grade',
-  '2nd Grade',
-  '3rd Grade',
-  '4th Grade',
-  '5th Grade',
-  '6th Grade',
-  '7th Grade',
-  '8th Grade',
-  '9th Grade',
-  '10th Grade',
-  '11th Grade',
-  '12th Grade',
-];
-
 const DAYS_OF_WEEK = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 export default function EditClassPage() {
@@ -37,7 +21,7 @@ export default function EditClassPage() {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    grade: 'unassigned',
+    grade: '',
     instructorIds: [] as number[],
     courseIds: [] as number[],
     startOfWeek: 'sunday',
@@ -89,7 +73,7 @@ export default function EditClassPage() {
       setFormData({
         name: classInfo.name || '',
         description: classInfo.description || '',
-        grade: classInfo.grade || 'unassigned',
+        grade: classInfo.grade || '',
         instructorIds: classInfo.instructorIds || [],
         courseIds: classInfo.courseIds || [],
         startOfWeek: classInfo.startOfWeek || 'sunday',
@@ -176,7 +160,7 @@ export default function EditClassPage() {
             {/* Basic Information */}
             <div className="space-y-4">
               <h2 className="text-xl font-semibold text-gray-900">Basic Information</h2>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Class Name *
@@ -201,20 +185,16 @@ export default function EditClassPage() {
                   rows={3}
                 />
               </div>
-
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Grade
+                  {isRTL ? 'الصف *' : 'Grade *'}
                 </label>
-                <select
+                <input
+                  type="text"
                   value={formData.grade}
                   onChange={(e) => setFormData({ ...formData, grade: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  {GRADES.map(grade => (
-                    <option key={grade} value={grade}>{grade}</option>
-                  ))}
-                </select>
+                />
               </div>
 
               <div>

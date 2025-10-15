@@ -7,22 +7,6 @@ import { useLanguage } from '@/app/contexts/LanguageContext';
 import { Sidebar, instructorLinks } from '@/components/Sidebar';
 import { ArrowLeft } from 'lucide-react';
 
-const GRADES = [
-  'unassigned',
-  'Grade 1',
-  'Grade 2',
-  'Grade 3',
-  'Grade 4',
-  'Grade 5',
-  'Grade 6',
-  'Grade 7',
-  'Grade 8',
-  'Grade 9',
-  'Grade 10',
-  'Grade 11',
-  'Grade 12',
-];
-
 export default function EditStudentPage() {
   const params = useParams();
   const router = useRouter();
@@ -38,7 +22,7 @@ export default function EditStudentPage() {
     email: '',
     studentId: '',
     password: '',
-    grade: GRADES[0],
+    grade: '',
     classId: 'none',
     accessibility: [] as string[],
   });
@@ -66,7 +50,7 @@ export default function EditStudentPage() {
           email: studentData.user.email || '',
           studentId: studentData.user.studentId || '',
           password: '',
-          grade: studentData.user.grade || GRADES[0],
+          grade: studentData.user.grade || '',
           classId: 'none',
           accessibility: studentData.user.accessibility || [],
         });
@@ -113,13 +97,13 @@ export default function EditStudentPage() {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value, type } = e.target;
-    
+
     if (type === 'checkbox' && name === 'accessibility') {
       const checkbox = e.target as HTMLInputElement;
       const updatedAccessibility = checkbox.checked
         ? [...formData.accessibility, value]
         : formData.accessibility.filter(item => item !== value);
-      
+
       setFormData({
         ...formData,
         accessibility: updatedAccessibility,
@@ -149,9 +133,8 @@ export default function EditStudentPage() {
         <div className={`mb-8 ${isRTL ? 'text-right' : 'text-left'}`}>
           <button
             onClick={() => router.push(`/instructor/students/${studentId}`)}
-            className={`flex items-center gap-2 text-blue-600 hover:text-blue-700 mb-4 ${
-              isRTL ? 'flex-row-reverse' : ''
-            }`}
+            className={`flex items-center gap-2 text-blue-600 hover:text-blue-700 mb-4 ${isRTL ? 'flex-row-reverse' : ''
+              }`}
           >
             <ArrowLeft className={`w-5 h-5 ${isRTL ? 'rotate-180' : ''}`} />
             <span className={isRTL ? 'font-arabic' : ''}>
@@ -170,9 +153,8 @@ export default function EditStudentPage() {
         {/* Form */}
         <div className="bg-white rounded-lg shadow p-8 max-w-2xl">
           {error && (
-            <div className={`mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 ${
-              isRTL ? 'text-right font-arabic' : ''
-            }`}>
+            <div className={`mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 ${isRTL ? 'text-right font-arabic' : ''
+              }`}>
               {error}
             </div>
           )}
@@ -180,9 +162,8 @@ export default function EditStudentPage() {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Name */}
             <div>
-              <label className={`block text-sm font-medium text-gray-700 mb-2 ${
-                isRTL ? 'text-right font-arabic' : ''
-              }`}>
+              <label className={`block text-sm font-medium text-gray-700 mb-2 ${isRTL ? 'text-right font-arabic' : ''
+                }`}>
                 {isRTL ? 'اسم الطالب' : 'Student Name'}{' '}
                 <span className="text-red-500">*</span>
               </label>
@@ -192,18 +173,16 @@ export default function EditStudentPage() {
                 value={formData.name}
                 onChange={handleChange}
                 required
-                className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                  isRTL ? 'text-right font-arabic' : ''
-                }`}
+                className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${isRTL ? 'text-right font-arabic' : ''
+                  }`}
                 placeholder={isRTL ? 'أدخل اسم الطالب' : 'Enter student name'}
               />
             </div>
 
             {/* Email */}
             <div>
-              <label className={`block text-sm font-medium text-gray-700 mb-2 ${
-                isRTL ? 'text-right font-arabic' : ''
-              }`}>
+              <label className={`block text-sm font-medium text-gray-700 mb-2 ${isRTL ? 'text-right font-arabic' : ''
+                }`}>
                 {isRTL ? 'البريد الإلكتروني' : 'Email Address'}{' '}
                 <span className="text-red-500">*</span>
               </label>
@@ -213,18 +192,16 @@ export default function EditStudentPage() {
                 value={formData.email}
                 onChange={handleChange}
                 required
-                className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                  isRTL ? 'text-right font-arabic' : ''
-                }`}
+                className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${isRTL ? 'text-right font-arabic' : ''
+                  }`}
                 placeholder={isRTL ? 'أدخل البريد الإلكتروني' : 'Enter email'}
               />
             </div>
 
             {/* Student ID */}
             <div>
-              <label className={`block text-sm font-medium text-gray-700 mb-2 ${
-                isRTL ? 'text-right font-arabic' : ''
-              }`}>
+              <label className={`block text-sm font-medium text-gray-700 mb-2 ${isRTL ? 'text-right font-arabic' : ''
+                }`}>
                 {isRTL ? 'رقم الطالب' : 'Student ID'}{' '}
                 <span className="text-red-500">*</span>
               </label>
@@ -234,18 +211,16 @@ export default function EditStudentPage() {
                 value={formData.studentId}
                 onChange={handleChange}
                 required
-                className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                  isRTL ? 'text-right font-arabic' : ''
-                }`}
+                className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${isRTL ? 'text-right font-arabic' : ''
+                  }`}
                 placeholder={isRTL ? 'أدخل رقم الطالب' : 'Enter student ID'}
               />
             </div>
 
             {/* Password */}
             <div>
-              <label className={`block text-sm font-medium text-gray-700 mb-2 ${
-                isRTL ? 'text-right font-arabic' : ''
-              }`}>
+              <label className={`block text-sm font-medium text-gray-700 mb-2 ${isRTL ? 'text-right font-arabic' : ''
+                }`}>
                 {isRTL ? 'كلمة المرور الجديدة' : 'New Password'}
               </label>
               <input
@@ -253,55 +228,43 @@ export default function EditStudentPage() {
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                  isRTL ? 'text-right font-arabic' : ''
-                }`}
+                className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${isRTL ? 'text-right font-arabic' : ''
+                  }`}
                 placeholder={isRTL ? 'اترك فارغاً للإبقاء على كلمة المرور الحالية' : 'Leave blank to keep current password'}
               />
               <p className={`text-sm text-gray-500 mt-1 ${isRTL ? 'text-right font-arabic' : ''}`}>
                 {isRTL ? 'اترك هذا الحقل فارغاً إذا كنت لا تريد تغيير كلمة المرور' : 'Leave this field empty if you don\'t want to change the password'}
               </p>
             </div>
-
-            {/* Grade */}
             <div>
-              <label className={`block text-sm font-medium text-gray-700 mb-2 ${
-                isRTL ? 'text-right font-arabic' : ''
-              }`}>
-                {isRTL ? 'الصف الدراسي' : 'Grade'}{' '}
+              <label className={`block text-sm font-medium text-gray-700 mb-2 ${isRTL ? 'text-right font-arabic' : ''
+                }`}>
+                {isRTL ? 'الصف *' : 'Grade *'}
                 <span className="text-red-500">*</span>
               </label>
-              <select
+              <input
+                type="text"
                 name="grade"
                 value={formData.grade}
                 onChange={handleChange}
-                required
-                className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                  isRTL ? 'text-right font-arabic' : ''
-                }`}
-              >
-                {GRADES.map((grade) => (
-                  <option key={grade} value={grade}>
-                    {grade}
-                  </option>
-                ))}
-              </select>
+                className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${isRTL ? 'text-right font-arabic' : ''
+                  }`}
+                placeholder={isRTL ? 'أدخل الصف' : 'Enter Grade'}
+              />
             </div>
 
             {/* Class Selection */}
             <div>
-              <label className={`block text-sm font-medium text-gray-700 mb-2 ${
-                isRTL ? 'text-right font-arabic' : ''
-              }`}>
+              <label className={`block text-sm font-medium text-gray-700 mb-2 ${isRTL ? 'text-right font-arabic' : ''
+                }`}>
                 {isRTL ? 'الفصل الدراسي' : 'Class'}
               </label>
               <select
                 name="classId"
                 value={formData.classId}
                 onChange={handleChange}
-                className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                  isRTL ? 'text-right font-arabic' : ''
-                }`}
+                className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${isRTL ? 'text-right font-arabic' : ''
+                  }`}
               >
                 <option value="none">
                   {isRTL ? 'بدون فصل' : 'No Class'}
@@ -319,12 +282,11 @@ export default function EditStudentPage() {
               <h3 className={`text-lg font-semibold text-gray-900 mb-4 ${isRTL ? 'text-right font-arabic' : ''}`}>
                 {isRTL ? 'إمكانية الوصول' : 'Accessibility'}
               </h3>
-              
+
               <div className="space-y-3">
                 {/* Blind */}
-                <label className={`flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer ${
-                  isRTL ? 'flex-row-reverse' : ''
-                }`}>
+                <label className={`flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer ${isRTL ? 'flex-row-reverse' : ''
+                  }`}>
                   <input
                     type="checkbox"
                     name="accessibility"
@@ -338,7 +300,7 @@ export default function EditStudentPage() {
                       {isRTL ? 'كفيف' : 'Blind'}
                     </div>
                     <div className={`text-sm text-gray-600 ${isRTL ? 'font-arabic' : ''}`}>
-                      {isRTL 
+                      {isRTL
                         ? 'يفعل: تباين عالي، خط كبير جداً، إرشاد صوتي كامل، منع عند الخطأ، مسافة للخلف'
                         : 'Activates: high contrast, extra-large font, fully guided voice-over, block-on-error, backspace'}
                     </div>
@@ -346,9 +308,8 @@ export default function EditStudentPage() {
                 </label>
 
                 {/* Low Vision */}
-                <label className={`flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer ${
-                  isRTL ? 'flex-row-reverse' : ''
-                }`}>
+                <label className={`flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer ${isRTL ? 'flex-row-reverse' : ''
+                  }`}>
                   <input
                     type="checkbox"
                     name="accessibility"
@@ -362,7 +323,7 @@ export default function EditStudentPage() {
                       {isRTL ? 'ضعف البصر' : 'Low Vision'}
                     </div>
                     <div className={`text-sm text-gray-600 ${isRTL ? 'font-arabic' : ''}`}>
-                      {isRTL 
+                      {isRTL
                         ? 'يفعل: خلفية افتراضية، خط كبير، إرشاد صوتي كامل'
                         : 'Activates: default background, large font, fully guided voice-over'}
                     </div>
@@ -370,9 +331,8 @@ export default function EditStudentPage() {
                 </label>
 
                 {/* Dyslexic */}
-                <label className={`flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer ${
-                  isRTL ? 'flex-row-reverse' : ''
-                }`}>
+                <label className={`flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer ${isRTL ? 'flex-row-reverse' : ''
+                  }`}>
                   <input
                     type="checkbox"
                     name="accessibility"
@@ -386,7 +346,7 @@ export default function EditStudentPage() {
                       {isRTL ? 'عسر القراءة' : 'Dyslexic'}
                     </div>
                     <div className={`text-sm text-gray-600 ${isRTL ? 'font-arabic' : ''}`}>
-                      {isRTL 
+                      {isRTL
                         ? 'يفعل: خط كبير مصمم خصيصاً لمن يعانون من عسر القراءة'
                         : 'Activates: large font designed specifically for dyslexic users'}
                     </div>
@@ -394,9 +354,8 @@ export default function EditStudentPage() {
                 </label>
 
                 {/* Right Hand Only */}
-                <label className={`flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer ${
-                  isRTL ? 'flex-row-reverse' : ''
-                }`}>
+                <label className={`flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer ${isRTL ? 'flex-row-reverse' : ''
+                  }`}>
                   <input
                     type="checkbox"
                     name="accessibility"
@@ -410,7 +369,7 @@ export default function EditStudentPage() {
                       {isRTL ? 'اليد اليمنى فقط' : 'Right Hand Only'}
                     </div>
                     <div className={`text-sm text-gray-600 ${isRTL ? 'font-arabic' : ''}`}>
-                      {isRTL 
+                      {isRTL
                         ? 'يفعل: دليل افتراضي لليد اليمنى'
                         : 'Activates: right-hand virtual guide'}
                     </div>
@@ -418,9 +377,8 @@ export default function EditStudentPage() {
                 </label>
 
                 {/* Left Hand Only */}
-                <label className={`flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer ${
-                  isRTL ? 'flex-row-reverse' : ''
-                }`}>
+                <label className={`flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer ${isRTL ? 'flex-row-reverse' : ''
+                  }`}>
                   <input
                     type="checkbox"
                     name="accessibility"
@@ -434,7 +392,7 @@ export default function EditStudentPage() {
                       {isRTL ? 'اليد اليسرى فقط' : 'Left Hand Only'}
                     </div>
                     <div className={`text-sm text-gray-600 ${isRTL ? 'font-arabic' : ''}`}>
-                      {isRTL 
+                      {isRTL
                         ? 'يفعل: دليل افتراضي لليد اليسرى'
                         : 'Activates: left-hand virtual guide'}
                     </div>
@@ -442,9 +400,8 @@ export default function EditStudentPage() {
                 </label>
 
                 {/* Hard of Hearing */}
-                <label className={`flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer ${
-                  isRTL ? 'flex-row-reverse' : ''
-                }`}>
+                <label className={`flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer ${isRTL ? 'flex-row-reverse' : ''
+                  }`}>
                   <input
                     type="checkbox"
                     name="accessibility"
@@ -458,7 +415,7 @@ export default function EditStudentPage() {
                       {isRTL ? 'ضعف السمع' : 'Hard of Hearing'}
                     </div>
                     <div className={`text-sm text-gray-600 ${isRTL ? 'font-arabic' : ''}`}>
-                      {isRTL 
+                      {isRTL
                         ? 'يفعل: ترجمة للفيديوهات'
                         : 'Activates: closed captioning for videos'}
                     </div>
@@ -472,24 +429,22 @@ export default function EditStudentPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className={`px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed ${
-                  isRTL ? 'font-arabic' : ''
-                }`}
+                className={`px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed ${isRTL ? 'font-arabic' : ''
+                  }`}
               >
                 {loading
                   ? isRTL
                     ? 'جاري الحفظ...'
                     : 'Saving...'
                   : isRTL
-                  ? 'حفظ التغييرات'
-                  : 'Save Changes'}
+                    ? 'حفظ التغييرات'
+                    : 'Save Changes'}
               </button>
               <button
                 type="button"
                 onClick={() => router.push(`/instructor/students/${studentId}`)}
-                className={`px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors ${
-                  isRTL ? 'font-arabic' : ''
-                }`}
+                className={`px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors ${isRTL ? 'font-arabic' : ''
+                  }`}
               >
                 {isRTL ? 'إلغاء' : 'Cancel'}
               </button>
