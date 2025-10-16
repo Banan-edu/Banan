@@ -14,6 +14,48 @@ type RouteContext = {
   params: Promise<{ id: string }>;
 };
 
+function calculateStars({
+  accuracy,
+  speed,
+  goalSpeed,
+  targetScore = 100,
+  minAccuracy = 80,
+  minSpeed = 20,
+}: {
+  accuracy: number;
+  speed: number;
+  goalSpeed: number;
+  targetScore?: number;
+  minAccuracy?: number;
+  minSpeed?: number;
+}) {
+  console.log(accuracy,
+    speed,
+    goalSpeed,
+    targetScore,
+    minAccuracy,
+    minSpeed)
+  // --- Step 1: Normalize accuracy (0–1)
+  const accRatio = Math.min(Math.max((accuracy - minAccuracy) / (100 - minAccuracy), 0), 1);
+
+  // --- Step 2: Normalize speed (0–1)
+  const spdRatio = Math.min(Math.max((speed - minSpeed) / (goalSpeed - minSpeed), 0), 1);
+
+  // --- Step 3: Weighted performance score (out of 100)
+  const performance = (accRatio * 0.6 + spdRatio * 0.4) * targetScore;
+
+  // --- Step 4: Convert to 1–5 stars
+  let stars = 1;
+  if (performance >= 95) stars = 5;
+  else if (performance >= 85) stars = 4;
+  else if (performance >= 70) stars = 3;
+  else if (performance >= 50) stars = 2;
+  else stars = 1;
+
+  return { stars, performance: Math.round(performance) };
+}
+
+
 export async function GET(req: NextRequest, context: RouteContext) {
   const session = await getSession();
 
@@ -132,6 +174,7 @@ export async function POST(req: NextRequest, context: RouteContext) {
   const timeSpent = Math.max(0, Math.min(3600, parseInt(body.timeSpent) || 0));
   const score = Math.max(0, Math.min(1000, parseInt(body.score) || 0));
 
+
   // Extract detailed tracking data
   const sessionData = body.sessionData || null; // Keystroke timeline
   const letterData = body.letterData || []; // Per-letter statistics
@@ -147,6 +190,14 @@ export async function POST(req: NextRequest, context: RouteContext) {
     return NextResponse.json({ error: 'Lesson not found' }, { status: 404 });
   }
 
+  const stars = calculateStars({
+    accuracy,
+    speed,
+    goalSpeed: lesson.goalSpeed || 0,
+    targetScore: lesson.targetScore || 0,
+    minAccuracy: lesson.minAccuracy || 0,
+    minSpeed: lesson.minSpeed || 0,
+  })
   const [section] = await db
     .select()
     .from(sections)
@@ -179,9 +230,7 @@ export async function POST(req: NextRequest, context: RouteContext) {
   if (enrolledCourses.length === 0) {
     return NextResponse.json({ error: 'Not authorized to submit progress for this lesson' }, { status: 403 });
   }
-
-  const stars = accuracy >= 95 && speed >= 40 ? 3 : accuracy >= 85 && speed >= 30 ? 2 : 1;
-  const completed = accuracy >= 80;
+  const completed = accuracy >= (lesson.minAccuracy || 80) && speed >= (lesson.goalSpeed || 0);
 
   const [existing] = await db
     .select()
@@ -198,10 +247,10 @@ export async function POST(req: NextRequest, context: RouteContext) {
     const [updated] = await db
       .update(lessonProgress)
       .set({
-        score: Math.max(existing?.score || 0, score),
+        score: Math.max(existing?.score || 0, stars.performance),
         speed: Math.max(existing?.speed || 0, speed),
         accuracy: Math.max(existing?.accuracy || 0, accuracy),
-        stars: Math.max(existing?.stars || 0, stars),
+        stars: Math.max(existing?.stars || 0, stars.stars),
         timeSpent: (existing?.timeSpent || 0) + timeSpent,
         attempts: (existing?.attempts || 0) + 1,
         completed: completed || existing.completed,
@@ -220,10 +269,10 @@ export async function POST(req: NextRequest, context: RouteContext) {
       .values({
         userId: session.userId,
         lessonId,
-        score,
+        score: stars.performance,
         speed,
         accuracy,
-        stars,
+        stars: stars.stars,
         timeSpent,
         attempts: 1,
         completed,

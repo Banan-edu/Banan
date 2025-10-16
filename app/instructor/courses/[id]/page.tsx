@@ -282,12 +282,7 @@ export default function InstructorCourseDetailPage() {
         }}
         onSubmit={handleLessonSubmit}
         sectionName={selectedSection?.name || ''}
-        initialData={selectedLesson ? {
-          name: selectedLesson.name,
-          type: selectedLesson.type,
-          content: selectedLesson.text,
-          language: selectedLesson.codeLanguage,
-        } : undefined}
+        initialData={selectedLesson ? { ...selectedLesson } : undefined}
         mode={lessonModalMode}
       />
 

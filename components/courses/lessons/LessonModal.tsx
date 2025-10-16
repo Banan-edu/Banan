@@ -1,13 +1,13 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
 
 interface LessonFormData {
   name: string;
-  type: 'text' | 'coding';
-  content: string;
+  type: 'text' | 'coding' | 'dual';
+  text: string;
   language?: string;
   objective?: string;
   disableBackspace?: boolean;
@@ -22,7 +22,7 @@ interface LessonFormData {
   instructions?: Array<{
     titleTag?: string;
     slideTitle?: string;
-    content?: string;
+    text?: string;
     highlightChar?: string;
     mediaUrl?: string;
     audioPath?: string;
@@ -46,10 +46,26 @@ export default function LessonModal({
   initialData,
   mode,
 }: LessonModalProps) {
-  const [formData, setFormData] = useState<LessonFormData>({
+  const [formData, setFormData] = useState<LessonFormData>(mode === 'add' ? {
+    name: '',
+    type: 'text',
+    text: '',
+    language: 'javascript',
+    objective: '',
+    disableBackspace: false,
+    blockOnError: false,
+    useMeaningfulWords: true,
+    isPlacementTest: false,
+    goalSpeed: 20,
+    minSpeed: 3,
+    minAccuracy: 80,
+    targetScore: 1000,
+    timeLimit: 10,
+    instructions: [],
+  } : {
     name: initialData?.name || '',
     type: initialData?.type || 'text',
-    content: initialData?.content || '',
+    text: initialData?.text || '',
     language: initialData?.language || 'javascript',
     objective: initialData?.objective || '',
     disableBackspace: initialData?.disableBackspace || false,
@@ -63,14 +79,88 @@ export default function LessonModal({
     timeLimit: initialData?.timeLimit || 10,
     instructions: initialData?.instructions || [],
   });
-
   const [activeTab, setActiveTab] = useState<'basic' | 'settings' | 'goals' | 'instructions'>('basic');
   const [loading, setLoading] = useState(false);
+
+
+  useEffect(() => {
+    if (initialData) {
+      setFormData(mode === 'add' ? {
+        name: '',
+        type: 'text',
+        text: '',
+        language: 'javascript',
+        objective: '',
+        disableBackspace: false,
+        blockOnError: false,
+        useMeaningfulWords: true,
+        isPlacementTest: false,
+        goalSpeed: 20,
+        minSpeed: 3,
+        minAccuracy: 80,
+        targetScore: 1000,
+        timeLimit: 10,
+        instructions: [],
+      } : {
+        name: initialData.name || '',
+        type: initialData.type || 'text',
+        text: initialData.text || '',
+        language: initialData.language || 'javascript',
+        objective: initialData.objective || '',
+        disableBackspace: initialData.disableBackspace ?? false,
+        blockOnError: initialData.blockOnError ?? false,
+        useMeaningfulWords: initialData.useMeaningfulWords ?? true,
+        isPlacementTest: initialData.isPlacementTest ?? false,
+        goalSpeed: initialData.goalSpeed ?? 20,
+        minSpeed: initialData.minSpeed ?? 3,
+        minAccuracy: initialData.minAccuracy ?? 80,
+        targetScore: initialData.targetScore ?? 1000,
+        timeLimit: initialData.timeLimit ?? 10,
+        instructions: initialData.instructions ?? [],
+      });
+    }else{
+      setFormData({
+        name: '',
+        type: 'text',
+        text: '',
+        language: 'javascript',
+        objective: '',
+        disableBackspace: false,
+        blockOnError: false,
+        useMeaningfulWords: true,
+        isPlacementTest: false,
+        goalSpeed: 20,
+        minSpeed: 3,
+        minAccuracy: 80,
+        targetScore: 1000,
+        timeLimit: 10,
+        instructions: [],
+      });
+
+    }
+  }, [initialData,mode]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
+      setFormData({
+        name: '',
+        type: 'text',
+        text: '',
+        language: 'javascript',
+        objective: '',
+        disableBackspace: false,
+        blockOnError: false,
+        useMeaningfulWords: true,
+        isPlacementTest: false,
+        goalSpeed: 20,
+        minSpeed: 3,
+        minAccuracy: 80,
+        targetScore: 1000,
+        timeLimit: 10,
+        instructions: [],
+      })
       await onSubmit(formData);
     } finally {
       setLoading(false);
@@ -82,7 +172,7 @@ export default function LessonModal({
       ...formData,
       instructions: [
         ...(formData.instructions || []),
-        { slideTitle: '', content: '' },
+        { slideTitle: '', text: '' },
       ],
     });
   };
@@ -119,11 +209,10 @@ export default function LessonModal({
             <button
               key={tab}
               onClick={() => setActiveTab(tab as any)}
-              className={`px-6 py-3 font-medium capitalize ${
-                activeTab === tab
-                  ? 'border-b-2 border-blue-500 text-blue-600'
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
+              className={`px-6 py-3 font-medium capitalize ${activeTab === tab
+                ? 'border-b-2 border-blue-500 text-blue-600'
+                : 'text-gray-600 hover:text-gray-900'
+                }`}
             >
               {tab}
             </button>
@@ -170,6 +259,7 @@ export default function LessonModal({
                 >
                   <option value="text">Text</option>
                   <option value="coding">Coding</option>
+                  <option value="dual">Dual</option>
                 </select>
               </div>
 
@@ -193,11 +283,11 @@ export default function LessonModal({
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Content *
+                  text *
                 </label>
                 <textarea
-                  value={formData.content}
-                  onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                  value={formData.text}
+                  onChange={(e) => setFormData({ ...formData, text: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
                   rows={10}
                   required
@@ -209,7 +299,7 @@ export default function LessonModal({
           {activeTab === 'settings' && (
             <div className="space-y-4">
               <h4 className="font-semibold text-gray-900 mb-3">Lesson Settings</h4>
-              
+
               <label className="flex items-center gap-2">
                 <input
                   type="checkbox"
@@ -363,9 +453,9 @@ export default function LessonModal({
                   />
 
                   <textarea
-                    value={instruction.content || ''}
-                    onChange={(e) => updateInstruction(index, 'content', e.target.value)}
-                    placeholder="Instruction content here"
+                    value={instruction.text || ''}
+                    onChange={(e) => updateInstruction(index, 'text', e.target.value)}
+                    placeholder="Instruction text here"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                     rows={3}
                   />

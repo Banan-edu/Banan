@@ -29,7 +29,7 @@ export function HeroSection({ onRegisterClick, t, isRTL }: HeroSectionProps) {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center min-h-[500px]">
           <div className="text-center space-y-8">
             <div className="space-y-4">
-              <h1 className={`text-5xl lg:text-7xl font-bold hero-text-shadow ${isRTL ? 'arabic-hero-title arabic-text' : ''}`}>
+              <h1 className={`text-5xl lg:text-6xl font-bold hero-text-shadow ${isRTL ? 'arabic-hero-title arabic-text' : ''}`}>
                 <span className="block text-white leading-tight mb-3 animate-fade-in-up">
                   {t('hero-title').split('\n').map((line, i) => (
                     <span key={i}>
@@ -39,7 +39,7 @@ export function HeroSection({ onRegisterClick, t, isRTL }: HeroSectionProps) {
                   ))}
                 </span>
                 {t('hero-subtitle') && (
-                  <span className="block text-purple-200 text-4xl lg:text-5xl leading-tight animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+                  <span className="block text-purple-200 text-xl lg:text-5xl leading-tight animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
                     {t('hero-subtitle')}
                   </span>
                 )}
@@ -47,7 +47,7 @@ export function HeroSection({ onRegisterClick, t, isRTL }: HeroSectionProps) {
               <div className="w-24 h-1 bg-gradient-to-r from-purple-300 to-indigo-100 mx-auto"></div>
             </div>
 
-            <p className={`text-xl lg:text-2xl text-indigo-50 leading-relaxed max-w-2xl mx-auto ${isRTL ? 'arabic-body arabic-text' : ''}`}>
+            <p className={`text-xl lg:text-xl text-indigo-50 leading-relaxed max-w-2xl mx-auto ${isRTL ? 'arabic-body arabic-text' : ''}`}>
               {t('hero-description')}
             </p>
 

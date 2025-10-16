@@ -2,7 +2,7 @@ import { pgTable, text, serial, integer, boolean, timestamp, jsonb, pgEnum, varc
 import { relations } from "drizzle-orm";
 
 export const userRoleEnum = pgEnum('user_role', ['admin', 'school_admin', 'billing_admin', 'instructor', 'student']);
-export const lessonTypeEnum = pgEnum('lesson_type', ['text', 'coding']);
+export const lessonTypeEnum = pgEnum('lesson_type', ['text', 'coding', 'dual']);
 export const typingModeEnum = pgEnum('typing_mode', ['duals_to_words', 'duals_and_words', 'words_only', 'sentences']);
 export const courseTypeEnum = pgEnum('course_type', ['typing', 'coding', 'game']);
 export const languageEnum = pgEnum('language', ['ar', 'en']);
@@ -171,6 +171,7 @@ export const lessons = pgTable("lessons", {
   id: serial("id").primaryKey(),
   sectionId: integer("section_id").notNull().references(() => sections.id, { onDelete: 'cascade' }),
   name: text("name").notNull(),
+  objective: text("objective"),
   type: lessonTypeEnum("type").notNull().default('text'),
   order: integer("order").notNull(),
 

@@ -120,7 +120,7 @@ export default function SectionPage() {
                                         {lesson.progress && (
                                             <div className="flex items-center gap-2 mt-3 pt-3 border-t">
                                                 <div className="flex gap-1">
-                                                    {[...Array(3)].map((_, i) => (
+                                                    {[...Array(lesson.progress?.stars||0)].map((_, i) => (
                                                         <Star
                                                             key={i}
                                                             className={`w-4 h-4 ${i < (lesson.progress?.stars || 0)

@@ -218,9 +218,10 @@ export default function LessonPage() {
     const acc = userInput.length ? Math.round((correctChars / userInput.length) * 100) : 100;
     setAccuracy(acc);
 
-    const timeElapsed = (Date.now() - startTime) / 1000 / 60;
-    const wordsTyped = userInput.trim().split(/\s+/).length;
-    setWpm(Math.round(wordsTyped / timeElapsed) || 0);
+    const timeElapsed = (Date.now() - startTime) / 1000 / 60; // minutes
+    const charsTyped = userInput.length;
+    const wordsTyped = charsTyped / 5; // 5 chars = 1 word
+    if (timeElapsed > 0) setWpm(Math.round(wordsTyped / timeElapsed) || 0);
 
     if (userInput === targetText) handleComplete();
   }, [userInput, lesson, startTime]);
@@ -230,7 +231,6 @@ export default function LessonPage() {
     const handleBeforeUnload = () => {
       if (startTime && !isComplete && keystrokes.length > 0) {
         const timeSpent = Math.round((Date.now() - startTime) / 1000);
-        const score = Math.round((accuracy * wpm) / 10);
         const letterData = Array.from(letterStats.values()).map(stat => ({
           letter: stat.letter,
           correctCount: stat.correctCount,
@@ -250,7 +250,6 @@ export default function LessonPage() {
         };
 
         const payload = JSON.stringify({
-          score,
           speed: wpm,
           accuracy,
           timeSpent,
@@ -275,7 +274,6 @@ export default function LessonPage() {
     const { screenBlob, cameraBlob } = await stopRecording();
 
     const timeSpent = Math.round((Date.now() - startTime) / 1000);
-    const score = Math.round((accuracy * wpm) / 10);
 
     const letterData = Array.from(letterStats.values()).map(stat => ({
       letter: stat.letter,
@@ -301,7 +299,6 @@ export default function LessonPage() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        score,
         speed: wpm,
         accuracy,
         timeSpent,
@@ -416,7 +413,7 @@ export default function LessonPage() {
     console.warn('MediaRecorder not supported on this browser.');
     return;
   }
-  // --- Text Rendering (no textbox, underlining next char) ---
+  // --- Text Rendering (underlining next char) ---
   const renderText = () => {
     if (!lesson) return null;
     const target = lesson.text;
@@ -435,6 +432,49 @@ export default function LessonPage() {
       );
     });
   };
+
+  const renderDual = () => {
+    if (!lesson) return null;
+
+    const target = lesson.text.split('');
+    const visibleCount = 7;
+
+    // Calculate which chunk of letters to display (based on typing progress)
+    const startIndex = Math.floor(userInput.length / visibleCount) * visibleCount;
+    const endIndex = startIndex + visibleCount;
+    const visibleChars = target.slice(startIndex, endIndex);
+
+    return (
+      <div className="flex justify-center flex-wrap gap-2 mt-6">
+        {visibleChars.map((char: string, index: number) => {
+          const actualIndex = startIndex + index;
+          let boxStyle =
+            'w-12 h-12 flex items-center justify-center rounded-lg border text-2xl font-bold transition-all duration-200 ';
+
+          if (actualIndex < userInput.length) {
+            // ✅ Typed letters
+            boxStyle +=
+              userInput[actualIndex] === char
+                ? 'bg-green-100 border-green-500 text-green-700'
+                : 'bg-red-100 border-red-500 text-red-700';
+          } else if (actualIndex === userInput.length) {
+            // ✅ Current letter
+            boxStyle += 'border-blue-500 underline decoration-blue-500 text-gray-900';
+          } else {
+            // ✅ Remaining letters
+            boxStyle += 'border-gray-300 text-gray-500';
+          }
+
+          return (
+            <div key={actualIndex} className={boxStyle}>
+              {char === ' ' ? <span className="opacity-50">␣</span> : char}
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
 
   const handleStartLesson = async () => {
     if (isRecording || recordingAllowed) return;
@@ -564,7 +604,7 @@ export default function LessonPage() {
           dir={lesson.language === 'ar' ? 'rtl' : 'ltr'}
           className={`bg-white rounded-lg shadow-lg p-6 ${getFontSizeClass()} ${getFontFamilyClass()} leading-relaxed whitespace-pre-wrap ${config.highContrast ? 'bg-black text-white' : ''}`}
         >
-          {renderText()}
+          {lesson.type === 'dual' ? renderDual() : renderText()}
         </div>
 
         {config.virtualKeyboardGuide !== 'none' && (

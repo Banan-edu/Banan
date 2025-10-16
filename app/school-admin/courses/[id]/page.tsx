@@ -285,7 +285,7 @@ export default function InstructorCourseDetailPage() {
         initialData={selectedLesson ? {
           name: selectedLesson.name,
           type: selectedLesson.type,
-          content: selectedLesson.text,
+          text: selectedLesson.text,
           language: selectedLesson.codeLanguage,
         } : undefined}
         mode={lessonModalMode}
