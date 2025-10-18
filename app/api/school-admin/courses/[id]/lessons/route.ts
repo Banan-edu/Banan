@@ -17,7 +17,7 @@ export async function POST(req: NextRequest, context: RouteContext) {
 
   const { id } = await context.params;
   const courseId = parseInt(id);
-  const { sectionId, name, type, content, language } = await req.json();
+  const { sectionId, name, type, text, language } = await req.json();
 
   const [section] = await db
     .select()
@@ -50,7 +50,7 @@ export async function POST(req: NextRequest, context: RouteContext) {
       sectionId,
       name,
       type,
-      text: content,
+      text: text,
       codeLanguage: type === 'coding' ? language : null,
       order: existingLessons.length + 1,
     })
